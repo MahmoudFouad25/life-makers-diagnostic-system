@@ -812,6 +812,21 @@ let currentOrgFilter = 'all';
         }
 
         function updateStatistics() {
+                        // إذا لم توجد جلسات بعد، أضف رسالة توضيحية
+            if (allSessions.length === 0) {
+                document.getElementById('totalSessions').textContent = '0';
+                document.getElementById('completedSessions').textContent = '0';
+                document.getElementById('activeSessions').textContent = '0';
+                document.getElementById('avgProgress').textContent = '0%';
+                
+                // مسح قائمة الجمعيات
+                const orgFilter = document.getElementById('orgFilter');
+                if (orgFilter) {
+                    orgFilter.innerHTML = '<option value="all">🏢 جميع الجمعيات (لا توجد جلسات بعد)</option>';
+                }
+                return;
+            }
+
             // Extract organizations
             allOrganizations.clear();
             allSessions.forEach(s => {
