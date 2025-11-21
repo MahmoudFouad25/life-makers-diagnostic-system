@@ -3,59 +3,1003 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الأسئلة التفاعلية</title>
+    <title>الأسئلة التفاعلية - نظام التشخيص</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
+            color: #2d3748;
         }
-        .container {
+
+        .top-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .session-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .session-id {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .participant-name {
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .back-home {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-home:hover {
+            background: #cbd5e0;
+        }
+
+        .progress-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .progress-stats {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .progress-bar-bg {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .question-card {
             background: white;
             border-radius: 20px;
             padding: 40px;
-            max-width: 900px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+            animation: slideIn 0.5s ease;
         }
-        h1 {
-            color: #2d3748;
-            text-align: center;
-            margin-bottom: 30px;
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .coming-soon {
-            text-align: center;
-            padding: 60px 20px;
+
+        .topic-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .question-type {
+            font-size: 12px;
             color: #718096;
-            font-size: 18px;
-        }
-        .back-btn {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 15px 30px;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
             font-weight: 600;
         }
-        .back-btn:hover {
-            background: #764ba2;
+
+        .question-text {
+            font-size: 22px;
+            color: #2d3748;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .question-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .choice-button {
+            display: block;
+            width: 100%;
+            padding: 18px 25px;
+            margin-bottom: 12px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: right;
+        }
+
+        .choice-button:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+            transform: translateX(-5px);
+        }
+
+        .choice-button.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .text-input, .textarea-input, .number-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            color: #2d3748;
+            transition: all 0.3s;
+        }
+
+        .text-input:focus, .textarea-input:focus, .number-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .textarea-input {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .scale-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .scale-button {
+            flex: 1;
+            padding: 15px 10px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .scale-button:hover {
+            background: #edf2f7;
+            transform: scale(1.05);
+        }
+
+        .scale-button.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .follow-up-card {
+            background: #fffbeb;
+            border: 2px solid #fbbf24;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .follow-up-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #92400e;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .follow-up-text {
+            color: #78350f;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 16px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-next:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-skip {
+            background: white;
+            color: #718096;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-skip:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        .completion-card {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .completion-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .completion-title {
+            font-size: 32px;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .completion-message {
+            font-size: 18px;
+            color: #718096;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .completion-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fee;
+            border: 2px solid #fcc;
+            color: #c33;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .question-card {
+                padding: 30px 20px;
+            }
+            
+            .question-text {
+                font-size: 18px;
+            }
+
+            .scale-container {
+                flex-wrap: wrap;
+            }
+
+            .scale-button {
+                min-width: 60px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎯 الأسئلة التفاعلية</h1>
-        <div class="coming-soon">
-            <p>هذه الصفحة قيد الإنشاء...</p>
-            <p>سيتم إضافة الأسئلة التفاعلية قريباً</p>
-            <a href="index.html" class="back-btn">↩️ العودة للصفحة الرئيسية</a>
+    <!-- شريط المعلومات العلوي -->
+    <div class="top-bar">
+        <div class="session-info">
+            <div class="session-id" id="sessionId">جلسة: ...</div>
+            <div class="participant-name">
+                <span id="participantName">مشارك</span>
+            </div>
+        </div>
+        <a href="index.html" class="back-home">↩️ الصفحة الرئيسية</a>
+    </div>
+
+    <!-- شريط التقدم -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">التقدم في التشخيص</div>
+            <div class="progress-stats">
+                <span id="progressText">0 من 0 سؤال</span>
+            </div>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
         </div>
     </div>
+
+    <!-- الحاوية الرئيسية -->
+    <div class="main-container">
+        <!-- بطاقة السؤال -->
+        <div class="question-card" id="questionCard">
+            <div class="question-number" id="questionNumber">1</div>
+            
+            <div class="topic-badge" id="topicBadge">
+                <span id="topicIcon">🏢</span>
+                <span id="topicTitle">الهيكل التنظيمي</span>
+            </div>
+
+            <div class="question-type" id="questionType">سؤال افتتاحي</div>
+            
+            <div class="question-text" id="questionText">
+                جاري التحميل...
+            </div>
+
+            <!-- منطقة الإجابة -->
+            <div id="answerArea"></div>
+
+            <!-- بطاقة السؤال التكميلي -->
+            <div id="followUpContainer" class="hidden"></div>
+
+            <!-- رسالة خطأ -->
+            <div id="errorMessage" class="hidden error-message"></div>
+
+            <!-- أزرار التحكم -->
+            <div class="action-buttons">
+                <button class="btn btn-skip" id="skipBtn">
+                    ⏭️ تخطي
+                </button>
+                <button class="btn btn-next" id="nextBtn" disabled>
+                    التالي ⬅️
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- شاشة التحميل -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div style="color: #2d3748; font-weight: 600; font-size: 18px;">
+                جاري حفظ الإجابات...
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase و Logic -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { questionsData } from './questions-data.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+            authDomain: "life-makers-diagnostic.firebaseapp.com",
+            projectId: "life-makers-diagnostic",
+            storageBucket: "life-makers-diagnostic.firebasestorage.app",
+            messagingSenderId: "819336926740",
+            appId: "1:819336926740:web:d338b3299e6d18e3b67901",
+            measurementId: "G-4Z1FWWKG1C"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // State Management
+        let sessionId = generateSessionId();
+        let participantName = getParticipantName();
+        let currentAxis = 'system';
+        let currentTopicIndex = 0;
+        let currentQuestionIndex = 0;
+        let allAnswers = {};
+        let totalQuestionsCount = 0;
+        let answeredQuestionsCount = 0;
+
+        // Initialize
+        document.getElementById('sessionId').textContent = `جلسة: ${sessionId}`;
+        document.getElementById('participantName').textContent = participantName;
+
+        // Calculate total questions
+        calculateTotalQuestions();
+        
+        // Load first question
+        loadQuestion();
+
+        function generateSessionId() {
+            return 'S-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        }
+
+        function getParticipantName() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('name') || 'مشارك';
+        }
+
+        function calculateTotalQuestions() {
+            Object.values(questionsData).forEach(axis => {
+                Object.values(axis.topics).forEach(topic => {
+                    totalQuestionsCount += topic.questions.length;
+                });
+            });
+        }
+
+        function loadQuestion() {
+            const axisKeys = Object.keys(questionsData);
+            const currentAxisData = questionsData[currentAxis];
+            const topicKeys = Object.keys(currentAxisData.topics);
+            
+            if (currentTopicIndex >= topicKeys.length) {
+                // Move to next axis
+                const currentAxisIdx = axisKeys.indexOf(currentAxis);
+                if (currentAxisIdx < axisKeys.length - 1) {
+                    currentAxis = axisKeys[currentAxisIdx + 1];
+                    currentTopicIndex = 0;
+                    currentQuestionIndex = 0;
+                    loadQuestion();
+                } else {
+                    // All questions completed
+                    showCompletion();
+                }
+                return;
+            }
+
+            const currentTopicKey = topicKeys[currentTopicIndex];
+            const currentTopic = currentAxisData.topics[currentTopicKey];
+            
+            if (currentQuestionIndex >= currentTopic.questions.length) {
+                // Move to next topic
+                currentTopicIndex++;
+                currentQuestionIndex = 0;
+                loadQuestion();
+                return;
+            }
+
+            const question = currentTopic.questions[currentQuestionIndex];
+            
+            // Update UI
+            document.getElementById('questionNumber').textContent = answeredQuestionsCount + 1;
+            
+            const badge = document.getElementById('topicBadge');
+            badge.style.backgroundColor = currentAxisData.color + '20';
+            badge.style.color = currentAxisData.color;
+            document.getElementById('topicIcon').textContent = currentTopic.icon;
+            document.getElementById('topicTitle').textContent = currentTopic.title;
+            
+            document.getElementById('questionType').textContent = getQuestionTypeLabel(question.type);
+            document.getElementById('questionText').textContent = question.text;
+            
+            // Render answer input
+            renderAnswerInput(question);
+            
+            // Update progress
+            updateProgress();
+            
+            // Hide follow-up initially
+            document.getElementById('followUpContainer').classList.add('hidden');
+            
+            // Reset buttons
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+
+        function getQuestionTypeLabel(type) {
+            const labels = {
+                'opening': '🚀 سؤال افتتاحي',
+                'reality_check': '🔍 فحص الواقع',
+                'provocative': '⚡ سؤال استفزازي',
+                'killer': '🎯 السؤال القاتل',
+                'closing': '🏁 سؤال ختامي',
+                'embarrassing': '😳 سؤال محرج',
+                'fundamental': '🧭 سؤال جذري',
+                'comparative': '⚖️ سؤال مقارن',
+                'simple_deceptive': '🎭 بسيط خادع',
+                'harsh': '💥 سؤال قاسي',
+                'confrontational': '🔥 سؤال مواجهة',
+                'shocking': '⚡ سؤال صادم',
+                'resource': '💰 سؤال الموارد',
+                'reality_vs_ideal': '🔀 الواقع vs المثالي',
+                'hard_closing': '🎯 ختامي قوي',
+                'powerful': '💪 سؤال قوي',
+                'classification': '📂 تصنيف',
+                'immunity': '🛡️ الحصانة',
+                'direct': '➡️ مباشر',
+                'difficult': '🔴 صعب',
+                'source': '🔍 المصدر',
+                'resignation_reason': '🚪 سبب الاستقالة',
+                'diagnostic': '🩺 تشخيصي',
+                'complaints': '📢 الشكاوى',
+                'meeting_mood': '🎪 مزاج الاجتماع',
+                'quantitative': '🔢 كمي',
+                'revealing': '💡 كاشف',
+                'honest': '🤝 صادق',
+                'pattern': '🔄 النمط',
+                'exit_interview': '👋 مقابلة خروج',
+                'simple_test': '✅ اختبار بسيط',
+                'bureaucracy': '📜 البيروقراطية',
+                'bottleneck': '🚧 عنق الزجاجة',
+                'fear_test': '😰 اختبار الخوف',
+                'unity': '🤝 الوحدة',
+                'crisis_test': '🚨 اختبار الأزمة',
+                'influence': '👑 التأثير',
+                'conflicts': '⚔️ الصراعات',
+                'reset': '🔄 إعادة تعيين',
+                'last_eval': '📅 آخر تقييم',
+                'process': '⚙️ العملية',
+                'clarity': '🔎 الوضوح',
+                'ideal': '⭐ المثالي',
+                'rating': '⭐ التقييم',
+                'gap': '📏 الفجوة',
+                'obstacle': '🚧 العائق',
+                'professional': '💼 احترافي',
+                'awareness': '🧠 الوعي',
+                'realistic': '🎯 واقعي',
+                'alignment': '🎯 التوافق',
+                'real_vs_stated': '🔀 المعلن vs الحقيقي',
+                'priority': '🥇 الأولوية',
+                'achievement': '🏆 الإنجاز',
+                'indicator': '📊 المؤشر',
+                'stakeholder': '🤝 أصحاب المصلحة',
+                'satisfaction': '😊 الرضا'
+            };
+            return labels[type] || '❓ سؤال';
+        }
+
+        function renderAnswerInput(question) {
+            const answerArea = document.getElementById('answerArea');
+            answerArea.innerHTML = '';
+
+            if (question.inputType === 'choice') {
+                question.choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.className = 'choice-button';
+                    btn.textContent = choice;
+                    btn.onclick = () => selectChoice(btn, choice, question);
+                    answerArea.appendChild(btn);
+                });
+            } else if (question.inputType === 'scale') {
+                const container = document.createElement('div');
+                container.className = 'scale-container';
+                
+                for (let i = question.scale.min; i <= question.scale.max; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'scale-button';
+                    btn.textContent = i;
+                    btn.onclick = () => selectScale(container, i, question);
+                    container.appendChild(btn);
+                }
+                
+                answerArea.appendChild(container);
+                
+                if (question.scale.labels) {
+                    const labels = document.createElement('div');
+                    labels.className = 'scale-labels';
+                    question.scale.labels.forEach(label => {
+                        const span = document.createElement('span');
+                        span.textContent = label;
+                        labels.appendChild(span);
+                    });
+                    answerArea.appendChild(labels);
+                }
+            } else if (question.inputType === 'text') {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'text-input';
+                input.placeholder = question.placeholder || 'اكتب إجابتك هنا...';
+                input.oninput = () => checkTextInput(input, question);
+                answerArea.appendChild(input);
+            } else if (question.inputType === 'textarea') {
+                const textarea = document.createElement('textarea');
+                textarea.className = 'textarea-input';
+                textarea.placeholder = question.placeholder || 'اكتب إجابتك بالتفصيل...';
+                textarea.oninput = () => checkTextInput(textarea, question);
+                answerArea.appendChild(textarea);
+            } else if (question.inputType === 'number') {
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.className = 'number-input';
+                input.placeholder = question.placeholder || 'أدخل رقم...';
+                input.oninput = () => checkTextInput(input, question);
+                answerArea.appendChild(input);
+            }
+        }
+
+        function selectChoice(btn, choice, question) {
+            // Deselect all
+            document.querySelectorAll('.choice-button').forEach(b => b.classList.remove('selected'));
+            // Select this one
+            btn.classList.add('selected');
+            
+            // Store answer
+            storeAnswer(question.id, choice);
+            
+            // Enable next button
+            document.getElementById('nextBtn').disabled = false;
+            
+            // Check for follow-up
+            checkFollowUp(question, choice);
+        }
+
+        function selectScale(container, value, question) {
+            // Deselect all
+            container.querySelectorAll('.scale-button').forEach(b => b.classList.remove('selected'));
+            // Select this one
+            container.children[value - question.scale.min].classList.add('selected');
+            
+            // Store answer
+            storeAnswer(question.id, value);
+            
+            // Enable next button
+            document.getElementById('nextBtn').disabled = false;
+            
+            // Check for follow-up
+            checkFollowUp(question, value);
+        }
+
+        function checkTextInput(input, question) {
+            const value = input.value.trim();
+            if (value.length > 0) {
+                storeAnswer(question.id, value);
+                document.getElementById('nextBtn').disabled = false;
+                checkFollowUp(question, value);
+            } else {
+                document.getElementById('nextBtn').disabled = true;
+                document.getElementById('followUpContainer').classList.add('hidden');
+            }
+        }
+
+        function storeAnswer(questionId, answer) {
+            if (!allAnswers[currentAxis]) allAnswers[currentAxis] = {};
+            const topicKey = Object.keys(questionsData[currentAxis].topics)[currentTopicIndex];
+            if (!allAnswers[currentAxis][topicKey]) allAnswers[currentAxis][topicKey] = {};
+            allAnswers[currentAxis][topicKey][questionId] = {
+                answer: answer,
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        function checkFollowUp(question, answer) {
+            if (!question.followUp) {
+                document.getElementById('followUpContainer').classList.add('hidden');
+                return;
+            }
+
+            let shouldShow = false;
+            
+            if (question.followUp.condition === 'any') {
+                shouldShow = true;
+            } else if (question.followUp.condition.includes('|')) {
+                // Multiple conditions (OR)
+                const conditions = question.followUp.condition.split('|');
+                shouldShow = conditions.some(cond => String(answer).includes(cond.trim()));
+            } else if (question.followUp.condition.startsWith('>=')) {
+                const threshold = parseInt(question.followUp.condition.substring(2));
+                shouldShow = parseInt(answer) >= threshold;
+            } else if (question.followUp.condition.startsWith('<=')) {
+                const threshold = parseInt(question.followUp.condition.substring(2));
+                shouldShow = parseInt(answer) <= threshold;
+            }
+
+            if (shouldShow) {
+                showFollowUp(question.followUp.question);
+            } else {
+                document.getElementById('followUpContainer').classList.add('hidden');
+            }
+        }
+
+        function showFollowUp(followUpQuestion) {
+            const container = document.getElementById('followUpContainer');
+            container.innerHTML = `
+                <div class="follow-up-label">
+                    <span>💭</span>
+                    <span>سؤال تكميلي</span>
+                </div>
+                <div class="follow-up-text">${followUpQuestion}</div>
+                <textarea class="textarea-input" id="followUpAnswer" placeholder="اكتب إجابتك..."></textarea>
+            `;
+            container.classList.remove('hidden');
+            
+            document.getElementById('followUpAnswer').oninput = (e) => {
+                const axisData = questionsData[currentAxis];
+                const topicKey = Object.keys(axisData.topics)[currentTopicIndex];
+                const topic = axisData.topics[topicKey];
+                const question = topic.questions[currentQuestionIndex];
+                
+                if (e.target.value.trim().length > 0) {
+                    storeAnswer(question.id + '_followup', e.target.value.trim());
+                }
+            };
+        }
+
+        function updateProgress() {
+            const percentage = (answeredQuestionsCount / totalQuestionsCount) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = 
+                `${answeredQuestionsCount} من ${totalQuestionsCount} سؤال`;
+        }
+
+        // Next button handler
+        document.getElementById('nextBtn').onclick = async () => {
+            answeredQuestionsCount++;
+            currentQuestionIndex++;
+            
+            // Save to Firebase periodically (every 5 questions)
+            if (answeredQuestionsCount % 5 === 0) {
+                await saveToFirebase(false);
+            }
+            
+            loadQuestion();
+        };
+
+        // Skip button handler
+        document.getElementById('skipBtn').onclick = () => {
+            currentQuestionIndex++;
+            loadQuestion();
+        };
+
+        async function saveToFirebase(isFinal = false) {
+            try {
+                document.getElementById('loadingOverlay').classList.remove('hidden');
+                
+                await addDoc(collection(db, 'responses'), {
+                    sessionId: sessionId,
+                    participantName: participantName,
+                    answers: allAnswers,
+                    progress: {
+                        answered: answeredQuestionsCount,
+                        total: totalQuestionsCount,
+                        percentage: (answeredQuestionsCount / totalQuestionsCount) * 100
+                    },
+                    isFinal: isFinal,
+                    timestamp: serverTimestamp()
+                });
+                
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            } catch (error) {
+                console.error('Error saving to Firebase:', error);
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                document.getElementById('errorMessage').textContent = 
+                    'حدث خطأ في حفظ الإجابات. سيتم المحاولة مرة أخرى.';
+                document.getElementById('errorMessage').classList.remove('hidden');
+            }
+        }
+
+        async function showCompletion() {
+            // Final save
+            await saveToFirebase(true);
+            
+            const card = document.getElementById('questionCard');
+            card.innerHTML = `
+                <div class="completion-card">
+                    <div class="completion-icon">🎉</div>
+                    <h1 class="completion-title">تم إكمال التشخيص بنجاح!</h1>
+                    <p class="completion-message">
+                        شكراً لمشاركتك القيّمة. تم حفظ جميع إجاباتك بنجاح.<br>
+                        سيتم تحليل البيانات وإعداد التقرير التشخيصي قريباً.
+                    </p>
+                    <div class="completion-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">${answeredQuestionsCount}</div>
+                            <div class="stat-label">سؤال تم الإجابة عليه</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${Object.keys(allAnswers).length}</div>
+                            <div class="stat-label">محور مكتمل</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 40px;">
+                        <a href="index.html" class="btn btn-next">
+                            العودة للصفحة الرئيسية
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
 </body>
 </html>
