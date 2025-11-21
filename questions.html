@@ -1157,6 +1157,10 @@
         function renderAnswerInput(question, previousAnswer = null) {
             const answerArea = document.getElementById('answerArea');
             answerArea.innerHTML = '';
+            
+            // Store original answer for confirmation
+            window.originalAnswer = previousAnswer;
+            window.hasChanged = false;
 
             if (question.inputType === 'choice') {
                 question.choices.forEach(choice => {
@@ -1227,14 +1231,24 @@
                 answerArea.appendChild(input);
             }
             
-            // Load follow-up if exists
-            const followUpAnswer = getAnswer(currentAxis, allQuestionsList[currentAbsoluteIndex].topicKey, question.id + '_followup');
-            if (followUpAnswer && previousAnswer) {
+            // CRITICAL: Load follow-up if previous answer exists
+            if (previousAnswer) {
+                const item = allQuestionsList[currentAbsoluteIndex];
+                const followUpAnswer = getAnswer(item.axisKey, item.topicKey, question.id + '_followup');
                 checkFollowUp(question, previousAnswer, followUpAnswer);
             }
         }
 
         function selectChoice(btn, choice, question) {
+            // Check if changing from previous answer
+            if (window.originalAnswer && window.originalAnswer !== choice) {
+                const confirmed = confirm(`⚠️ هل تريد تغيير إجابتك من "${window.originalAnswer}" إلى "${choice}"؟`);
+                if (!confirmed) {
+                    return; // Don't change
+                }
+                window.hasChanged = true;
+            }
+            
             document.querySelectorAll('.choice-button').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
             storeAnswer(question.id, choice);
@@ -1242,6 +1256,15 @@
         }
 
         function selectScale(container, value, question) {
+            // Check if changing from previous answer
+            if (window.originalAnswer && window.originalAnswer != value) {
+                const confirmed = confirm(`⚠️ هل تريد تغيير إجابتك من "${window.originalAnswer}" إلى "${value}"؟`);
+                if (!confirmed) {
+                    return; // Don't change
+                }
+                window.hasChanged = true;
+            }
+            
             container.querySelectorAll('.scale-button').forEach(b => b.classList.remove('selected'));
             container.children[value - question.scale.min].classList.add('selected');
             storeAnswer(question.id, value);
@@ -1251,6 +1274,10 @@
         function checkTextInput(input, question) {
             const value = input.value.trim();
             if (value.length > 0) {
+                // Mark as changed if different from original
+                if (window.originalAnswer && window.originalAnswer !== value) {
+                    window.hasChanged = true;
+                }
                 storeAnswer(question.id, value);
                 checkFollowUp(question, value);
             } else {
@@ -1296,22 +1323,34 @@
             }
         }
 
-        function showFollowUp(followUpQuestion, existingAnswer = null) {
+       function showFollowUp(followUpQuestion, existingAnswer = null) {
             const container = document.getElementById('followUpContainer');
+            const currentValue = existingAnswer || '';
+            
             container.innerHTML = `
                 <div class="follow-up-label">
                     <span>💭</span>
                     <span>سؤال تكميلي</span>
                 </div>
                 <div class="follow-up-text">${followUpQuestion}</div>
-                <textarea class="textarea-input" id="followUpAnswer" placeholder="اكتب إجابتك...">${existingAnswer || ''}</textarea>
+                <textarea class="textarea-input" id="followUpAnswer" placeholder="اكتب إجابتك...">${currentValue}</textarea>
             `;
             container.classList.remove('hidden');
             
+            // Store original follow-up answer
+            window.originalFollowUp = existingAnswer;
+            
             document.getElementById('followUpAnswer').oninput = (e) => {
                 const item = allQuestionsList[currentAbsoluteIndex];
-                if (e.target.value.trim().length > 0) {
-                    storeAnswer(item.question.id + '_followup', e.target.value.trim());
+                const newValue = e.target.value.trim();
+                
+                // Mark as changed if different from original
+                if (window.originalFollowUp && window.originalFollowUp !== newValue) {
+                    window.hasChanged = true;
+                }
+                
+                if (newValue.length > 0) {
+                    storeAnswer(item.question.id + '_followup', newValue);
                 }
             };
         }
@@ -1333,13 +1372,40 @@
         }
 
         // Navigation handlers
-        document.getElementById('prevBtn').onclick = () => {
+       document.getElementById('prevBtn').onclick = () => {
+            // If answer was changed, confirm before leaving
+            if (window.hasChanged && window.originalAnswer) {
+                const confirmed = confirm('⚠️ لديك تعديلات غير محفوظة. هل تريد المتابعة بدون حفظ؟');
+                if (!confirmed) {
+                    return; // Stay on current question
+                }
+            }
+            
+            // Reset change flag
+            window.hasChanged = false;
+            window.originalAnswer = null;
+            window.originalFollowUp = null;
+            
             loadQuestionByIndex(currentAbsoluteIndex - 1);
         };
 
+
         document.getElementById('nextBtn').onclick = async () => {
+            // If answer was changed, confirm before moving
+            if (window.hasChanged && window.originalAnswer) {
+                const confirmed = confirm('✅ هل تريد حفظ التعديلات والانتقال للسؤال التالي؟');
+                if (!confirmed) {
+                    return; // Stay on current question
+                }
+            }
+            
             // Save to Firebase
             await saveToFirebase(false);
+            
+            // Reset change flag
+            window.hasChanged = false;
+            window.originalAnswer = null;
+            window.originalFollowUp = null;
             
             // Move to next question or complete
             if (currentAbsoluteIndex >= allQuestionsList.length - 1) {
