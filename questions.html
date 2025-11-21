@@ -53,6 +53,31 @@
             font-weight: 600;
         }
 
+        .top-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .top-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .review-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .review-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+        }
+
         .back-home {
             background: #e2e8f0;
             color: #4a5568;
@@ -137,6 +162,7 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             margin-bottom: 20px;
             animation: slideIn 0.5s ease;
+            position: relative;
         }
 
         @keyframes slideIn {
@@ -148,6 +174,20 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        .previous-answer-notice {
+            background: #e0f2fe;
+            border: 2px solid #0284c7;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #075985;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .topic-badge {
@@ -340,6 +380,22 @@
             gap: 8px;
         }
 
+        .btn-prev {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-prev:hover:not(:disabled) {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .btn-prev:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         .btn-next {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -395,6 +451,42 @@
             color: #718096;
             margin-bottom: 30px;
             line-height: 1.6;
+        }
+
+        .skipped-questions-section {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: right;
+        }
+
+        .skipped-title {
+            font-size: 20px;
+            color: #92400e;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .skipped-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .skipped-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #4a5568;
+        }
+
+        .skipped-item:hover {
+            background: #fef3c7;
+            transform: translateX(-5px);
         }
 
         .completion-stats {
@@ -468,6 +560,131 @@
             font-weight: 600;
         }
 
+        /* Review Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 40px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f7fafc;
+            color: #4a5568;
+            border-radius: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #e2e8f0;
+        }
+
+        .review-section {
+            margin-bottom: 30px;
+        }
+
+        .review-axis-title {
+            font-size: 20px;
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 10px;
+        }
+
+        .review-topic {
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .review-topic-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .review-question-item {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .review-question-item:hover {
+            background: #edf2f7;
+            transform: translateX(-5px);
+        }
+
+        .review-question-item.unanswered {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+        }
+
+        .review-q-text {
+            font-size: 14px;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .review-answer {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .review-unanswered {
+            font-size: 14px;
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             .question-card {
                 padding: 30px 20px;
@@ -492,6 +709,10 @@
             .btn {
                 width: 100%;
             }
+
+            .modal-content {
+                padding: 20px;
+            }
         }
 
         .hidden {
@@ -503,12 +724,17 @@
     <!-- شريط المعلومات العلوي -->
     <div class="top-bar">
         <div class="session-info">
-                <div class="session-id" id="sessionId" style="font-size: 16px;">...</div>
+            <div class="session-id" id="sessionId" style="font-size: 16px;">...</div>
             <div class="participant-name">
                 <span id="participantName">مشارك</span>
             </div>
         </div>
-        <a href="index.html" class="back-home">↩️ الصفحة الرئيسية</a>
+        <div class="top-actions">
+            <button class="top-btn review-btn" onclick="openReviewModal()">
+                📋 عرض كل الإجابات
+            </button>
+            <a href="index.html" class="back-home">↩️ الصفحة الرئيسية</a>
+        </div>
     </div>
 
     <!-- شريط التقدم -->
@@ -530,6 +756,10 @@
         <div class="question-card" id="questionCard">
             <div class="question-number" id="questionNumber">1</div>
             
+            <div id="previousAnswerNotice" class="previous-answer-notice hidden">
+                💡 أنت جاوبت على هذا السؤال من قبل - يمكنك تعديل الإجابة
+            </div>
+
             <div class="topic-badge" id="topicBadge">
                 <span id="topicIcon">🏢</span>
                 <span id="topicTitle">الهيكل التنظيمي</span>
@@ -552,13 +782,27 @@
 
             <!-- أزرار التحكم -->
             <div class="action-buttons">
+                <button class="btn btn-prev" id="prevBtn" disabled>
+                    ⬅️ السابق
+                </button>
                 <button class="btn btn-skip" id="skipBtn">
                     ⏭️ تخطي
                 </button>
-                <button class="btn btn-next" id="nextBtn" disabled>
-                    التالي ⬅️
+                <button class="btn btn-next" id="nextBtn">
+                    التالي ➡️
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📋 مراجعة جميع الإجابات</h2>
+                <button class="modal-close" onclick="closeReviewModal()">×</button>
+            </div>
+            <div id="reviewContent"></div>
         </div>
     </div>
 
@@ -602,8 +846,9 @@
         let allAnswers = {};
         let totalQuestionsCount = 0;
         let answeredQuestionsCount = 0;
+        let allQuestionsList = [];
+        let currentAbsoluteIndex = 0;
 
-        // Initialize
         // Initialize
         if (organizationName) {
             document.getElementById('sessionId').textContent = organizationName;
@@ -615,34 +860,28 @@
                 window.history.replaceState({}, '', newUrl);
             }
 
-            // Calculate total questions
-            calculateTotalQuestions();
+            // Build questions list and calculate total
+            buildQuestionsList();
             
-            // حفظ الجلسة في Firebase فوراً (لضمان ظهور الجمعية في الأدمن)
-            initializeSession();
-            
-            // Load first question
-            loadQuestion();
+            // Try to resume session
+            resumeSession();
         }
 
         function getOrganizationName() {
             const urlParams = new URLSearchParams(window.location.search);
             const orgFromUrl = urlParams.get('org');
             
-            // إذا كان موجود في الـ URL، احفظه في localStorage
             if (orgFromUrl) {
                 const orgName = decodeURIComponent(orgFromUrl);
                 localStorage.setItem('currentOrganization', orgName);
                 return orgName;
             }
             
-            // إذا لم يكن في الـ URL، جربه من localStorage
             const orgFromStorage = localStorage.getItem('currentOrganization');
             if (orgFromStorage) {
                 return orgFromStorage;
             }
             
-            // إذا لم يكن موجود في أي مكان، اعرض رسالة
             alert('⚠️ هذا الرابط غير صحيح. من فضلك استخدم الرابط المُرسل من الأدمن.');
             window.location.href = 'index.html';
             return null;
@@ -651,16 +890,14 @@
         function getOrCreateSessionId() {
             if (!organizationName) return null;
             
-            // مفتاح التخزين يعتمد على اسم الجمعية
             const storageKey = `session_${organizationName.replace(/\s+/g, '_')}`;
             let existingSession = localStorage.getItem(storageKey);
             
             if (existingSession) {
                 try {
                     const sessionData = JSON.parse(existingSession);
-                    // تحقق من أن الجلسة أقل من 24 ساعة
                     const sessionAge = Date.now() - sessionData.createdAt;
-                    if (sessionAge < 24 * 60 * 60 * 1000) { // 24 ساعة
+                    if (sessionAge < 24 * 60 * 60 * 1000) {
                         return sessionData.sessionId;
                     }
                 } catch (e) {
@@ -668,7 +905,6 @@
                 }
             }
             
-            // إنشاء جلسة جديدة
             const newSessionId = 'S-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
             const sessionData = {
                 sessionId: newSessionId,
@@ -685,61 +921,144 @@
             return urlParams.get('name') || 'مشارك';
         }
 
-        function calculateTotalQuestions() {
-            Object.values(questionsData).forEach(axis => {
-                Object.values(axis.topics).forEach(topic => {
-                    totalQuestionsCount += topic.questions.length;
+        function buildQuestionsList() {
+            allQuestionsList = [];
+            let index = 0;
+            
+            Object.keys(questionsData).forEach(axisKey => {
+                const axisData = questionsData[axisKey];
+                Object.keys(axisData.topics).forEach(topicKey => {
+                    const topicData = axisData.topics[topicKey];
+                    topicData.questions.forEach(question => {
+                        allQuestionsList.push({
+                            index: index++,
+                            axisKey: axisKey,
+                            topicKey: topicKey,
+                            question: question,
+                            axisData: axisData,
+                            topicData: topicData
+                        });
+                    });
                 });
             });
+            
+            totalQuestionsCount = allQuestionsList.length;
+            document.getElementById('progressText').textContent = `0 من ${totalQuestionsCount} سؤال`;
         }
 
-        function loadQuestion() {
-            const axisKeys = Object.keys(questionsData);
-            const currentAxisData = questionsData[currentAxis];
-            const topicKeys = Object.keys(currentAxisData.topics);
-            
-            if (currentTopicIndex >= topicKeys.length) {
-                // Move to next axis
-                const currentAxisIdx = axisKeys.indexOf(currentAxis);
-                if (currentAxisIdx < axisKeys.length - 1) {
-                    currentAxis = axisKeys[currentAxisIdx + 1];
-                    currentTopicIndex = 0;
-                    currentQuestionIndex = 0;
-                    loadQuestion();
+        async function resumeSession() {
+            try {
+                // Try to load existing session from Firebase
+                const q = query(
+                    collection(db, 'responses'),
+                    where('sessionId', '==', sessionId),
+                    where('organizationName', '==', organizationName)
+                );
+                
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    const sessionDoc = querySnapshot.docs[0].data();
+                    allAnswers = sessionDoc.answers || {};
+                    
+                    // Count answered questions
+                    answeredQuestionsCount = 0;
+                    let lastAnsweredIndex = -1;
+                    
+                    allQuestionsList.forEach((item, idx) => {
+                        const answer = getAnswer(item.axisKey, item.topicKey, item.question.id);
+                        if (answer) {
+                            answeredQuestionsCount++;
+                            lastAnsweredIndex = idx;
+                        }
+                    });
+                    
+                    // Resume from last answered + 1
+                    if (lastAnsweredIndex >= 0 && lastAnsweredIndex < allQuestionsList.length - 1) {
+                        currentAbsoluteIndex = lastAnsweredIndex + 1;
+                    } else {
+                        currentAbsoluteIndex = 0;
+                    }
+                    
+                    updateProgress();
+                    loadQuestionByIndex(currentAbsoluteIndex);
                 } else {
-                    // All questions completed
-                    showCompletion();
+                    // New session
+                    await initializeSession();
+                    loadQuestionByIndex(0);
                 }
+            } catch (error) {
+                console.error('Error resuming session:', error);
+                loadQuestionByIndex(0);
+            }
+        }
+
+        async function initializeSession() {
+            try {
+                await addDoc(collection(db, 'responses'), {
+                    organizationName: organizationName,
+                    sessionId: sessionId,
+                    participantName: participantName,
+                    answers: {},
+                    progress: {
+                        answered: 0,
+                        total: totalQuestionsCount,
+                        percentage: 0
+                    },
+                    isFinal: false,
+                    timestamp: serverTimestamp(),
+                    status: 'initialized'
+                });
+                
+                console.log('Session initialized successfully');
+            } catch (error) {
+                console.error('Error initializing session:', error);
+            }
+        }
+
+        function loadQuestionByIndex(index) {
+            if (index < 0 || index >= allQuestionsList.length) {
+                showCompletion();
                 return;
             }
-
-            const currentTopicKey = topicKeys[currentTopicIndex];
-            const currentTopic = currentAxisData.topics[currentTopicKey];
             
-            if (currentQuestionIndex >= currentTopic.questions.length) {
-                // Move to next topic
-                currentTopicIndex++;
-                currentQuestionIndex = 0;
-                loadQuestion();
-                return;
-            }
+            currentAbsoluteIndex = index;
+            const item = allQuestionsList[index];
+            
+            currentAxis = item.axisKey;
+            const topicKeys = Object.keys(item.axisData.topics);
+            currentTopicIndex = topicKeys.indexOf(item.topicKey);
+            currentQuestionIndex = item.topicData.questions.indexOf(item.question);
+            
+            renderQuestion(item);
+            updateNavigationButtons();
+        }
 
-            const question = currentTopic.questions[currentQuestionIndex];
+        function renderQuestion(item) {
+            const { question, axisData, topicData } = item;
             
             // Update UI
-            document.getElementById('questionNumber').textContent = answeredQuestionsCount + 1;
+            document.getElementById('questionNumber').textContent = currentAbsoluteIndex + 1;
             
             const badge = document.getElementById('topicBadge');
-            badge.style.backgroundColor = currentAxisData.color + '20';
-            badge.style.color = currentAxisData.color;
-            document.getElementById('topicIcon').textContent = currentTopic.icon;
-            document.getElementById('topicTitle').textContent = currentTopic.title;
+            badge.style.backgroundColor = axisData.color + '20';
+            badge.style.color = axisData.color;
+            document.getElementById('topicIcon').textContent = topicData.icon;
+            document.getElementById('topicTitle').textContent = topicData.title;
             
             document.getElementById('questionType').textContent = getQuestionTypeLabel(question.type);
             document.getElementById('questionText').textContent = question.text;
             
-            // Render answer input
-            renderAnswerInput(question);
+            // Check if previously answered
+            const previousAnswer = getAnswer(item.axisKey, item.topicKey, question.id);
+            if (previousAnswer) {
+                document.getElementById('previousAnswerNotice').classList.remove('hidden');
+            } else {
+                document.getElementById('previousAnswerNotice').classList.add('hidden');
+            }
+            
+            // Render answer input with previous answer if exists
+            renderAnswerInput(question, previousAnswer);
             
             // Update progress
             updateProgress();
@@ -747,9 +1066,30 @@
             // Hide follow-up initially
             document.getElementById('followUpContainer').classList.add('hidden');
             
-            // Reset buttons
-            document.getElementById('nextBtn').disabled = true;
+            // Reset error
             document.getElementById('errorMessage').classList.add('hidden');
+        }
+
+        function getAnswer(axisKey, topicKey, questionId) {
+            if (allAnswers[axisKey] && allAnswers[axisKey][topicKey] && allAnswers[axisKey][topicKey][questionId]) {
+                return allAnswers[axisKey][topicKey][questionId].answer;
+            }
+            return null;
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            // Previous button
+            prevBtn.disabled = currentAbsoluteIndex === 0;
+            
+            // Next button text
+            if (currentAbsoluteIndex === allQuestionsList.length - 1) {
+                nextBtn.innerHTML = 'إنهاء 🎉';
+            } else {
+                nextBtn.innerHTML = 'التالي ➡️';
+            }
         }
 
         function getQuestionTypeLabel(type) {
@@ -814,7 +1154,7 @@
             return labels[type] || '❓ سؤال';
         }
 
-        function renderAnswerInput(question) {
+        function renderAnswerInput(question, previousAnswer = null) {
             const answerArea = document.getElementById('answerArea');
             answerArea.innerHTML = '';
 
@@ -823,6 +1163,9 @@
                     const btn = document.createElement('button');
                     btn.className = 'choice-button';
                     btn.textContent = choice;
+                    if (previousAnswer === choice) {
+                        btn.classList.add('selected');
+                    }
                     btn.onclick = () => selectChoice(btn, choice, question);
                     answerArea.appendChild(btn);
                 });
@@ -834,6 +1177,9 @@
                     const btn = document.createElement('button');
                     btn.className = 'scale-button';
                     btn.textContent = i;
+                    if (previousAnswer == i) {
+                        btn.classList.add('selected');
+                    }
                     btn.onclick = () => selectScale(container, i, question);
                     container.appendChild(btn);
                 }
@@ -855,12 +1201,18 @@
                 input.type = 'text';
                 input.className = 'text-input';
                 input.placeholder = question.placeholder || 'اكتب إجابتك هنا...';
+                if (previousAnswer) {
+                    input.value = previousAnswer;
+                }
                 input.oninput = () => checkTextInput(input, question);
                 answerArea.appendChild(input);
             } else if (question.inputType === 'textarea') {
                 const textarea = document.createElement('textarea');
                 textarea.className = 'textarea-input';
                 textarea.placeholder = question.placeholder || 'اكتب إجابتك بالتفصيل...';
+                if (previousAnswer) {
+                    textarea.value = previousAnswer;
+                }
                 textarea.oninput = () => checkTextInput(textarea, question);
                 answerArea.appendChild(textarea);
             } else if (question.inputType === 'number') {
@@ -868,40 +1220,31 @@
                 input.type = 'number';
                 input.className = 'number-input';
                 input.placeholder = question.placeholder || 'أدخل رقم...';
+                if (previousAnswer) {
+                    input.value = previousAnswer;
+                }
                 input.oninput = () => checkTextInput(input, question);
                 answerArea.appendChild(input);
+            }
+            
+            // Load follow-up if exists
+            const followUpAnswer = getAnswer(currentAxis, allQuestionsList[currentAbsoluteIndex].topicKey, question.id + '_followup');
+            if (followUpAnswer && previousAnswer) {
+                checkFollowUp(question, previousAnswer, followUpAnswer);
             }
         }
 
         function selectChoice(btn, choice, question) {
-            // Deselect all
             document.querySelectorAll('.choice-button').forEach(b => b.classList.remove('selected'));
-            // Select this one
             btn.classList.add('selected');
-            
-            // Store answer
             storeAnswer(question.id, choice);
-            
-            // Enable next button
-            document.getElementById('nextBtn').disabled = false;
-            
-            // Check for follow-up
             checkFollowUp(question, choice);
         }
 
         function selectScale(container, value, question) {
-            // Deselect all
             container.querySelectorAll('.scale-button').forEach(b => b.classList.remove('selected'));
-            // Select this one
             container.children[value - question.scale.min].classList.add('selected');
-            
-            // Store answer
             storeAnswer(question.id, value);
-            
-            // Enable next button
-            document.getElementById('nextBtn').disabled = false;
-            
-            // Check for follow-up
             checkFollowUp(question, value);
         }
 
@@ -909,25 +1252,23 @@
             const value = input.value.trim();
             if (value.length > 0) {
                 storeAnswer(question.id, value);
-                document.getElementById('nextBtn').disabled = false;
                 checkFollowUp(question, value);
             } else {
-                document.getElementById('nextBtn').disabled = true;
                 document.getElementById('followUpContainer').classList.add('hidden');
             }
         }
 
         function storeAnswer(questionId, answer) {
             if (!allAnswers[currentAxis]) allAnswers[currentAxis] = {};
-            const topicKey = Object.keys(questionsData[currentAxis].topics)[currentTopicIndex];
-            if (!allAnswers[currentAxis][topicKey]) allAnswers[currentAxis][topicKey] = {};
-            allAnswers[currentAxis][topicKey][questionId] = {
+            const item = allQuestionsList[currentAbsoluteIndex];
+            if (!allAnswers[currentAxis][item.topicKey]) allAnswers[currentAxis][item.topicKey] = {};
+            allAnswers[currentAxis][item.topicKey][questionId] = {
                 answer: answer,
                 timestamp: new Date().toISOString()
             };
         }
 
-        function checkFollowUp(question, answer) {
+        function checkFollowUp(question, answer, existingFollowUp = null) {
             if (!question.followUp) {
                 document.getElementById('followUpContainer').classList.add('hidden');
                 return;
@@ -938,7 +1279,6 @@
             if (question.followUp.condition === 'any') {
                 shouldShow = true;
             } else if (question.followUp.condition.includes('|')) {
-                // Multiple conditions (OR)
                 const conditions = question.followUp.condition.split('|');
                 shouldShow = conditions.some(cond => String(answer).includes(cond.trim()));
             } else if (question.followUp.condition.startsWith('>=')) {
@@ -950,13 +1290,13 @@
             }
 
             if (shouldShow) {
-                showFollowUp(question.followUp.question);
+                showFollowUp(question.followUp.question, existingFollowUp);
             } else {
                 document.getElementById('followUpContainer').classList.add('hidden');
             }
         }
 
-        function showFollowUp(followUpQuestion) {
+        function showFollowUp(followUpQuestion, existingAnswer = null) {
             const container = document.getElementById('followUpContainer');
             container.innerHTML = `
                 <div class="follow-up-label">
@@ -964,100 +1304,72 @@
                     <span>سؤال تكميلي</span>
                 </div>
                 <div class="follow-up-text">${followUpQuestion}</div>
-                <textarea class="textarea-input" id="followUpAnswer" placeholder="اكتب إجابتك..."></textarea>
+                <textarea class="textarea-input" id="followUpAnswer" placeholder="اكتب إجابتك...">${existingAnswer || ''}</textarea>
             `;
             container.classList.remove('hidden');
             
             document.getElementById('followUpAnswer').oninput = (e) => {
-                const axisData = questionsData[currentAxis];
-                const topicKey = Object.keys(axisData.topics)[currentTopicIndex];
-                const topic = axisData.topics[topicKey];
-                const question = topic.questions[currentQuestionIndex];
-                
+                const item = allQuestionsList[currentAbsoluteIndex];
                 if (e.target.value.trim().length > 0) {
-                    storeAnswer(question.id + '_followup', e.target.value.trim());
+                    storeAnswer(item.question.id + '_followup', e.target.value.trim());
                 }
             };
         }
 
         function updateProgress() {
+            // Recount answered questions
+            answeredQuestionsCount = 0;
+            allQuestionsList.forEach(item => {
+                const answer = getAnswer(item.axisKey, item.topicKey, item.question.id);
+                if (answer) {
+                    answeredQuestionsCount++;
+                }
+            });
+            
             const percentage = (answeredQuestionsCount / totalQuestionsCount) * 100;
             document.getElementById('progressBar').style.width = percentage + '%';
             document.getElementById('progressText').textContent = 
                 `${answeredQuestionsCount} من ${totalQuestionsCount} سؤال`;
         }
 
-        // Next button handler
-                document.getElementById('nextBtn').onclick = async () => {
-            answeredQuestionsCount++;
-            currentQuestionIndex++;
-            
-            // Save to Firebase after every question (for real-time admin updates)
+        // Navigation handlers
+        document.getElementById('prevBtn').onclick = () => {
+            loadQuestionByIndex(currentAbsoluteIndex - 1);
+        };
+
+        document.getElementById('nextBtn').onclick = async () => {
+            // Save to Firebase
             await saveToFirebase(false);
             
-            loadQuestion();
+            // Move to next question or complete
+            if (currentAbsoluteIndex >= allQuestionsList.length - 1) {
+                showCompletion();
+            } else {
+                loadQuestionByIndex(currentAbsoluteIndex + 1);
+            }
         };
 
-
-        // Skip button handler
         document.getElementById('skipBtn').onclick = () => {
-            currentQuestionIndex++;
-            loadQuestion();
+            // Just move to next without saving answer
+            if (currentAbsoluteIndex >= allQuestionsList.length - 1) {
+                showCompletion();
+            } else {
+                loadQuestionByIndex(currentAbsoluteIndex + 1);
+            }
         };
 
-        async function initializeSession() {
+        async function saveToFirebase(isFinal = false) {
             try {
-                // تحقق إذا كانت الجلسة موجودة بالفعل
+                document.getElementById('loadingOverlay').classList.remove('hidden');
+                
                 const q = query(
                     collection(db, 'responses'),
                     where('sessionId', '==', sessionId),
                     where('organizationName', '==', organizationName)
                 );
                 
-                const existingDocs = await getDocs(q);
-                
-                // إذا كانت موجودة، لا تنشئ جديدة
-                if (!existingDocs.empty) {
-                    console.log('Session already exists');
-                    return;
-                }
-                
-                // حفظ أولي للجلسة في Firebase
-                await addDoc(collection(db, 'responses'), {
-                    organizationName: organizationName,
-                    sessionId: sessionId,
-                    participantName: participantName,
-                    answers: {},
-                    progress: {
-                        answered: 0,
-                        total: totalQuestionsCount,
-                        percentage: 0
-                    },
-                    isFinal: false,
-                    timestamp: serverTimestamp(),
-                    status: 'initialized'
-                });
-                
-                console.log('Session initialized successfully');
-            } catch (error) {
-                console.error('Error initializing session:', error);
-            }
-        }
-        
-        async function saveToFirebase(isFinal = false) {
-            try {
-                document.getElementById('loadingOverlay').classList.remove('hidden');
-                
-                // بحث عن الجلسة الحالية
-                const q = query(
-                    collection(db, 'responses'), 
-                    where('sessionId', '==', sessionId),
-                    where('organizationName', '==', organizationName)
-                );
-                
                 const querySnapshot = await getDocs(q);
                 
-                // تحديث أو إنشاء
                 const sessionDoc = {
                     organizationName: organizationName,
                     sessionId: sessionId,
@@ -1074,11 +1386,9 @@
                 };
                 
                 if (!querySnapshot.empty) {
-                    // تحديث الجلسة الموجودة
                     const docRef = querySnapshot.docs[0].ref;
                     await updateDoc(docRef, sessionDoc);
                 } else {
-                    // إنشاء جلسة جديدة
                     await addDoc(collection(db, 'responses'), sessionDoc);
                 }
                 
@@ -1086,33 +1396,105 @@
             } catch (error) {
                 console.error('Error saving to Firebase:', error);
                 document.getElementById('loadingOverlay').classList.add('hidden');
-                document.getElementById('errorMessage').textContent = 
-                    'حدث خطأ في حفظ الإجابات. سيتم المحاولة مرة أخرى.';
-                document.getElementById('errorMessage').classList.remove('hidden');
             }
         }
 
         async function showCompletion() {
-            // Final save
+            // Check for skipped questions
+            const skippedQuestions = [];
+            allQuestionsList.forEach(item => {
+                const answer = getAnswer(item.axisKey, item.topicKey, item.question.id);
+                if (!answer) {
+                    skippedQuestions.push(item);
+                }
+            });
+            
+            const card = document.getElementById('questionCard');
+            
+            if (skippedQuestions.length > 0) {
+                // Show skipped questions
+                let skippedHTML = '<ul class="skipped-list">';
+                skippedQuestions.forEach(item => {
+                    skippedHTML += `
+                        <li class="skipped-item" onclick="goToQuestion(${item.index})">
+                            ${item.topicData.icon} ${item.question.text.substring(0, 60)}...
+                        </li>
+                    `;
+                });
+                skippedHTML += '</ul>';
+                
+                card.innerHTML = `
+                    <div class="completion-card">
+                        <div class="completion-icon">⚠️</div>
+                        <h1 class="completion-title">انتبه! هناك أسئلة متخطاة</h1>
+                        <p class="completion-message">
+                            لديك ${skippedQuestions.length} سؤال لم يتم الإجابة عليه.<br>
+                            هل تريد إكمالها أم إنهاء التشخيص؟
+                        </p>
+                        
+                        <div class="skipped-questions-section">
+                            <div class="skipped-title">📝 الأسئلة المتخطاة (اضغط للإجابة):</div>
+                            ${skippedHTML}
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                            <button class="btn btn-next" onclick="finishAnyway()">
+                                إنهاء على أي حال 🎉
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // All answered - finish
+                await saveToFirebase(true);
+                
+                card.innerHTML = `
+                    <div class="completion-card">
+                        <div class="completion-icon">🎉</div>
+                        <h1 class="completion-title">تم إكمال التشخيص بنجاح!</h1>
+                        <p class="completion-message">
+                            شكراً لمشاركتك القيّمة. تم حفظ جميع إجاباتك بنجاح.<br>
+                            سيتم تحليل البيانات وإعداد التقرير التشخيصي قريباً.
+                        </p>
+                        <div class="completion-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">${answeredQuestionsCount}</div>
+                                <div class="stat-label">سؤال تم الإجابة عليه</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">${Object.keys(allAnswers).length}</div>
+                                <div class="stat-label">محور مكتمل</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 40px;">
+                            <a href="index.html" class="btn btn-next">
+                                العودة للصفحة الرئيسية
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        window.goToQuestion = function(index) {
+            loadQuestionByIndex(index);
+        };
+
+        window.finishAnyway = async function() {
             await saveToFirebase(true);
             
             const card = document.getElementById('questionCard');
             card.innerHTML = `
                 <div class="completion-card">
                     <div class="completion-icon">🎉</div>
-                    <h1 class="completion-title">تم إكمال التشخيص بنجاح!</h1>
+                    <h1 class="completion-title">تم حفظ التشخيص!</h1>
                     <p class="completion-message">
-                        شكراً لمشاركتك القيّمة. تم حفظ جميع إجاباتك بنجاح.<br>
-                        سيتم تحليل البيانات وإعداد التقرير التشخيصي قريباً.
+                        تم حفظ إجاباتك بنجاح. يمكنك العودة لاحقاً لإكمال الأسئلة المتخطاة.
                     </p>
                     <div class="completion-stats">
                         <div class="stat-item">
                             <div class="stat-number">${answeredQuestionsCount}</div>
                             <div class="stat-label">سؤال تم الإجابة عليه</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">${Object.keys(allAnswers).length}</div>
-                            <div class="stat-label">محور مكتمل</div>
                         </div>
                     </div>
                     <div style="margin-top: 40px;">
@@ -1122,7 +1504,59 @@
                     </div>
                 </div>
             `;
-        }
+        };
+
+        // Review Modal
+        window.openReviewModal = function() {
+            const modal = document.getElementById('reviewModal');
+            const content = document.getElementById('reviewContent');
+            
+            let html = '';
+            
+            Object.keys(questionsData).forEach(axisKey => {
+                const axisData = questionsData[axisKey];
+                html += `<div class="review-section">`;
+                html += `<div class="review-axis-title">${axisData.title}</div>`;
+                
+                Object.keys(axisData.topics).forEach(topicKey => {
+                    const topicData = axisData.topics[topicKey];
+                    html += `<div class="review-topic">`;
+                    html += `<div class="review-topic-title">${topicData.icon} ${topicData.title}</div>`;
+                    
+                    topicData.questions.forEach(question => {
+                        const answer = getAnswer(axisKey, topicKey, question.id);
+                        const questionItem = allQuestionsList.find(item => 
+                            item.axisKey === axisKey && 
+                            item.topicKey === topicKey && 
+                            item.question.id === question.id
+                        );
+                        
+                        const className = answer ? 'review-question-item' : 'review-question-item unanswered';
+                        
+                        html += `
+                            <div class="${className}" onclick="goToQuestion(${questionItem.index})">
+                                <div class="review-q-text">${question.text}</div>
+                                ${answer ? 
+                                    `<div class="review-answer">✅ ${answer}</div>` : 
+                                    `<div class="review-unanswered">⚠️ لم يتم الإجابة</div>`
+                                }
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                });
+                
+                html += `</div>`;
+            });
+            
+            content.innerHTML = html;
+            modal.classList.remove('hidden');
+        };
+
+        window.closeReviewModal = function() {
+            document.getElementById('reviewModal').classList.add('hidden');
+        };
     </script>
 </body>
 </html>
