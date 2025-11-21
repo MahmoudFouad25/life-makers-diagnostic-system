@@ -1009,6 +1009,21 @@
 
         async function initializeSession() {
             try {
+                // تحقق إذا كانت الجلسة موجودة بالفعل
+                const q = query(
+                    collection(db, 'responses'),
+                    where('sessionId', '==', sessionId),
+                    where('organizationName', '==', organizationName)
+                );
+                
+                const existingDocs = await getDocs(q);
+                
+                // إذا كانت موجودة، لا تنشئ جديدة
+                if (!existingDocs.empty) {
+                    console.log('Session already exists');
+                    return;
+                }
+                
                 // حفظ أولي للجلسة في Firebase
                 await addDoc(collection(db, 'responses'), {
                     organizationName: organizationName,
