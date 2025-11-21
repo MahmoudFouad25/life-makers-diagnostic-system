@@ -673,20 +673,73 @@
         </div>
     </div>
 
+    <!-- Link Generator Section -->
+    <div class="main-content" style="margin-bottom: 20px;">
+        <div class="content-header">
+            <h2 class="content-title">🔗 إنشاء رابط جمعية جديدة</h2>
+        </div>
+        
+        <div style="display: grid; gap: 20px; margin-top: 20px;">
+            <div>
+                <label style="display: block; margin-bottom: 8px; color: #94a3b8; font-weight: 600;">
+                    اسم الجمعية
+                </label>
+                <input 
+                    type="text" 
+                    id="orgNameInput" 
+                    placeholder="مثال: جمعية صناع الحياة - أسيوط"
+                    style="width: 100%; padding: 15px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: #e2e8f0; font-size: 16px;"
+                >
+            </div>
+            
+            <button 
+                class="btn btn-primary" 
+                onclick="generateOrgLink()"
+                style="width: fit-content;"
+            >
+                ✨ إنشاء الرابط
+            </button>
+            
+            <div id="generatedLinkContainer" class="hidden" style="background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <label style="color: #94a3b8; font-weight: 600;">
+                        الرابط المُنشأ:
+                    </label>
+                    <button class="btn btn-secondary" onclick="copyLink()" style="padding: 8px 16px; font-size: 13px;">
+                        📋 نسخ
+                    </button>
+                </div>
+                <div 
+                    id="generatedLink" 
+                    style="background: #1e293b; padding: 15px; border-radius: 8px; color: #10b981; font-family: 'Courier New', monospace; word-break: break-all; font-size: 14px;"
+                >
+                </div>
+                <div style="margin-top: 15px; padding: 12px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; color: #94a3b8; font-size: 13px;">
+                    💡 <strong>تعليمات:</strong> أرسل هذا الرابط للجمعية. سيتم حفظ جميع إجاباتهم تحت اسم الجمعية المحدد.
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Main Content -->
     <div class="main-content">
         <div class="content-header">
             <h2 class="content-title">الجلسات النشطة والمكتملة</h2>
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all" onclick="filterSessions('all')">
-                    الكل
-                </button>
-                <button class="filter-btn" data-filter="active" onclick="filterSessions('active')">
-                    نشطة
-                </button>
-                <button class="filter-btn" data-filter="completed" onclick="filterSessions('completed')">
-                    مكتملة
-                </button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <select id="orgFilter" onchange="filterByOrganization()" style="padding: 10px 20px; background: #334155; color: #e2e8f0; border: 1px solid #475569; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                    <option value="all">🏢 جميع الجمعيات</option>
+                </select>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all" onclick="filterSessions('all')">
+                        الكل
+                    </button>
+                    <button class="filter-btn" data-filter="active" onclick="filterSessions('active')">
+                        نشطة
+                    </button>
+                    <button class="filter-btn" data-filter="completed" onclick="filterSessions('completed')">
+                        مكتملة
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -734,7 +787,9 @@
 
         let allSessions = [];
         let currentFilter = 'all';
-
+let currentOrgFilter = 'all';
+   let allOrganizations = new Set();
+        
         // Start listening to real-time updates
         startRealtimeListener();
 
@@ -757,12 +812,42 @@
         }
 
         function updateStatistics() {
-            const total = allSessions.length;
-            const completed = allSessions.filter(s => s.isFinal).length;
+            // Extract organizations
+            allOrganizations.clear();
+            allSessions.forEach(s => {
+                if (s.organizationName) {
+                    allOrganizations.add(s.organizationName);
+                }
+            });
+            
+            // Update org filter dropdown
+            const orgFilter = document.getElementById('orgFilter');
+            if (orgFilter) {
+                const currentValue = orgFilter.value;
+                orgFilter.innerHTML = '<option value="all">🏢 جميع الجمعيات</option>';
+                
+                Array.from(allOrganizations).sort().forEach(org => {
+                    const option = document.createElement('option');
+                    option.value = org;
+                    option.textContent = '🏢 ' + org;
+                    orgFilter.appendChild(option);
+                });
+                
+                orgFilter.value = currentValue;
+            }
+            
+            // Filter sessions based on org
+            let filteredForStats = allSessions;
+            if (currentOrgFilter !== 'all') {
+                filteredForStats = allSessions.filter(s => s.organizationName === currentOrgFilter);
+            }
+            
+            const total = filteredForStats.length;
+            const completed = filteredForStats.filter(s => s.isFinal).length;
             const active = total - completed;
             
             let totalProgress = 0;
-            allSessions.forEach(s => {
+            filteredForStats.forEach(s => {
                 if (s.progress && s.progress.percentage) {
                     totalProgress += s.progress.percentage;
                 }
@@ -781,10 +866,16 @@
 
             let filteredSessions = allSessions;
             
+            // Filter by organization
+            if (currentOrgFilter !== 'all') {
+                filteredSessions = filteredSessions.filter(s => s.organizationName === currentOrgFilter);
+            }
+            
+            // Filter by status
             if (currentFilter === 'active') {
-                filteredSessions = allSessions.filter(s => !s.isFinal);
+                filteredSessions = filteredSessions.filter(s => !s.isFinal);
             } else if (currentFilter === 'completed') {
-                filteredSessions = allSessions.filter(s => s.isFinal);
+                filteredSessions = filteredSessions.filter(s => s.isFinal);
             }
 
             if (filteredSessions.length === 0) {
@@ -817,7 +908,8 @@
                                 ${session.sessionId}
                                 ${badge}
                             </div>
-                            <div class="session-participant">👤 ${session.participantName}</div>
+                            <div class="session-participant">🏢 ${session.organizationName || 'غير محدد'}</div>
+    <div class="session-participant">👤 ${session.participantName}</div>
                             <div class="session-time">🕐 ${timeStr}</div>
                         </div>
                     </div>
@@ -1008,6 +1100,39 @@
         // Make functions globally available
         window.allSessions = allSessions;
         window.questionsData = questionsData;
+
+        // Generate Organization Link
+        window.generateOrgLink = function() {
+            const orgName = document.getElementById('orgNameInput').value.trim();
+            
+            if (!orgName) {
+                showNotification('⚠️ من فضلك أدخل اسم الجمعية');
+                return;
+            }
+            
+            const baseUrl = window.location.origin;
+            const link = `${baseUrl}/questions.html?org=${encodeURIComponent(orgName)}`;
+            
+            document.getElementById('generatedLink').textContent = link;
+            document.getElementById('generatedLinkContainer').classList.remove('hidden');
+            
+            showNotification('✅ تم إنشاء الرابط بنجاح!');
+        };
+        
+        window.copyLink = function() {
+            const link = document.getElementById('generatedLink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                showNotification('✅ تم نسخ الرابط!');
+            });
+        };
+        
+        window.filterByOrganization = function() {
+            const orgFilter = document.getElementById('orgFilter');
+            currentOrgFilter = orgFilter.value;
+            updateStatistics();
+            renderSessions();
+        };
+
     </script>
 </body>
 </html>
