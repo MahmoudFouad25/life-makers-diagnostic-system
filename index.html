@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التشخيص التفاعلي - صناع الحياة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 36px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 18px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .status {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .status.success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status.error {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎯</div>
+        <h1>نظام التشخيص التفاعلي</h1>
+        <p class="subtitle">
+            منظومة متكاملة لتشخيص وضع المنظمات على منحنى النمو<br>
+            بناءً على منهجية رام شاران ونماذج Organizational Life Cycle
+        </p>
+
+        <div class="buttons">
+            <a href="questions.html" class="btn btn-primary">
+                🚀 البدء في التشخيص
+            </a>
+            <a href="admin.html" class="btn btn-secondary">
+                ⚙️ لوحة التحكم
+            </a>
+        </div>
+
+        <div id="status" class="status">
+            ⏳ جاري التحقق من الاتصال بقاعدة البيانات...
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Configuration
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+            authDomain: "life-makers-diagnostic.firebaseapp.com",
+            projectId: "life-makers-diagnostic",
+            storageBucket: "life-makers-diagnostic.firebasestorage.app",
+            messagingSenderId: "819336926740",
+            appId: "1:819336926740:web:d338b3299e6d18e3b67901",
+            measurementId: "G-4Z1FWWKG1C"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Test connection
+        const statusDiv = document.getElementById('status');
+        
+        try {
+            // Try to access Firestore
+            await getDocs(collection(db, 'test'));
+            statusDiv.className = 'status success';
+            statusDiv.textContent = '✅ النظام جاهز! قاعدة البيانات متصلة بنجاح';
+        } catch (error) {
+            statusDiv.className = 'status error';
+            statusDiv.textContent = '⚠️ تحذير: قد تكون هناك مشكلة في الاتصال - ' + error.message;
+        }
+    </script>
+</body>
+</html>
