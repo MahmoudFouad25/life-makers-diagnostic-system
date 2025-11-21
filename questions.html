@@ -611,6 +611,12 @@
         document.getElementById('sessionId').textContent = organizationName;
         document.getElementById('participantName').textContent = participantName;
 
+        // تأكد من وجود org في URL
+        if (organizationName && !window.location.search.includes('org=')) {
+            const newUrl = window.location.pathname + '?org=' + encodeURIComponent(organizationName);
+            window.history.replaceState({}, '', newUrl);
+        }
+
         // Calculate total questions
         calculateTotalQuestions();
         
