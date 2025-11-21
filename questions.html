@@ -988,17 +988,16 @@
         }
 
         // Next button handler
-        document.getElementById('nextBtn').onclick = async () => {
+                document.getElementById('nextBtn').onclick = async () => {
             answeredQuestionsCount++;
             currentQuestionIndex++;
             
-            // Save to Firebase periodically (every 5 questions)
-            if (answeredQuestionsCount % 5 === 0) {
-                await saveToFirebase(false);
-            }
+            // Save to Firebase after every question (for real-time admin updates)
+            await saveToFirebase(false);
             
             loadQuestion();
         };
+
 
         // Skip button handler
         document.getElementById('skipBtn').onclick = () => {
