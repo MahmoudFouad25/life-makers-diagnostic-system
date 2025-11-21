@@ -604,27 +604,26 @@
         let answeredQuestionsCount = 0;
 
         // Initialize
-        if (!organizationName) {
-            return; // Will redirect in getOrganizationName
-        }
-        
-        document.getElementById('sessionId').textContent = organizationName;
-        document.getElementById('participantName').textContent = participantName;
+        // Initialize
+        if (organizationName) {
+            document.getElementById('sessionId').textContent = organizationName;
+            document.getElementById('participantName').textContent = participantName;
 
-        // تأكد من وجود org في URL
-        if (organizationName && !window.location.search.includes('org=')) {
-            const newUrl = window.location.pathname + '?org=' + encodeURIComponent(organizationName);
-            window.history.replaceState({}, '', newUrl);
-        }
+            // تأكد من وجود org في URL
+            if (!window.location.search.includes('org=')) {
+                const newUrl = window.location.pathname + '?org=' + encodeURIComponent(organizationName);
+                window.history.replaceState({}, '', newUrl);
+            }
 
-        // Calculate total questions
-        calculateTotalQuestions();
-        
-        // حفظ الجلسة في Firebase فوراً (لضمان ظهور الجمعية في الأدمن)
-        initializeSession();
-        
-        // Load first question
-        loadQuestion();
+            // Calculate total questions
+            calculateTotalQuestions();
+            
+            // حفظ الجلسة في Firebase فوراً (لضمان ظهور الجمعية في الأدمن)
+            initializeSession();
+            
+            // Load first question
+            loadQuestion();
+        }
 
         function getOrganizationName() {
             const urlParams = new URLSearchParams(window.location.search);
