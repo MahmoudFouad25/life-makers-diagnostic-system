@@ -718,6 +718,98 @@
         .hidden {
             display: none !important;
         }
+
+        /* Custom Confirmation Modal */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .confirm-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .confirm-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .confirm-title {
+            font-size: 24px;
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .confirm-message {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .confirm-btn-yes {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .confirm-btn-yes:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .confirm-btn-no {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .confirm-btn-no:hover {
+            background: #edf2f7;
+        }
+        
     </style>
 </head>
 <body>
@@ -821,7 +913,28 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getFirestore, collection, addDoc, query, where, getDocs, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         import { questionsData } from './questions-data.js';
-
+// Custom Confirmation Dialog
+        function showConfirm(icon, title, message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmModal');
+                document.getElementById('confirmIcon').textContent = icon;
+                document.getElementById('confirmTitle').textContent = title;
+                document.getElementById('confirmMessage').textContent = message;
+                
+                modal.classList.remove('hidden');
+                
+                document.getElementById('confirmYes').onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(true);
+                };
+                
+                document.getElementById('confirmNo').onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(false);
+                };
+            });
+        }
+        
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
@@ -1034,7 +1147,7 @@
             updateNavigationButtons();
         }
 
-        function renderQuestion(item) {
+       function renderQuestion(item) {
             const { question, axisData, topicData } = item;
             
             // Update UI
@@ -1051,6 +1164,8 @@
             
             // Check if previously answered
             const previousAnswer = getAnswer(item.axisKey, item.topicKey, question.id);
+            const previousFollowUp = getAnswer(item.axisKey, item.topicKey, question.id + '_followup');
+            
             if (previousAnswer) {
                 document.getElementById('previousAnswerNotice').classList.remove('hidden');
             } else {
@@ -1058,13 +1173,10 @@
             }
             
             // Render answer input with previous answer if exists
-            renderAnswerInput(question, previousAnswer);
+            renderAnswerInput(question, item, previousAnswer, previousFollowUp);
             
             // Update progress
             updateProgress();
-            
-            // Hide follow-up initially
-            document.getElementById('followUpContainer').classList.add('hidden');
             
             // Reset error
             document.getElementById('errorMessage').classList.add('hidden');
@@ -1154,12 +1266,13 @@
             return labels[type] || '❓ سؤال';
         }
 
-        function renderAnswerInput(question, previousAnswer = null) {
+        function renderAnswerInput(question, item, previousAnswer = null, previousFollowUp = null) {
             const answerArea = document.getElementById('answerArea');
             answerArea.innerHTML = '';
             
             // Store original answer for confirmation
             window.originalAnswer = previousAnswer;
+            window.originalFollowUp = previousFollowUp;
             window.hasChanged = false;
 
             if (question.inputType === 'choice') {
@@ -1233,18 +1346,20 @@
             
             // CRITICAL: Load follow-up if previous answer exists
             if (previousAnswer) {
-                const item = allQuestionsList[currentAbsoluteIndex];
-                const followUpAnswer = getAnswer(item.axisKey, item.topicKey, question.id + '_followup');
-                checkFollowUp(question, previousAnswer, followUpAnswer);
+                checkFollowUp(question, previousAnswer, previousFollowUp);
             }
         }
 
-        function selectChoice(btn, choice, question) {
+        async function selectChoice(btn, choice, question) {
             // Check if changing from previous answer
             if (window.originalAnswer && window.originalAnswer !== choice) {
-                const confirmed = confirm(`⚠️ هل تريد تغيير إجابتك من "${window.originalAnswer}" إلى "${choice}"؟`);
+                const confirmed = await showConfirm(
+                    '⚠️',
+                    'تغيير الإجابة',
+                    `هل تريد تغيير إجابتك من "${window.originalAnswer}" إلى "${choice}"؟`
+                );
                 if (!confirmed) {
-                    return; // Don't change
+                    return;
                 }
                 window.hasChanged = true;
             }
@@ -1255,12 +1370,15 @@
             checkFollowUp(question, choice);
         }
 
-        function selectScale(container, value, question) {
-            // Check if changing from previous answer
+        async function selectScale(container, value, question) {
             if (window.originalAnswer && window.originalAnswer != value) {
-                const confirmed = confirm(`⚠️ هل تريد تغيير إجابتك من "${window.originalAnswer}" إلى "${value}"؟`);
+                const confirmed = await showConfirm(
+                    '⚠️',
+                    'تغيير الإجابة',
+                    `هل تريد تغيير إجابتك من "${window.originalAnswer}" إلى "${value}"؟`
+                );
                 if (!confirmed) {
-                    return; // Don't change
+                    return;
                 }
                 window.hasChanged = true;
             }
@@ -1372,16 +1490,18 @@
         }
 
         // Navigation handlers
-       document.getElementById('prevBtn').onclick = () => {
-            // If answer was changed, confirm before leaving
+       document.getElementById('prevBtn').onclick = async () => {
             if (window.hasChanged && window.originalAnswer) {
-                const confirmed = confirm('⚠️ لديك تعديلات غير محفوظة. هل تريد المتابعة بدون حفظ؟');
+                const confirmed = await showConfirm(
+                    '⚠️',
+                    'تعديلات غير محفوظة',
+                    'لديك تعديلات غير محفوظة. هل تريد المتابعة بدون حفظ؟'
+                );
                 if (!confirmed) {
-                    return; // Stay on current question
+                    return;
                 }
             }
             
-            // Reset change flag
             window.hasChanged = false;
             window.originalAnswer = null;
             window.originalFollowUp = null;
@@ -1390,24 +1510,25 @@
         };
 
 
+
         document.getElementById('nextBtn').onclick = async () => {
-            // If answer was changed, confirm before moving
             if (window.hasChanged && window.originalAnswer) {
-                const confirmed = confirm('✅ هل تريد حفظ التعديلات والانتقال للسؤال التالي؟');
+                const confirmed = await showConfirm(
+                    '✅',
+                    'حفظ التعديلات',
+                    'هل تريد حفظ التعديلات والانتقال للسؤال التالي؟'
+                );
                 if (!confirmed) {
-                    return; // Stay on current question
+                    return;
                 }
             }
             
-            // Save to Firebase
             await saveToFirebase(false);
             
-            // Reset change flag
             window.hasChanged = false;
             window.originalAnswer = null;
             window.originalFollowUp = null;
             
-            // Move to next question or complete
             if (currentAbsoluteIndex >= allQuestionsList.length - 1) {
                 showCompletion();
             } else {
