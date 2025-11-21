@@ -1172,6 +1172,10 @@
                 document.getElementById('previousAnswerNotice').classList.add('hidden');
             }
             
+            // CRITICAL: Hide follow-up initially for every question
+            document.getElementById('followUpContainer').classList.add('hidden');
+            document.getElementById('followUpContainer').innerHTML = '';
+            
             // Render answer input with previous answer if exists
             renderAnswerInput(question, item, previousAnswer, previousFollowUp);
             
@@ -1414,8 +1418,10 @@
         }
 
         function checkFollowUp(question, answer, existingFollowUp = null) {
+            // If question doesn't have follow-up, hide it
             if (!question.followUp) {
                 document.getElementById('followUpContainer').classList.add('hidden');
+                document.getElementById('followUpContainer').innerHTML = '';
                 return;
             }
 
@@ -1438,8 +1444,10 @@
                 showFollowUp(question.followUp.question, existingFollowUp);
             } else {
                 document.getElementById('followUpContainer').classList.add('hidden');
+                document.getElementById('followUpContainer').innerHTML = '';
             }
         }
+
 
        function showFollowUp(followUpQuestion, existingAnswer = null) {
             const container = document.getElementById('followUpContainer');
