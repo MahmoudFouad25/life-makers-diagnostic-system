@@ -503,7 +503,7 @@
     <!-- شريط المعلومات العلوي -->
     <div class="top-bar">
         <div class="session-info">
-            <div class="session-id" id="sessionId">جلسة: ...</div>
+                <div class="session-id" id="sessionId" style="font-size: 16px;">...</div>
             <div class="participant-name">
                 <span id="participantName">مشارك</span>
             </div>
@@ -593,7 +593,8 @@
         const db = getFirestore(app);
 
         // State Management
-        let sessionId = generateSessionId();
+        let organizationName = getOrganizationName();
+        let sessionId = getOrCreateSessionId();
         let participantName = getParticipantName();
         let currentAxis = 'system';
         let currentTopicIndex = 0;
@@ -603,7 +604,11 @@
         let answeredQuestionsCount = 0;
 
         // Initialize
-        document.getElementById('sessionId').textContent = `جلسة: ${sessionId}`;
+        if (!organizationName) {
+            return; // Will redirect in getOrganizationName
+        }
+        
+        document.getElementById('sessionId').textContent = organizationName;
         document.getElementById('participantName').textContent = participantName;
 
         // Calculate total questions
@@ -612,8 +617,42 @@
         // Load first question
         loadQuestion();
 
-        function generateSessionId() {
-            return 'S-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        function getOrganizationName() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orgFromUrl = urlParams.get('org');
+            
+            if (!orgFromUrl) {
+                alert('⚠️ هذا الرابط غير صحيح. من فضلك استخدم الرابط المُرسل من الأدمن.');
+                window.location.href = 'index.html';
+                return null;
+            }
+            
+            return decodeURIComponent(orgFromUrl);
+        }
+
+        function getOrCreateSessionId() {
+            // Check if session exists in localStorage
+            const storageKey = `session_${organizationName}`;
+            let existingSession = localStorage.getItem(storageKey);
+            
+            if (existingSession) {
+                const sessionData = JSON.parse(existingSession);
+                // Check if session is less than 24 hours old
+                const sessionAge = Date.now() - sessionData.createdAt;
+                if (sessionAge < 24 * 60 * 60 * 1000) { // 24 hours
+                    return sessionData.sessionId;
+                }
+            }
+            
+            // Generate new session
+            const newSessionId = 'S-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            const sessionData = {
+                sessionId: newSessionId,
+                createdAt: Date.now()
+            };
+            
+            localStorage.setItem(storageKey, JSON.stringify(sessionData));
+            return newSessionId;
         }
 
         function getParticipantName() {
@@ -947,6 +986,7 @@
                 document.getElementById('loadingOverlay').classList.remove('hidden');
                 
                 await addDoc(collection(db, 'responses'), {
+                    organizationName: organizationName,
                     sessionId: sessionId,
                     participantName: participantName,
                     answers: allAnswers,
