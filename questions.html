@@ -647,14 +647,7 @@
             gap: 8px;
         }
 
-        .review-question-item {
-            background: #f7fafc;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+        
 
         .review-question-item:hover {
             background: #edf2f7;
@@ -808,6 +801,91 @@
 
         .confirm-btn-no:hover {
             background: #edf2f7;
+        }
+
+        .review-question-item {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .review-question-item:hover {
+            background: #edf2f7;
+            transform: translateX(-5px);
+        }
+
+        .review-question-item.unanswered {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+        }
+
+        .review-q-number {
+            min-width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .review-question-item.unanswered .review-q-number {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .review-q-content {
+            flex: 1;
+        }
+
+        .review-q-text {
+            font-size: 14px;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .review-answer {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .review-unanswered {
+            font-size: 14px;
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .review-followup {
+            margin-top: 10px;
+            padding: 10px;
+            background: #fffbeb;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+        }
+
+        .followup-label {
+            display: block;
+            font-size: 12px;
+            color: #92400e;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .followup-answer {
+            font-size: 14px;
+            color: #78350f;
+            font-weight: 500;
         }
         
     </style>
@@ -1702,6 +1780,7 @@
             const content = document.getElementById('reviewContent');
             
             let html = '';
+            let questionNumber = 0;
             
             Object.keys(questionsData).forEach(axisKey => {
                 const axisData = questionsData[axisKey];
@@ -1714,7 +1793,10 @@
                     html += `<div class="review-topic-title">${topicData.icon} ${topicData.title}</div>`;
                     
                     topicData.questions.forEach(question => {
+                        questionNumber++;
                         const answer = getAnswer(axisKey, topicKey, question.id);
+                        const followUpAnswer = getAnswer(axisKey, topicKey, question.id + '_followup');
+                        
                         const questionItem = allQuestionsList.find(item => 
                             item.axisKey === axisKey && 
                             item.topicKey === topicKey && 
@@ -1723,13 +1805,31 @@
                         
                         const className = answer ? 'review-question-item' : 'review-question-item unanswered';
                         
+                        // Build answer display
+                        let answerDisplay = '';
+                        if (answer) {
+                            answerDisplay = `<div class="review-answer">✅ ${answer}</div>`;
+                            
+                            // Show follow-up answer if exists
+                            if (followUpAnswer) {
+                                answerDisplay += `
+                                    <div class="review-followup">
+                                        <span class="followup-label">💭 السؤال التكميلي:</span>
+                                        <span class="followup-answer">${followUpAnswer}</span>
+                                    </div>
+                                `;
+                            }
+                        } else {
+                            answerDisplay = `<div class="review-unanswered">⚠️ لم يتم الإجابة</div>`;
+                        }
+                        
                         html += `
-                            <div class="${className}" onclick="goToQuestion(${questionItem.index})">
-                                <div class="review-q-text">${question.text}</div>
-                                ${answer ? 
-                                    `<div class="review-answer">✅ ${answer}</div>` : 
-                                    `<div class="review-unanswered">⚠️ لم يتم الإجابة</div>`
-                                }
+                            <div class="${className}" onclick="goToQuestionAndClose(${questionItem.index})">
+                                <div class="review-q-number">${questionNumber}</div>
+                                <div class="review-q-content">
+                                    <div class="review-q-text">${question.text}</div>
+                                    ${answerDisplay}
+                                </div>
                             </div>
                         `;
                     });
@@ -1742,6 +1842,13 @@
             
             content.innerHTML = html;
             modal.classList.remove('hidden');
+        };
+
+        window.goToQuestionAndClose = function(index) {
+            // Close modal first
+            document.getElementById('reviewModal').classList.add('hidden');
+            // Then go to question
+            loadQuestionByIndex(index);
         };
 
         window.closeReviewModal = function() {
