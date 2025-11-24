@@ -911,7 +911,7 @@
     <!-- Firebase و Logic -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, collection, addDoc, query, where, getDocs, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, collection, doc, setDoc, query, where, getDocs, updateDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         import { questionsData } from './questions-data.js';
 // Custom Confirmation Dialog
         function showConfirm(icon, title, message) {
@@ -1040,60 +1040,41 @@
 
         async function resumeSession() {
             try {
-                // Try to load existing session from Firebase using organization name
-                const q = query(
-                    collection(db, 'responses'),
-                    where('organizationName', '==', organizationName)
-                );
+                // Document ID = Organization Name
+                const docId = organizationName.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_');
+                const docRef = doc(db, 'responses', docId);
+                const docSnap = await getDoc(docRef);
                 
-                const querySnapshot = await getDocs(q);
-                
-                if (!querySnapshot.empty) {
-                    // Get the most recent session for this organization
-                    let latestDoc = null;
-                    let latestTime = 0;
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    sessionId = data.sessionId || sessionId;
+                    allAnswers = data.answers || {};
                     
-                    querySnapshot.forEach(doc => {
-                        const data = doc.data();
-                        const time = data.timestamp ? data.timestamp.seconds : 0;
-                        if (time > latestTime) {
-                            latestTime = time;
-                            latestDoc = { id: doc.id, data: data };
+                    // Count answered questions
+                    answeredQuestionsCount = 0;
+                    let lastAnsweredIndex = -1;
+                    
+                    allQuestionsList.forEach((item, idx) => {
+                        const answer = getAnswer(item.axisKey, item.topicKey, item.question.id);
+                        if (answer) {
+                            answeredQuestionsCount++;
+                            lastAnsweredIndex = idx;
                         }
                     });
                     
-                    if (latestDoc) {
-                        // Update sessionId to match existing document
-                        sessionId = latestDoc.data.sessionId;
-                        allAnswers = latestDoc.data.answers || {};
-                        
-                        // Count answered questions
-                        answeredQuestionsCount = 0;
-                        let lastAnsweredIndex = -1;
-                        
-                        allQuestionsList.forEach((item, idx) => {
-                            const answer = getAnswer(item.axisKey, item.topicKey, item.question.id);
-                            if (answer) {
-                                answeredQuestionsCount++;
-                                lastAnsweredIndex = idx;
-                            }
-                        });
-                        
-                        // Resume from last answered + 1
-                        if (lastAnsweredIndex >= 0 && lastAnsweredIndex < allQuestionsList.length - 1) {
-                            currentAbsoluteIndex = lastAnsweredIndex + 1;
-                        } else if (lastAnsweredIndex === allQuestionsList.length - 1) {
-                            // All questions answered
-                            currentAbsoluteIndex = 0;
-                        } else {
-                            currentAbsoluteIndex = 0;
-                        }
-                        
-                        updateProgress();
-                        loadQuestionByIndex(currentAbsoluteIndex);
-                        console.log('Session resumed successfully');
-                        return;
+                    // Resume from last answered + 1
+                    if (lastAnsweredIndex >= 0 && lastAnsweredIndex < allQuestionsList.length - 1) {
+                        currentAbsoluteIndex = lastAnsweredIndex + 1;
+                    } else if (lastAnsweredIndex === allQuestionsList.length - 1) {
+                        currentAbsoluteIndex = 0;
+                    } else {
+                        currentAbsoluteIndex = 0;
                     }
+                    
+                    updateProgress();
+                    loadQuestionByIndex(currentAbsoluteIndex);
+                    console.log('Session resumed successfully');
+                    return;
                 }
                 
                 // No existing session - create new one
@@ -1108,22 +1089,20 @@
 
         async function initializeSession() {
             try {
-                // Check if session already exists for this organization
-                const q = query(
-                    collection(db, 'responses'),
-                    where('organizationName', '==', organizationName)
-                );
+                // Document ID = Organization Name (readable)
+                const docId = organizationName.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_');
+                const docRef = doc(db, 'responses', docId);
                 
-                const existingDocs = await getDocs(q);
+                // Check if document exists
+                const docSnap = await getDoc(docRef);
                 
-                // If session exists, don't create new one
-                if (!existingDocs.empty) {
+                if (docSnap.exists()) {
                     console.log('Session already exists for this organization');
                     return;
                 }
                 
-                // Create new session for this organization
-                await addDoc(collection(db, 'responses'), {
+                // Create new document with organization name as ID
+                await setDoc(docRef, {
                     organizationName: organizationName,
                     sessionId: sessionId,
                     participantName: participantName,
@@ -1138,7 +1117,7 @@
                     status: 'initialized'
                 });
                 
-                console.log('New session initialized successfully');
+                console.log('New session initialized with ID:', docId);
             } catch (error) {
                 console.error('Error initializing session:', error);
             }
@@ -1572,13 +1551,9 @@
             try {
                 document.getElementById('loadingOverlay').classList.remove('hidden');
                 
-                // Find existing document for this organization
-                const q = query(
-                    collection(db, 'responses'),
-                    where('organizationName', '==', organizationName)
-                );
-                
-                const querySnapshot = await getDocs(q);
+                // Document ID = Organization Name
+                const docId = organizationName.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_');
+                const docRef = doc(db, 'responses', docId);
                 
                 const sessionDoc = {
                     organizationName: organizationName,
@@ -1594,24 +1569,24 @@
                     lastUpdated: serverTimestamp()
                 };
                 
-                if (!querySnapshot.empty) {
-                    // Update existing document (use the first one - should be only one per org)
-                    const docRef = querySnapshot.docs[0].ref;
+                // Check if document exists
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
                     await updateDoc(docRef, sessionDoc);
-                    console.log('Session updated');
                 } else {
-                    // Create new document
                     sessionDoc.timestamp = serverTimestamp();
-                    await addDoc(collection(db, 'responses'), sessionDoc);
-                    console.log('New session created');
+                    await setDoc(docRef, sessionDoc);
                 }
                 
                 document.getElementById('loadingOverlay').classList.add('hidden');
+                console.log('Saved to document:', docId);
             } catch (error) {
                 console.error('Error saving to Firebase:', error);
                 document.getElementById('loadingOverlay').classList.add('hidden');
             }
         }
+
 
 
         async function showCompletion() {
