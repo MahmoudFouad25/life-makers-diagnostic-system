@@ -750,30 +750,40 @@
 
             // Render responses
             if (data.responses?.openingQuestion?.length > 0) {
-                renderResponses(data.responses.openingQuestion);
+                renderResponses(data.responses.openingQuestion, data.highlightedResponse);
             }
         }
 
-        function renderResponses(responses) {
+        function renderResponses(responses, highlightedResponse) {
             const container = document.getElementById('responsesDisplayContainer');
             container.innerHTML = '';
 
             responses.forEach((response, index) => {
                 const item = document.createElement('div');
                 item.className = 'response-item-display';
-                if (response.highlighted) {
+                
+                // تمييز الإجابة المختارة من الأدمن
+                const isHighlighted = highlightedResponse && highlightedResponse.index === index;
+                if (isHighlighted) {
                     item.classList.add('highlighted');
                 }
                 
                 item.innerHTML = `
                     <div class="response-header-display">
                         <span class="response-participant-display">
-                            👤 ${response.participantName || 'مشارك ' + (index + 1)}
+                            ${isHighlighted ? '⭐ ' : '👤 '}${response.participantName || 'مشارك ' + (index + 1)}
                         </span>
+                        ${isHighlighted ? '<span style="color: #fbbf24; font-weight: 700;">إجابة مميزة</span>' : ''}
                     </div>
                     <div class="response-text-display">${response.answer}</div>
                 `;
-                container.appendChild(item);
+                
+                // إضافة في البداية لو مميزة، وإلا في النهاية
+                if (isHighlighted) {
+                    container.insertBefore(item, container.firstChild);
+                } else {
+                    container.appendChild(item);
+                }
             });
         }
 
