@@ -555,13 +555,68 @@
         document.getElementById('sessionIdDisplay').textContent = sessionId;
 
         let participantName = '';
-        let participantId = generateParticipantId();
+        let participantId = '';
         let workshopData = null;
         let surveyAnswers = {};
+        let hasJoined = false;
 
-        function generateParticipantId() {
+        // توليد أو استرجاع معرف المشارك
+        function getOrCreateParticipantId() {
+            const storageKey = `participant_${sessionId}`;
+            let stored = localStorage.getItem(storageKey);
+            
+            if (stored) {
+                const data = JSON.parse(stored);
+                return data.id;
+            }
+            
             return 'P-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
         }
+
+        // حفظ بيانات المشارك
+        function saveParticipantData() {
+            const storageKey = `participant_${sessionId}`;
+            localStorage.setItem(storageKey, JSON.stringify({
+                id: participantId,
+                name: participantName,
+                joinedAt: new Date().toISOString()
+            }));
+        }
+
+        // استرجاع بيانات المشارك
+        function loadParticipantData() {
+            const storageKey = `participant_${sessionId}`;
+            const stored = localStorage.getItem(storageKey);
+            
+            if (stored) {
+                const data = JSON.parse(stored);
+                participantId = data.id;
+                participantName = data.name;
+                hasJoined = true;
+                
+                // تغيير عنوان الصفحة باسم المشارك
+                document.title = `👤 ${participantName} - ورشة عيش وملح`;
+                
+                return true;
+            }
+            
+            participantId = getOrCreateParticipantId();
+            return false;
+        }
+
+        // التحقق من حالة المشارك عند التحميل
+        function checkParticipantStatus() {
+            const wasJoined = loadParticipantData();
+            
+            if (wasJoined && participantName) {
+                document.getElementById('welcomeNameDisplay').textContent = participantName;
+                showSection('waitingSection');
+                console.log('✅ تم استرجاع بيانات المشارك:', participantName);
+            }
+        }
+
+        // تشغيل عند تحميل الصفحة
+        checkParticipantStatus();
 
         // Join Workshop
         document.getElementById('joinBtn').onclick = async () => {
@@ -573,7 +628,9 @@
             }
 
             participantName = name;
-
+            
+saveParticipantData();
+            document.title = `👤 ${participantName} - ورشة عيش وملح`;
             try {
                 const workshopRef = doc(db, 'workshops', sessionId);
                 await updateDoc(workshopRef, {
