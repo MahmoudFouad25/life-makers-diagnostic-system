@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 تحضير ورشة "من التنفيذ للتبني"</title>
+    <link rel="stylesheet" href="workshop-styles.css">
+    <style>
+        /* تنسيقات خاصة بصفحة Setup */
+        .setup-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .logo-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.5);
+            animation: pulse 3s ease infinite;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .steps-container {
+            display: grid;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .step-card {
+            background: linear-gradient(135deg, var(--bg-dark-2) 0%, var(--bg-dark-3) 100%);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 20px;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(240, 147, 251, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .step-card:hover::before {
+            opacity: 1;
+        }
+
+        .step-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.3);
+        }
+
+        .step-number {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .step-content {
+            margin-right: 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-description {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .session-input-group {
+            background: var(--bg-dark);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid var(--bg-dark-3);
+        }
+
+        .session-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--bg-dark-2);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .session-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .qr-display-area {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            margin: 25px 0;
+        }
+
+        .qr-code-canvas {
+            margin: 0 auto 25px;
+            border: 5px solid var(--bg-dark-3);
+            border-radius: 15px;
+            padding: 15px;
+            background: white;
+        }
+
+        .qr-info {
+            color: var(--bg-dark);
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .link-display {
+            background: var(--bg-dark);
+            color: var(--primary-color);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            margin-top: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 25px;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            border: 2px solid var(--bg-dark-3);
+            margin-top: 20px;
+        }
+
+        .status-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            animation: pulse 2s ease infinite;
+        }
+
+        .status-indicator.connected {
+            background: var(--success);
+            box-shadow: 0 0 20px var(--success);
+        }
+
+        .status-indicator.disconnected {
+            background: var(--error);
+            box-shadow: 0 0 20px var(--error);
+        }
+
+        .status-indicator.connecting {
+            background: var(--warning);
+            box-shadow: 0 0 20px var(--warning);
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .quick-link-card {
+            background: linear-gradient(135deg, var(--bg-dark-2) 0%, var(--bg-dark-3) 100%);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .quick-link-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .quick-link-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .quick-link-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .quick-link-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .countdown-timer {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(240, 147, 251, 0.2) 100%);
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .timer-display {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-label {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .checklist {
+            background: var(--bg-dark);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checklist-item:hover {
+            background: var(--bg-dark-2);
+        }
+
+        .checklist-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-muted);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item.checked .checklist-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .checklist-text {
+            color: var(--text-secondary);
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .checklist-item.checked .checklist-text {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <!-- شعار وعنوان الورشة -->
+        <div class="logo-section">
+            <div class="logo-icon">🎯</div>
+            <h1 class="main-title">تحضير ورشة "من التنفيذ للتبني"</h1>
+            <p class="subtitle">مشروع عيش وملح - صناع الحياة</p>
+        </div>
+
+        <!-- الخطوة 1: إنشاء جلسة جديدة -->
+        <div class="steps-container">
+            <div class="step-card slide-up">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h2 class="step-title">🆔 إنشاء معرّف الجلسة</h2>
+                    <p class="step-description">
+                        أنشئ معرّف فريد لهذه الورشة. سيتم استخدامه لربط جميع المشاركين والبيانات معاً.
+                        <br><strong>مقترح:</strong> workshop-YYYY-MM-DD (مثال: workshop-2024-11-27)
+                    </p>
+                    
+                    <div class="session-input-group">
+                        <label class="input-label">معرّف الجلسة (Session ID)</label>
+                        <input 
+                            type="text" 
+                            id="sessionIdInput" 
+                            class="session-input"
+                            placeholder="مثال: workshop-2024-11-27"
+                            value=""
+                        >
+                        <div class="connection-status" id="connectionStatus">
+                            <div class="status-indicator connecting"></div>
+                            <span>جاري الاتصال بقاعدة البيانات...</span>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="createSessionBtn" disabled>
+                            ✨ إنشاء الجلسة
+                        </button>
+                        <button class="btn btn-secondary" id="generateIdBtn">
+                            🎲 توليد معرّف تلقائي
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الخطوة 2: QR Code -->
+            <div class="step-card slide-up hidden" id="step2Card">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h2 class="step-title">📱 رمز الاستجابة السريع (QR Code)</h2>
+                    <p class="step-description">
+                        امسح هذا الرمز أو استخدم الرابط المباشر لمشاركته مع المشاركين.
+                        يمكنك طباعته أو عرضه على الشاشة.
+                    </p>
+
+                    <div class="qr-display-area" id="qrDisplayArea">
+                        <div id="qrCode" class="qr-code-canvas"></div>
+                        <p class="qr-info">📷 امسح الرمز للانضمام للورشة</p>
+                        <div class="link-display" id="participantLink">
+                            جاري إنشاء الرابط...
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-success" id="copyLinkBtn">
+                            📋 نسخ الرابط
+                        </button>
+                        <button class="btn btn-secondary" id="printQrBtn">
+                            🖨️ طباعة الرمز
+                        </button>
+                        <button class="btn btn-secondary" id="downloadQrBtn">
+                            💾 تحميل الرمز
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الخطوة 3: روابط سريعة -->
+            <div class="step-card slide-up hidden" id="step3Card">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h2 class="step-title">🚀 الصفحات التفاعلية</h2>
+                    <p class="step-description">
+                        افتح هذه الصفحات في تبويبات منفصلة قبل بدء الورشة.
+                    </p>
+
+                    <div class="quick-links">
+                        <a href="#" class="quick-link-card" id="adminLink" target="_blank">
+                            <div class="quick-link-icon">⚙️</div>
+                            <div class="quick-link-title">لوحة التحكم</div>
+                            <div class="quick-link-desc">للميسّر (أنت)</div>
+                        </a>
+                        <a href="#" class="quick-link-card" id="displayLink" target="_blank">
+                            <div class="quick-link-icon">📺</div>
+                            <div class="quick-link-title">شاشة العرض</div>
+                            <div class="quick-link-desc">للبروجيكتور</div>
+                        </a>
+                        <a href="#" class="quick-link-card" id="testParticipantLink" target="_blank">
+                            <div class="quick-link-icon">👤</div>
+                            <div class="quick-link-title">واجهة المشارك</div>
+                            <div class="quick-link-desc">للاختبار</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الخطوة 4: قائمة التحقق -->
+            <div class="step-card slide-up hidden" id="step4Card">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h2 class="step-title">✅ قائمة التحقق النهائية</h2>
+                    <p class="step-description">
+                        تأكد من إكمال جميع هذه الخطوات قبل بدء الورشة.
+                    </p>
+
+                    <div class="checklist">
+                        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                            <div class="checklist-checkbox">✓</div>
+                            <div class="checklist-text">تم إنشاء الجلسة بنجاح</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                            <div class="checklist-checkbox">✓</div>
+                            <div class="checklist-text">تم طباعة/عرض QR Code</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                            <div class="checklist-checkbox">✓</div>
+                            <div class="checklist-text">فتحت لوحة التحكم (Admin) في تبويب منفصل</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                            <div class="checklist-checkbox">✓</div>
+                            <div class="checklist-text">فتحت شاشة العرض (Display) على البروجيكتور</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                            <div class="checklist-checkbox">✓</div>
+                            <div class="checklist-text">اختبرت واجهة المشارك على الموبايل</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                            <div class="checklist-checkbox">✓</div>
+                            <div class="checklist-text">طبعت الاستبيان (70 نسخة) - احتياطي</div>
+                        </div>
+                        <div class="checklist-item" onclick="toggleChecklistItem(this)">
+                            <div class="checklist-checkbox">✓</div>
+                            <div class="checklist-text">جهزت ماركرز + فليب تشارت احتياطي</div>
+                        </div>
+                    </div>
+
+                    <div class="countdown-timer">
+                        <div class="timer-display" id="timerDisplay">--:--:--</div>
+                        <div class="timer-label">الوقت المتبقي لبدء الورشة</div>
+                        <button class="btn btn-warning mt-20" id="setTimerBtn">
+                            ⏰ ضبط العد التنازلي
+                        </button>
+                    </div>
+
+                    <div class="action-buttons mt-30">
+                        <button class="btn btn-success" style="flex: 1; font-size: 20px; padding: 20px;" id="startWorkshopBtn">
+                            🎉 كل شيء جاهز - ابدأ الورشة!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- شاشة التحميل -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">جاري التحميل...</div>
+        </div>
+    </div>
+
+    <!-- Firebase & QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+            authDomain: "life-makers-diagnostic.firebaseapp.com",
+            projectId: "life-makers-diagnostic",
+            storageBucket: "life-makers-diagnostic.firebasestorage.app",
+            messagingSenderId: "819336926740",
+            appId: "1:819336926740:web:d338b3299e6d18e3b67901",
+            measurementId: "G-4Z1FWWKG1C"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let currentSessionId = null;
+        let qrCodeInstance = null;
+
+        // Test Firebase Connection
+        async function testConnection() {
+            try {
+                const testRef = doc(db, 'system', 'test');
+                await setDoc(testRef, { 
+                    test: true, 
+                    timestamp: serverTimestamp() 
+                }, { merge: true });
+                
+                document.getElementById('connectionStatus').innerHTML = `
+                    <div class="status-indicator connected"></div>
+                    <span>✅ متصل بقاعدة البيانات بنجاح</span>
+                `;
+                document.getElementById('createSessionBtn').disabled = false;
+            } catch (error) {
+                console.error('Connection error:', error);
+                document.getElementById('connectionStatus').innerHTML = `
+                    <div class="status-indicator disconnected"></div>
+                    <span>❌ فشل الاتصال: ${error.message}</span>
+                `;
+            }
+        }
+
+        // Generate Random Session ID
+        window.generateIdBtn = document.getElementById('generateIdBtn');
+        generateIdBtn.onclick = () => {
+            const date = new Date();
+            const dateStr = date.toISOString().split('T')[0];
+            const randomStr = Math.random().toString(36).substring(2, 6);
+            const sessionId = `workshop-${dateStr}-${randomStr}`;
+            document.getElementById('sessionIdInput').value = sessionId;
+        };
+
+        // Create Session
+        window.createSessionBtn = document.getElementById('createSessionBtn');
+        createSessionBtn.onclick = async () => {
+            const sessionId = document.getElementById('sessionIdInput').value.trim();
+            
+            if (!sessionId) {
+                alert('⚠️ من فضلك أدخل معرّف الجلسة');
+                return;
+            }
+
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+
+            try {
+                // Check if session exists
+                const sessionRef = doc(db, 'workshops', sessionId);
+                const sessionDoc = await getDoc(sessionRef);
+
+                if (sessionDoc.exists()) {
+                    const confirm = window.confirm('⚠️ هذا المعرّف موجود بالفعل. هل تريد المتابعة والكتابة عليه؟');
+                    if (!confirm) {
+                        document.getElementById('loadingOverlay').classList.add('hidden');
+                        return;
+                    }
+                }
+
+                // Create/Update session
+                await setDoc(sessionRef, {
+                    sessionId: sessionId,
+                    createdAt: serverTimestamp(),
+                    status: 'setup',
+                    participants: [],
+                    currentPhase: 'not-started',
+                    responses: {
+                        openingQuestion: [],
+                        survey: [],
+                        groups: []
+                    }
+                }, { merge: true });
+
+                currentSessionId = sessionId;
+                
+                // Show success and next steps
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                showAlert('success', '✅ تم إنشاء الجلسة بنجاح!');
+                
+                // Show Step 2 (QR Code)
+                document.getElementById('step2Card').classList.remove('hidden');
+                generateQRCode(sessionId);
+                
+                // Show Step 3 (Quick Links)
+                setTimeout(() => {
+                    document.getElementById('step3Card').classList.remove('hidden');
+                    setupQuickLinks(sessionId);
+                }, 500);
+                
+                // Show Step 4 (Checklist)
+                setTimeout(() => {
+                    document.getElementById('step4Card').classList.remove('hidden');
+                }, 1000);
+
+                // Disable session input
+                document.getElementById('sessionIdInput').disabled = true;
+                document.getElementById('createSessionBtn').disabled = true;
+                document.getElementById('generateIdBtn').disabled = true;
+
+            } catch (error) {
+                console.error('Error creating session:', error);
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                showAlert('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // Generate QR Code
+        function generateQRCode(sessionId) {
+            const baseUrl = window.location.origin + window.location.pathname.replace('workshop-setup.html', '');
+            const participantUrl = `${baseUrl}workshop-participate.html?session=${sessionId}`;
+            
+            document.getElementById('participantLink').textContent = participantUrl;
+
+            // Clear previous QR if exists
+            document.getElementById('qrCode').innerHTML = '';
+
+            // Generate new QR
+            qrCodeInstance = new QRCode(document.getElementById('qrCode'), {
+                text: participantUrl,
+                width: 300,
+                height: 300,
+                colorDark: '#0f172a',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        // Setup Quick Links
+        function setupQuickLinks(sessionId) {
+            const baseUrl = window.location.origin + window.location.pathname.replace('workshop-setup.html', '');
+            
+            document.getElementById('adminLink').href = `${baseUrl}workshop-admin.html?session=${sessionId}`;
+            document.getElementById('displayLink').href = `${baseUrl}workshop-display.html?session=${sessionId}`;
+            document.getElementById('testParticipantLink').href = `${baseUrl}workshop-participate.html?session=${sessionId}`;
+        }
+
+        // Copy Link
+        window.copyLinkBtn = document.getElementById('copyLinkBtn');
+        copyLinkBtn.onclick = () => {
+            const link = document.getElementById('participantLink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                showAlert('success', '✅ تم نسخ الرابط!');
+            });
+        };
+
+        // Print QR
+        window.printQrBtn = document.getElementById('printQrBtn');
+        printQrBtn.onclick = () => {
+            window.print();
+        };
+
+        // Download QR
+        window.downloadQrBtn = document.getElementById('downloadQrBtn');
+        downloadQrBtn.onclick = () => {
+            const canvas = document.querySelector('#qrCode canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `qr-${currentSessionId}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            }
+        };
+
+        // Countdown Timer
+        let countdownInterval = null;
+        window.setTimerBtn = document.getElementById('setTimerBtn');
+        setTimerBtn.onclick = () => {
+            const workshopTime = prompt('أدخل وقت بدء الورشة (مثال: 14:30)');
+            if (workshopTime) {
+                startCountdown(workshopTime);
+            }
+        };
+
+        function startCountdown(timeStr) {
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const now = new Date();
+            const target = new Date();
+            target.setHours(hours, minutes, 0, 0);
+            
+            if (target < now) {
+                target.setDate(target.getDate() + 1);
+            }
+
+            countdownInterval = setInterval(() => {
+                const now = new Date();
+                const diff = target - now;
+                
+                if (diff <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('timerDisplay').textContent = '🎉 حان الوقت!';
+                    return;
+                }
+
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                
+                document.getElementById('timerDisplay').textContent = 
+                    `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Start Workshop Button
+        window.startWorkshopBtn = document.getElementById('startWorkshopBtn');
+        startWorkshopBtn.onclick = async () => {
+            const confirmed = window.confirm('🎉 هل أنت متأكد أنك جاهز لبدء الورشة؟');
+            if (!confirmed) return;
+
+            try {
+                const sessionRef = doc(db, 'workshops', currentSessionId);
+                await setDoc(sessionRef, {
+                    status: 'active',
+                    currentPhase: 'phase-1-opening',
+                    startedAt: serverTimestamp()
+                }, { merge: true });
+
+                showAlert('success', '🚀 تم بدء الورشة! افتح لوحة التحكم الآن.');
+                
+                // Open admin in new tab
+                setTimeout(() => {
+                    window.open(document.getElementById('adminLink').href, '_blank');
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error starting workshop:', error);
+                showAlert('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // Checklist Toggle
+        window.toggleChecklistItem = function(item) {
+            item.classList.toggle('checked');
+        };
+
+        // Alert Helper
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '10000';
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        // Initialize
+        testConnection();
+
+        // Auto-generate session ID on load
+        window.addEventListener('load', () => {
+            const date = new Date();
+            const dateStr = date.toISOString().split('T')[0];
+            document.getElementById('sessionIdInput').value = `workshop-${dateStr}`;
+        });
+    </script>
+</body>
+</html>
