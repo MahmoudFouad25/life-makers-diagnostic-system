@@ -628,6 +628,10 @@
             background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
         }
 
+        .toast.info {
+            background: linear-gradient(135deg, var(--info) 0%, #2563eb 100%);
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .admin-container {
@@ -666,7 +670,7 @@
             <div class="phases-menu">
                 <div class="menu-label">مراحل الورشة</div>
                 
-                <div class="phase-item" data-phase="phase-1" onclick="switchPhase('phase-1')">
+                <div class="phase-item active" data-phase="phase-1" onclick="switchPhase('phase-1')">
                     <div class="phase-icon">🎤</div>
                     <div class="phase-text">
                         <div class="phase-name">الصدمة والمواجهة</div>
@@ -701,9 +705,15 @@
                     📺 فتح شاشة العرض
                 </button>
                 <button class="quick-action-btn" onclick="exportAllData()">
-                    💾 تصدير البيانات
+                    💾 تصدير JSON
                 </button>
-                <button class="quick-action-btn" onclick="resetWorkshop()">
+                <button class="quick-action-btn" onclick="exportWorkshopSummary()">
+                    📄 تصدير ملخص
+                </button>
+                <button class="quick-action-btn" onclick="showEndScreen()">
+                    🎉 شاشة الختام
+                </button>
+                <button class="quick-action-btn" onclick="resetWorkshop()" style="color: var(--error);">
                     🔄 إعادة تعيين
                 </button>
             </div>
@@ -760,6 +770,42 @@
                     </div>
                     <div class="stat-value-large" id="elapsedTime">00:00</div>
                 </div>
+
+                <div class="live-stat-card" style="cursor: pointer;" onclick="openTimerModal()">
+                    <div class="stat-header">
+                        <span class="stat-label">⏰ مؤقت النشاط</span>
+                        <span class="stat-icon-small">🔔</span>
+                    </div>
+                    <div class="stat-value-large" id="activityTimer">--:--</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">اضغط للضبط</div>
+                </div>
+            </div>
+
+            <!-- نافذة المؤقت -->
+            <div id="timerModal" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                <div style="background: var(--bg-dark-2); border: 2px solid var(--primary-color); border-radius: 20px; padding: 40px; max-width: 400px; width: 90%;">
+                    <h3 style="color: var(--text-primary); font-size: 24px; margin-bottom: 25px; text-align: center;">⏰ ضبط المؤقت</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+                        <button class="btn btn-secondary" onclick="setTimer(3)">3 دقائق</button>
+                        <button class="btn btn-secondary" onclick="setTimer(5)">5 دقائق</button>
+                        <button class="btn btn-secondary" onclick="setTimer(7)">7 دقائق</button>
+                        <button class="btn btn-secondary" onclick="setTimer(10)">10 دقائق</button>
+                        <button class="btn btn-secondary" onclick="setTimer(15)">15 دقائق</button>
+                        <button class="btn btn-secondary" onclick="setTimer(20)">20 دقيقة</button>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="color: var(--text-secondary); font-size: 14px; display: block; margin-bottom: 8px;">أو أدخل الوقت بالدقائق:</label>
+                        <input type="number" id="customTimerInput" style="width: 100%; padding: 12px; background: var(--bg-dark); border: 2px solid var(--bg-dark-3); border-radius: 10px; color: var(--text-primary); font-size: 18px; text-align: center;" placeholder="مثال: 12">
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" style="flex: 1;" onclick="startCustomTimer()">▶️ بدء</button>
+                        <button class="btn btn-warning" style="flex: 1;" onclick="stopTimer()">⏹️ إيقاف</button>
+                        <button class="btn btn-secondary" onclick="closeTimerModal()">✖️ إغلاق</button>
+                    </div>
+                </div>
             </div>
 
             <!-- محتوى المرحلة 1 -->
@@ -789,6 +835,22 @@
                             <button class="btn btn-warning" id="closeResponsesBtn" disabled>
                                 ⏸️ إيقاف الإجابات
                             </button>
+                        </div>
+                        
+                        <!-- أزرار التحكم في شاشة العرض -->
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--bg-dark-3);">
+                            <h4 style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">📺 التحكم في شاشة العرض:</h4>
+                            <div class="control-buttons">
+                                <button class="btn btn-primary" onclick="setDisplayMode('question')">
+                                    ❓ عرض السؤال
+                                </button>
+                                <button class="btn btn-secondary" onclick="setDisplayMode('responses')">
+                                    💬 عرض الإجابات
+                                </button>
+                                <button class="btn btn-secondary" onclick="setDisplayMode('flipchart')">
+                                    📝 عرض الفليب تشارت
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -886,6 +948,16 @@
                             <div class="warning-text">
                                 تأكد من أن جميع المشاركين متصلون قبل إطلاق الاستبيان
                             </div>
+                        </div>
+
+                        <!-- زر إغلاق الاستبيان -->
+                        <div id="closeSurveyContainer" class="hidden" style="margin: 20px 0;">
+                            <button class="btn btn-warning" id="closeSurveyBtn">
+                                ⏸️ إغلاق الاستبيان
+                            </button>
+                            <button class="btn btn-secondary" onclick="setDisplayMode('survey')" style="margin-right: 10px;">
+                                📺 عرض النتائج على الشاشة
+                            </button>
                         </div>
 
                         <!-- إحصائيات الاستبيان -->
@@ -1002,9 +1074,28 @@
                                 🎯 نتائج المجموعات
                             </h2>
                             <div class="panel-actions">
+                                <button class="btn btn-primary" onclick="refreshGroupResults()">
+                                    🔄 تحديث
+                                </button>
                                 <button class="btn btn-success" id="exportAllBtn">
                                     📥 تصدير الكل
                                 </button>
+                            </div>
+                        </div>
+
+                        <!-- ملخص سريع -->
+                        <div id="resultsOverview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                            <div style="background: var(--bg-dark); padding: 20px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 32px; font-weight: 800; color: var(--text-primary);" id="totalGroupsCount">0</div>
+                                <div style="font-size: 14px; color: var(--text-secondary);">إجمالي المجموعات</div>
+                            </div>
+                            <div style="background: var(--bg-dark); padding: 20px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 32px; font-weight: 800; color: var(--success);" id="submittedGroupsCount">0</div>
+                                <div style="font-size: 14px; color: var(--text-secondary);">أرسلت نتائجها</div>
+                            </div>
+                            <div style="background: var(--bg-dark); padding: 20px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 32px; font-weight: 800; color: var(--warning);" id="pendingGroupsCount">0</div>
+                                <div style="font-size: 14px; color: var(--text-secondary);">في الانتظار</div>
                             </div>
                         </div>
 
@@ -1028,7 +1119,6 @@
             <div class="loading-text">جاري التحميل...</div>
         </div>
     </div>
-
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
@@ -1063,6 +1153,7 @@
         let currentPhase = 'phase-1';
         let startTime = Date.now();
         let workshopData = null;
+        const workshopRef = doc(db, 'workshops', sessionId);
 
         // Timer
         setInterval(() => {
@@ -1074,7 +1165,6 @@
         }, 1000);
 
         // Listen to Workshop Data
-        const workshopRef = doc(db, 'workshops', sessionId);
         onSnapshot(workshopRef, (docSnap) => {
             if (docSnap.exists()) {
                 workshopData = docSnap.data();
@@ -1123,12 +1213,24 @@
                 document.getElementById('launchSurveyBtn').disabled = true;
                 document.getElementById('launchSurveyBtn').innerHTML = '✅ الاستبيان نشط';
                 document.getElementById('surveyStatsContainer').classList.remove('hidden');
+                document.getElementById('closeSurveyContainer').classList.remove('hidden');
+                updateSurveyStats();
+            }
+            
+            if (workshopData.surveyClosed) {
+                document.getElementById('launchSurveyBtn').disabled = true;
+                document.getElementById('launchSurveyBtn').innerHTML = '✅ الاستبيان مغلق';
+                document.getElementById('closeSurveyBtn').disabled = true;
+                document.getElementById('closeSurveyBtn').innerHTML = '⏸️ تم الإغلاق';
+                document.getElementById('surveyStatsContainer').classList.remove('hidden');
+                document.getElementById('closeSurveyContainer').classList.remove('hidden');
                 updateSurveyStats();
             }
 
             // ═══ استرجاع المجموعات ═══
             if (workshopData.groups?.length > 0) {
                 displayGroups(workshopData.groups);
+                displayGroupResults(workshopData.groups);
             }
         }
 
@@ -1167,6 +1269,67 @@
             const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
             return date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
         }
+
+        // ═══ حذف إجابة ═══
+        window.deleteResponse = async function(index) {
+            const confirmed = confirm('🗑️ هل أنت متأكد من حذف هذه الإجابة؟');
+            if (!confirmed) return;
+
+            try {
+                const responses = [...(workshopData.responses?.openingQuestion || [])];
+                responses.splice(index, 1);
+                
+                await updateDoc(workshopRef, {
+                    'responses.openingQuestion': responses
+                });
+                
+                showToast('success', '✅ تم حذف الإجابة');
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // ═══ عرض إجابة على الشاشة ═══
+        window.showOnDisplay = async function(index) {
+            try {
+                const response = workshopData.responses?.openingQuestion?.[index];
+                if (!response) return;
+
+                await updateDoc(workshopRef, {
+                    'highlightedResponse': {
+                        index: index,
+                        participantName: response.participantName,
+                        answer: response.answer,
+                        timestamp: new Date()
+                    }
+                });
+                
+                showToast('success', '📺 تم إرسال الإجابة لشاشة العرض');
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // ═══ التحكم في وضع شاشة العرض ═══
+        window.setDisplayMode = async function(mode) {
+            try {
+                await updateDoc(workshopRef, {
+                    'displayMode': mode
+                });
+                
+                const modeNames = {
+                    'question': 'السؤال',
+                    'responses': 'الإجابات', 
+                    'flipchart': 'الفليب تشارت',
+                    'survey': 'نتائج الاستبيان',
+                    'groups': 'المجموعات'
+                };
+                
+                showToast('success', `📺 تم التبديل إلى: ${modeNames[mode]}`);
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
 
         // Launch Opening Question
         document.getElementById('launchQuestionBtn').onclick = async () => {
@@ -1244,7 +1407,7 @@
             });
             document.querySelector(`[data-phase="${phase}"]`).classList.add('active');
 
-            // Update content
+            // Hide all phase content
             document.querySelectorAll('.phase-content').forEach(content => {
                 content.classList.add('hidden');
             });
@@ -1253,24 +1416,42 @@
                 'phase-1': {
                     icon: '🎤',
                     title: 'الصدمة والمواجهة',
-                    description: 'إطلاق السؤال الافتتاحي والحوار العميق'
+                    description: 'إطلاق السؤال الافتتاحي والحوار العميق',
+                    contentId: 'phase1Content'
                 },
                 'phase-2': {
                     icon: '💡',
                     title: 'الفلسفة',
-                    description: 'شرح فلسفة صناع الحياة والفرق بين الأثر والفارق'
+                    description: 'شرح فلسفة صناع الحياة والفرق بين الأثر والفارق',
+                    contentId: 'phase2Content'
                 },
                 'phase-3': {
                     icon: '📝',
                     title: 'التفكيك والاستبيان',
-                    description: 'استبيان "مين أنت فعلاً؟" وتقسيم المجموعات'
+                    description: 'استبيان "مين أنت فعلاً؟" وتقسيم المجموعات',
+                    contentId: 'phase3Content'
                 }
             };
 
             document.getElementById('phaseIcon').textContent = phaseInfo[phase].icon;
             document.getElementById('phaseTitle').textContent = phaseInfo[phase].title;
             document.getElementById('phaseDescription').textContent = phaseInfo[phase].description;
-            document.getElementById(`${phase}Content`).classList.remove('hidden');
+            document.getElementById(phaseInfo[phase].contentId).classList.remove('hidden');
+        };
+
+        // Tab Switching
+        window.switchTab = function(tabName) {
+            // Update buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
         };
 
         // Helper Functions
@@ -1303,7 +1484,6 @@
 
         window.resetWorkshop = function() {
             if (confirm('⚠️ هل أنت متأكد من إعادة تعيين الورشة؟ سيتم حذف جميع البيانات!')) {
-                // Implement reset logic
                 showToast('warning', '🔄 جاري إعادة التعيين...');
             }
         };
@@ -1317,6 +1497,139 @@
             setTimeout(() => {
                 toast.remove();
             }, 3000);
+        }
+
+        // ════════════════════════════════════════════════════════
+        // نظام المؤقت
+        // ════════════════════════════════════════════════════════
+
+        let timerInterval = null;
+        let timerSeconds = 0;
+
+        window.openTimerModal = function() {
+            document.getElementById('timerModal').classList.remove('hidden');
+            document.getElementById('timerModal').style.display = 'flex';
+        };
+
+        window.closeTimerModal = function() {
+            document.getElementById('timerModal').classList.add('hidden');
+            document.getElementById('timerModal').style.display = 'none';
+        };
+
+        window.setTimer = function(minutes) {
+            timerSeconds = minutes * 60;
+            startTimerCountdown();
+            closeTimerModal();
+            showToast('success', `⏰ تم ضبط المؤقت على ${minutes} دقائق`);
+        };
+
+        window.startCustomTimer = function() {
+            const minutes = parseInt(document.getElementById('customTimerInput').value);
+            if (!minutes || minutes <= 0) {
+                showToast('error', '⚠️ أدخل عدد دقائق صحيح');
+                return;
+            }
+            setTimer(minutes);
+        };
+
+        window.stopTimer = async function() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            timerSeconds = 0;
+            document.getElementById('activityTimer').textContent = '--:--';
+            document.getElementById('activityTimer').style.color = 'var(--text-primary)';
+            
+            try {
+                await updateDoc(workshopRef, {
+                    'timer': {
+                        seconds: 0,
+                        active: false,
+                        updatedAt: new Date()
+                    }
+                });
+            } catch (error) {
+                console.error('Timer stop error:', error);
+            }
+            
+            closeTimerModal();
+            showToast('info', '⏹️ تم إيقاف المؤقت');
+        };
+
+        function startTimerCountdown() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            updateTimerDisplay();
+            syncTimerToFirebase();
+
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                
+                if (timerSeconds % 5 === 0) {
+                    syncTimerToFirebase();
+                }
+
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    document.getElementById('activityTimer').textContent = '00:00';
+                    document.getElementById('activityTimer').style.color = 'var(--error)';
+                    syncTimerToFirebase();
+                    playTimerAlert();
+                    showToast('warning', '⏰ انتهى الوقت!');
+                }
+            }, 1000);
+        }
+
+        async function syncTimerToFirebase() {
+            try {
+                await updateDoc(workshopRef, {
+                    'timer': {
+                        seconds: timerSeconds,
+                        active: timerSeconds > 0,
+                        updatedAt: new Date()
+                    }
+                });
+            } catch (error) {
+                console.error('Timer sync error:', error);
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('activityTimer').textContent = display;
+
+            if (timerSeconds <= 30) {
+                document.getElementById('activityTimer').style.color = 'var(--error)';
+            } else if (timerSeconds <= 60) {
+                document.getElementById('activityTimer').style.color = 'var(--warning)';
+            } else {
+                document.getElementById('activityTimer').style.color = 'var(--success)';
+            }
+        }
+
+        function playTimerAlert() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                gainNode.gain.value = 0.3;
+                
+                oscillator.start();
+                setTimeout(() => oscillator.stop(), 500);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
         }
 
         // ════════════════════════════════════════════════════════
@@ -1338,9 +1651,30 @@
                 showToast('success', '✅ تم إطلاق الاستبيان بنجاح!');
                 document.getElementById('launchSurveyBtn').disabled = true;
                 document.getElementById('surveyStatsContainer').classList.remove('hidden');
+                document.getElementById('closeSurveyContainer').classList.remove('hidden');
 
             } catch (error) {
                 console.error('Error launching survey:', error);
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // Close Survey
+        document.getElementById('closeSurveyBtn').onclick = async () => {
+            const confirmed = window.confirm('⏸️ هل تريد إغلاق الاستبيان؟ لن يتمكن المشاركون من الإجابة بعد ذلك.');
+            if (!confirmed) return;
+
+            try {
+                await updateDoc(workshopRef, {
+                    surveyActive: false,
+                    surveyClosed: true,
+                    surveyClosedAt: new Date()
+                });
+
+                showToast('warning', '⏸️ تم إغلاق الاستبيان');
+                document.getElementById('closeSurveyBtn').disabled = true;
+
+            } catch (error) {
                 showToast('error', '❌ حدث خطأ: ' + error.message);
             }
         };
@@ -1352,29 +1686,32 @@
             const responses = workshopData.responses.survey;
             const total = responses.length;
 
-            // تصنيف النتائج
-            let executors = 0;  // 5-8
-            let middle = 0;     // 9-12
-            let adopters = 0;   // 13-15
+            if (total === 0) return;
+
+            let executors = 0;
+            let middle = 0;
+            let adopters = 0;
+            let totalScore = 0;
 
             responses.forEach(response => {
                 const score = response.totalScore;
+                totalScore += score;
                 if (score >= 5 && score <= 8) executors++;
                 else if (score >= 9 && score <= 12) middle++;
                 else if (score >= 13 && score <= 15) adopters++;
             });
 
-            // تحديث الإحصائيات
+            const averageScore = (totalScore / total).toFixed(1);
+
             document.getElementById('totalSurveyResponses').textContent = total;
             document.getElementById('executorsCount').textContent = executors;
             document.getElementById('middleCount').textContent = middle;
             document.getElementById('adoptersCount').textContent = adopters;
 
-            // رسم الرسم البياني
             renderSurveyChart(executors, middle, adopters, total);
-
-            // عرض التفاصيل
             renderSurveyDetails(responses);
+
+            console.log(`📊 إحصائيات الاستبيان: ${total} مشارك، متوسط ${averageScore}/15`);
         }
 
         function renderSurveyChart(executors, middle, adopters, total) {
@@ -1408,7 +1745,6 @@
             const container = document.getElementById('surveyDetailsList');
             container.innerHTML = '';
 
-            // ترتيب حسب النتيجة (من الأعلى للأقل)
             const sorted = [...responses].sort((a, b) => b.totalScore - a.totalScore);
 
             sorted.forEach((response, index) => {
@@ -1440,24 +1776,174 @@
             });
         }
 
-        // Tab Switching
-        window.switchTab = function(tabName) {
-            // Update buttons
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
+        // ════════════════════════════════════════════════════════
+        // المجموعات
+        // ════════════════════════════════════════════════════════
 
-            // Update content
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
+        // متغير لتتبع المجموعة الحالية المعروضة
+        let currentDisplayGroupIndex = -1;
+
+        // عرض كل المجموعات
+        window.showAllGroupsOnDisplay = async function() {
+            try {
+                await updateDoc(workshopRef, {
+                    'displayMode': 'groups',
+                    'displayGroupId': null
+                });
+                currentDisplayGroupIndex = -1;
+                showToast('success', '📺 تم عرض كل المجموعات');
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // عرض المجموعة التالية
+        window.showNextGroup = async function() {
+            const groups = workshopData?.groups || [];
+            if (groups.length === 0) {
+                showToast('warning', '⚠️ لا توجد مجموعات');
+                return;
+            }
+
+            currentDisplayGroupIndex++;
+            if (currentDisplayGroupIndex >= groups.length) {
+                currentDisplayGroupIndex = 0;
+            }
+
+            const group = groups[currentDisplayGroupIndex];
+            await showGroupOnDisplay(group.id);
+            showToast('info', `📺 ${group.name} (${currentDisplayGroupIndex + 1}/${groups.length})`);
+        };
+
+        // عرض المجموعة السابقة
+        window.showPrevGroup = async function() {
+            const groups = workshopData?.groups || [];
+            if (groups.length === 0) {
+                showToast('warning', '⚠️ لا توجد مجموعات');
+                return;
+            }
+
+            currentDisplayGroupIndex--;
+            if (currentDisplayGroupIndex < 0) {
+                currentDisplayGroupIndex = groups.length - 1;
+            }
+
+            const group = groups[currentDisplayGroupIndex];
+            await showGroupOnDisplay(group.id);
+            showToast('info', `📺 ${group.name} (${currentDisplayGroupIndex + 1}/${groups.length})`);
+        };
+
+        // عرض نتائج مجموعة على الشاشة
+        window.showGroupOnDisplay = async function(groupId) {
+            try {
+                await updateDoc(workshopRef, {
+                    'displayMode': 'group-result',
+                    'displayGroupId': groupId
+                });
+                showToast('success', '📺 تم إرسال النتائج لشاشة العرض');
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // عرض نتائج المجموعات
+        function displayGroupResults(groups) {
+            const container = document.getElementById('groupResultsContainer');
+            
+            if (!groups || groups.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">لا توجد مجموعات بعد</div>
+                        <div class="empty-subtext">قم بتقسيم المجموعات أولاً من تبويب "المجموعات"</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const total = groups.length;
+            const submitted = groups.filter(g => g.results).length;
+            const pending = total - submitted;
+
+            document.getElementById('totalGroupsCount').textContent = total;
+            document.getElementById('submittedGroupsCount').textContent = submitted;
+            document.getElementById('pendingGroupsCount').textContent = pending;
+
+            container.innerHTML = `
+                <div style="background: var(--bg-dark); padding: 20px; border-radius: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div style="color: var(--text-secondary); font-weight: 600;">📺 التحكم في العرض:</div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" onclick="showAllGroupsOnDisplay()" style="padding: 10px 20px;">
+                            👥 عرض كل المجموعات
+                        </button>
+                        <button class="btn btn-primary" onclick="showPrevGroup()" style="padding: 10px 20px;">
+                            ◀️ السابق
+                        </button>
+                        <button class="btn btn-primary" onclick="showNextGroup()" style="padding: 10px 20px;">
+                            التالي ▶️
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            groups.forEach((group, index) => {
+                const hasResults = group.results ? true : false;
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.marginBottom = '20px';
+                card.style.borderColor = hasResults ? 'var(--success)' : 'var(--bg-dark-3)';
+                
+                card.innerHTML = `
+                    <div class="card-header" style="border-bottom-color: ${hasResults ? 'var(--success)' : 'var(--bg-dark-3)'};">
+                        <h3 class="card-title">
+                            ${hasResults ? '✅' : '⏳'} ${group.name}
+                        </h3>
+                        <div style="display: flex; gap: 10px;">
+                            ${hasResults ? `
+                                <button class="btn btn-primary" onclick="showGroupOnDisplay('${group.id}')" style="padding: 8px 16px; font-size: 14px;">
+                                    📺 عرض
+                                </button>
+                            ` : ''}
+                            <span class="badge ${hasResults ? 'badge-success' : 'badge-warning'}">
+                                ${hasResults ? 'تم الإرسال' : 'في الانتظار'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--bg-dark); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">📌 الموضوع:</div>
+                        <div style="color: var(--text-primary); font-weight: 600;">${group.topic}</div>
+                    </div>
+                    
+                    ${hasResults ? `
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid var(--success); padding: 20px; border-radius: 12px;">
+                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+                                ✍️ النتائج (أرسلها: ${group.results.submittedBy}):
+                            </div>
+                            <div style="color: var(--text-primary); font-size: 16px; line-height: 1.8; white-space: pre-wrap;">${group.results.text}</div>
+                        </div>
+                    ` : `
+                        <div style="background: rgba(245, 158, 11, 0.1); border: 2px solid var(--warning); padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="color: #fbbf24; font-weight: 600;">⏳ في انتظار نتائج المجموعة...</div>
+                        </div>
+                    `}
+                `;
+                
+                container.appendChild(card);
             });
-            document.getElementById(tabName).classList.add('active');
+        }
+
+        // تحديث نتائج المجموعات
+        window.refreshGroupResults = function() {
+            if (workshopData?.groups) {
+                displayGroupResults(workshopData.groups);
+                showToast('success', '🔄 تم تحديث النتائج');
+            }
         };
 
         // Auto Group Division
         document.getElementById('autoGroupBtn').onclick = async () => {
-            const confirmed = window.confirm('🤖 هل تريد تقسيم المشاركين تلقائياً على 7 مجموعات؟');
+            const confirmed = window.confirm('🤖 هل تريد تقسيم المشاركين تلقائياً على المجموعات؟');
             if (!confirmed) return;
 
             try {
@@ -1470,10 +1956,8 @@
                     return;
                 }
 
-                // خلط المشاركين عشوائياً
                 const shuffled = [...participants].sort(() => Math.random() - 0.5);
                 
-                // تقسيم إلى مجموعات
                 const groups = [];
                 const membersPerGroup = Math.ceil(shuffled.length / groupsCount);
 
@@ -1493,7 +1977,6 @@
                     }
                 }
 
-                // حفظ المجموعات
                 await updateDoc(workshopRef, {
                     groups: groups,
                     currentPhase: 'phase-3-groups'
@@ -1553,142 +2036,120 @@
             });
         }
 
-        // Export All Data
+        // Export All Data Button
         document.getElementById('exportAllBtn').onclick = () => {
             exportAllData();
         };
 
-        // Update UI when workshop data changes
-        const originalUpdateUI = updateUI;
-        updateUI = function() {
-            originalUpdateUI();
-            
-            // Update survey stats if available
-            if (workshopData?.responses?.survey?.length > 0) {
-                document.getElementById('surveyStatsContainer').classList.remove('hidden');
-                updateSurveyStats();
-            }
+        // ════════════════════════════════════════════════════════
+        // شاشة الختام
+        // ════════════════════════════════════════════════════════
 
-            // Display groups if available
-            if (workshopData?.groups?.length > 0) {
-                displayGroups(workshopData.groups);
+        window.showEndScreen = async function() {
+            const confirmed = confirm('🎉 هل تريد عرض شاشة ختام الورشة؟');
+            if (!confirmed) return;
+
+            try {
+                await updateDoc(workshopRef, {
+                    'displayMode': 'end',
+                    'workshopEnded': true,
+                    'endedAt': new Date()
+                });
+                showToast('success', '🎉 تم عرض شاشة الختام');
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
             }
         };
 
         // ════════════════════════════════════════════════════════
-        // Export Data Functions
+        // تصدير ملخص الورشة
         // ════════════════════════════════════════════════════════
 
-        function exportAllData() {
+        window.exportWorkshopSummary = function() {
             if (!workshopData) {
                 showToast('error', '⚠️ لا توجد بيانات للتصدير');
                 return;
             }
 
-            const exportData = {
-                sessionInfo: {
-                    sessionId: sessionId,
-                    createdAt: workshopData.createdAt,
-                    status: workshopData.status,
-                    currentPhase: workshopData.currentPhase
-                },
-                participants: workshopData.participants || [],
-                openingQuestion: {
-                    question: workshopData.openingQuestion?.text,
-                    responses: workshopData.responses?.openingQuestion || []
-                },
-                flipchart: workshopData.flipchart?.content || '',
-                survey: {
-                    responses: workshopData.responses?.survey || [],
-                    statistics: calculateSurveyStatistics()
-                },
-                groups: workshopData.groups || []
-            };
+            let surveyStats = { executors: 0, middle: 0, adopters: 0, total: 0 };
+            if (workshopData.responses?.survey?.length > 0) {
+                surveyStats.total = workshopData.responses.survey.length;
+                workshopData.responses.survey.forEach(r => {
+                    if (r.totalScore >= 5 && r.totalScore <= 8) surveyStats.executors++;
+                    else if (r.totalScore >= 9 && r.totalScore <= 12) surveyStats.middle++;
+                    else if (r.totalScore >= 13 && r.totalScore <= 15) surveyStats.adopters++;
+                });
+            }
 
-            // Convert to JSON
-            const jsonString = JSON.stringify(exportData, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
+            let summary = `
+╔══════════════════════════════════════════════════════════════╗
+║           ملخص ورشة "من التنفيذ للتبني"                      ║
+║              مشروع عيش وملح - صناع الحياة                    ║
+╚══════════════════════════════════════════════════════════════╝
+
+📅 معرّف الجلسة: ${sessionId}
+👥 عدد المشاركين: ${workshopData.participants?.length || 0}
+
+══════════════════════════════════════════════════════════════
+📌 المرحلة الأولى: السؤال الافتتاحي
+══════════════════════════════════════════════════════════════
+
+السؤال: صناع الحياة موجودة ليه؟
+عدد الإجابات: ${workshopData.responses?.openingQuestion?.length || 0}
+
+الإجابات:
+${(workshopData.responses?.openingQuestion || []).map((r, i) => 
+    `${i + 1}. ${r.participantName}: ${r.answer}`
+).join('\n') || 'لا توجد إجابات'}
+
+══════════════════════════════════════════════════════════════
+📝 الفليب تشارت
+══════════════════════════════════════════════════════════════
+
+${workshopData.flipchart?.content || 'لا يوجد محتوى'}
+
+══════════════════════════════════════════════════════════════
+📊 المرحلة الثالثة: نتائج الاستبيان
+══════════════════════════════════════════════════════════════
+
+إجمالي المشاركين في الاستبيان: ${surveyStats.total}
+- منفذون (5-8): ${surveyStats.executors} (${surveyStats.total > 0 ? ((surveyStats.executors/surveyStats.total)*100).toFixed(1) : 0}%)
+- في المنتصف (9-12): ${surveyStats.middle} (${surveyStats.total > 0 ? ((surveyStats.middle/surveyStats.total)*100).toFixed(1) : 0}%)
+- متبنون (13-15): ${surveyStats.adopters} (${surveyStats.total > 0 ? ((surveyStats.adopters/surveyStats.total)*100).toFixed(1) : 0}%)
+
+تفاصيل المشاركين:
+${(workshopData.responses?.survey || []).map((r, i) => 
+    `${i + 1}. ${r.participantName}: ${r.totalScore}/15 (${r.totalScore >= 13 ? 'متبني' : r.totalScore >= 9 ? 'في المنتصف' : 'منفذ'})`
+).join('\n') || 'لا توجد نتائج'}
+
+══════════════════════════════════════════════════════════════
+👥 المجموعات ونتائجها
+══════════════════════════════════════════════════════════════
+
+${(workshopData.groups || []).map((g, i) => `
+--- ${g.name} ---
+الموضوع: ${g.topic}
+الأعضاء: ${g.members.map(m => m.name).join('، ')}
+النتائج: ${g.results ? g.results.text : 'لم يتم الإرسال بعد'}
+${g.results ? `(أرسلها: ${g.results.submittedBy})` : ''}
+`).join('\n') || 'لا توجد مجموعات'}
+
+══════════════════════════════════════════════════════════════
+تم التصدير بتاريخ: ${new Date().toLocaleString('ar-EG')}
+══════════════════════════════════════════════════════════════
+            `;
+
+            const blob = new Blob([summary], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
-            
-            // Create download link
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `workshop-${sessionId}-${Date.now()}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `workshop-summary-${sessionId}.txt`;
+            link.click();
             URL.revokeObjectURL(url);
 
-            showToast('success', '✅ تم تصدير البيانات بنجاح!');
-        }
-
-        function calculateSurveyStatistics() {
-            const responses = workshopData.responses?.survey || [];
-            if (responses.length === 0) return null;
-
-            let executors = 0;
-            let middle = 0;
-            let adopters = 0;
-
-            responses.forEach(response => {
-                const score = response.totalScore;
-                if (score >= 5 && score <= 8) executors++;
-                else if (score >= 9 && score <= 12) middle++;
-                else if (score >= 13 && score <= 15) adopters++;
-            });
-
-            return {
-                total: responses.length,
-                executors: executors,
-                middle: middle,
-                adopters: adopters,
-                percentages: {
-                    executors: ((executors / responses.length) * 100).toFixed(1),
-                    middle: ((middle / responses.length) * 100).toFixed(1),
-                    adopters: ((adopters / responses.length) * 100).toFixed(1)
-                }
-            };
-        }
-
-// ═══ حذف إجابة ═══
-        window.deleteResponse = async function(index) {
-            const confirmed = confirm('🗑️ هل أنت متأكد من حذف هذه الإجابة؟');
-            if (!confirmed) return;
-
-            try {
-                const responses = [...(workshopData.responses?.openingQuestion || [])];
-                responses.splice(index, 1);
-                
-                await updateDoc(workshopRef, {
-                    'responses.openingQuestion': responses
-                });
-                
-                showToast('success', '✅ تم حذف الإجابة');
-            } catch (error) {
-                showToast('error', '❌ حدث خطأ: ' + error.message);
-            }
+            showToast('success', '📄 تم تصدير الملخص بنجاح!');
         };
 
-        // ═══ عرض إجابة على الشاشة ═══
-        window.showOnDisplay = async function(index) {
-            try {
-                const response = workshopData.responses?.openingQuestion?.[index];
-                if (!response) return;
-
-                await updateDoc(workshopRef, {
-                    'highlightedResponse': {
-                        index: index,
-                        participantName: response.participantName,
-                        answer: response.answer,
-                        timestamp: new Date()
-                    }
-                });
-                
-                showToast('success', '📺 تم إرسال الإجابة لشاشة العرض');
-            } catch (error) {
-                showToast('error', '❌ حدث خطأ: ' + error.message);
-            }
-        };
         // Initialize
         console.log('Admin Dashboard loaded for session:', sessionId);
     </script>
