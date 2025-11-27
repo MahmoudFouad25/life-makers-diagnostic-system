@@ -3,645 +3,1007 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📺 شاشة العرض - ورشة "من التنفيذ للتبني"</title>
-    <link rel="stylesheet" href="workshop-styles.css">
+    <title>شاشة العرض - ورشة عيش وملح</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* تنسيقات شاشة العرض - مُحسّنة للبروجيكتور */
-        body {
+        :root {
+            --primary: #667eea;
+            --primary-light: #7c8ff8;
+            --secondary: #f093fb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg-dark: #0f0f1a;
+            --bg-dark-2: #1a1a2e;
+            --bg-dark-3: #252542;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-muted: #64748b;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
             overflow: hidden;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
-        .display-container {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* شريط الحالة العلوي */
+        /* ═══ شريط الحالة العلوي ═══ */
         .status-bar {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 40px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--bg-dark-2);
+            border-bottom: 2px solid var(--bg-dark-3);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--bg-dark-3);
-            position: relative;
-            z-index: 100;
+            padding: 0 40px;
+            z-index: 1000;
         }
 
-        .status-left {
+        .status-bar .logo {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 15px;
         }
 
-        .workshop-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .status-bar .logo-icon {
+            font-size: 28px;
         }
 
-        .logo-circle {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
-        }
-
-        .workshop-title {
-            font-size: 18px;
+        .status-bar .logo-text {
+            font-size: 20px;
             font-weight: 700;
-            color: var(--text-primary);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .phase-indicator {
+        .status-bar .stats {
             display: flex;
+            gap: 30px;
             align-items: center;
-            gap: 10px;
-            padding: 8px 20px;
-            background: rgba(102, 126, 234, 0.2);
-            border: 2px solid var(--primary-color);
-            border-radius: 20px;
         }
 
-        .phase-dot {
-            width: 10px;
-            height: 10px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s ease infinite;
-        }
-
-        .phase-text {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .status-right {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .stat-mini {
+        .stat-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 8px 16px;
+            background: var(--bg-dark-3);
+            border-radius: 10px;
+        }
+
+        .stat-item .stat-icon {
+            font-size: 18px;
+        }
+
+        .stat-item .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .stat-item .stat-label {
+            font-size: 14px;
             color: var(--text-secondary);
         }
 
-        .stat-mini-value {
-            color: var(--text-primary);
-            font-size: 20px;
+        /* ═══ المؤقت ═══ */
+        .timer-container {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--bg-dark-3);
+            border-radius: 12px;
+            border: 2px solid var(--primary);
         }
 
-        /* منطقة المحتوى الرئيسية */
-        .main-display {
-            flex: 1;
+        .timer-container.active {
+            display: flex;
+        }
+
+        .timer-icon {
+            font-size: 24px;
+        }
+
+        .timer-value {
+            font-size: 28px;
+            font-weight: 900;
+            font-family: monospace;
+            color: var(--success);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .timer-value.warning {
+            color: var(--warning);
+        }
+
+        .timer-value.danger {
+            color: var(--error);
+            animation: pulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ═══ المحتوى الرئيسي ═══ */
+        .main-content {
+            padding-top: 60px;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            height: calc(100vh - 60px);
+            padding: 40px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .screen.active {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 60px;
-            position: relative;
+            justify-content: center;
         }
 
-        /* شاشة الترحيب */
-        .welcome-screen {
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ═══ شاشة الانتظار ═══ */
+        #waitingScreen {
             text-align: center;
-            animation: fadeIn 1s ease;
         }
 
-        .welcome-icon {
+        .waiting-icon {
             font-size: 120px;
             margin-bottom: 30px;
-            animation: bounce 2s ease infinite;
+            animation: float 3s ease-in-out infinite;
         }
 
-        @keyframes bounce {
+        @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-20px); }
         }
 
-        .welcome-title {
-            font-size: 64px;
+        .waiting-title {
+            font-size: 48px;
             font-weight: 800;
-            background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 20px;
-            line-height: 1.2;
         }
 
-        .welcome-subtitle {
-            font-size: 32px;
-            color: var(--text-secondary);
-            font-weight: 600;
-            margin-bottom: 40px;
-        }
-
-        .qr-display {
-            background: white;
-            padding: 40px;
-            border-radius: 25px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            margin-top: 40px;
-        }
-
-        .qr-instruction {
-            color: var(--bg-dark);
+        .waiting-subtitle {
             font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 20px;
+            color: var(--text-secondary);
         }
 
-        /* شاشة السؤال */
-        .question-screen {
-            width: 100%;
-            max-width: 1400px;
-            animation: slideUp 0.6s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .question-card {
-            background: linear-gradient(135deg, var(--bg-dark-2) 0%, var(--bg-dark-3) 100%);
-            border: 3px solid var(--primary-color);
-            border-radius: 30px;
-            padding: 60px;
-            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .question-card::before {
-            content: '❓';
-            position: absolute;
-            top: -50px;
-            left: -50px;
-            font-size: 300px;
-            opacity: 0.03;
+        /* ═══ شاشة السؤال ═══ */
+        #questionScreen {
+            text-align: center;
+            background: radial-gradient(circle at center, var(--bg-dark-2) 0%, var(--bg-dark) 100%);
         }
 
         .question-label {
-            font-size: 20px;
-            color: var(--text-secondary);
-            font-weight: 600;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .question-text-large {
-            font-size: 56px;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.4;
-            margin-bottom: 40px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .question-status {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 22px;
-            font-weight: 600;
-            padding: 20px 30px;
-            background: rgba(16, 185, 129, 0.2);
-            border: 2px solid var(--success);
-            border-radius: 15px;
-            margin-top: 30px;
-        }
-
-        .question-status.closed {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: var(--warning);
-            color: #fbbf24;
-        }
-
-        .status-pulse {
-            width: 16px;
-            height: 16px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s ease infinite;
-        }
-
-        /* قائمة الإجابات المباشرة */
-        .responses-display {
-            margin-top: 50px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 20px;
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 20px;
-        }
-
-        .response-item-display {
-            background: linear-gradient(135deg, var(--bg-dark-2) 0%, var(--bg-dark-3) 100%);
-            border: 2px solid var(--bg-dark-3);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 15px;
-            animation: slideInRight 0.4s ease;
-            transition: all 0.3s ease;
-        }
-
-        .response-item-display:hover {
-            border-color: var(--primary-color);
-            transform: scale(1.02);
-        }
-
-        .response-item-display.highlighted {
-            border-color: var(--warning);
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.2));
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
-        }
-
-        .response-header-display {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .response-participant-display {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .response-text-display {
             font-size: 24px;
-            color: var(--text-primary);
-            line-height: 1.6;
-            font-weight: 500;
-        }
-
-        /* الفليب تشارت */
-        .flipchart-display {
-            width: 100%;
-            max-width: 1400px;
-            background: white;
-            border-radius: 30px;
-            padding: 60px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            min-height: 600px;
-            position: relative;
-        }
-
-        .flipchart-title-display {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--bg-dark);
+            color: var(--text-secondary);
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid var(--bg-dark-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
 
-        .flipchart-content-display {
+        .question-text {
+            font-size: 72px;
+            font-weight: 900;
+            line-height: 1.4;
+            max-width: 1200px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 60px rgba(102, 126, 234, 0.3);
+        }
+
+        .question-instruction {
+            margin-top: 50px;
             font-size: 28px;
-            color: var(--bg-dark);
-            line-height: 2;
-            white-space: pre-wrap;
-            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-secondary);
+            padding: 20px 40px;
+            background: var(--bg-dark-3);
+            border-radius: 20px;
+            border: 2px solid var(--primary);
         }
 
-        /* الاستبيان - الإحصائيات */
-        .survey-stats-display {
-            width: 100%;
-            max-width: 1400px;
+        /* ═══ شاشة الإجابات ═══ */
+        #responsesScreen {
+            padding: 80px 60px;
         }
 
-        .stats-grid-display {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
+        .responses-header {
+            text-align: center;
             margin-bottom: 40px;
         }
 
-        .stat-card-large {
-            background: linear-gradient(135deg, var(--bg-dark-2) 0%, var(--bg-dark-3) 100%);
-            border: 2px solid var(--bg-dark-3);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .stat-icon-large {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
-
-        .stat-value-huge {
-            font-size: 72px;
+        .responses-title {
+            font-size: 36px;
             font-weight: 800;
             color: var(--text-primary);
             margin-bottom: 10px;
         }
 
-        .stat-label-large {
+        .responses-count {
             font-size: 20px;
             color: var(--text-secondary);
-            font-weight: 600;
         }
 
-        /* رسم بياني بسيط */
-        .chart-display {
+        .responses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1600px;
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .response-card {
             background: var(--bg-dark-2);
+            border: 2px solid var(--bg-dark-3);
             border-radius: 20px;
-            padding: 40px;
-            margin-top: 30px;
+            padding: 25px;
+            transition: all 0.3s ease;
         }
 
-        .chart-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 30px;
+        .response-card.highlighted {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            transform: scale(1.02);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
         }
 
-        .bar-chart {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .bar-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .bar-label {
-            min-width: 200px;
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .bar-container {
-            flex: 1;
-            height: 50px;
-            background: var(--bg-dark-3);
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border-radius: 10px;
-            transition: width 1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 15px;
-        }
-
-        .bar-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: white;
-        }
-
-        /* حالة الاتصال */
-        .connection-status-display {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 25px;
-            border-radius: 15px;
-            border: 2px solid var(--success);
+        .response-card .participant {
             display: flex;
             align-items: center;
             gap: 12px;
-            z-index: 100;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--bg-dark-3);
         }
 
-        .connection-dot {
-            width: 12px;
-            height: 12px;
-            background: var(--success);
+        .response-card .participant-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
             border-radius: 50%;
-            animation: pulse 2s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
 
-        .connection-text {
-            font-size: 14px;
-            font-weight: 600;
+        .response-card .participant-name {
+            font-size: 18px;
+            font-weight: 700;
             color: var(--text-primary);
         }
 
-        /* Fullscreen Toggle */
-        .fullscreen-btn {
-            position: fixed;
-            top: 90px;
-            left: 30px;
-            width: 50px;
-            height: 50px;
-            background: rgba(102, 126, 234, 0.2);
-            border: 2px solid var(--primary-color);
-            border-radius: 12px;
+        .response-card .answer {
+            font-size: 20px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        /* ═══ شاشة الإجابة المميزة ═══ */
+        #highlightedResponseScreen {
+            text-align: center;
+        }
+
+        .highlighted-card {
+            background: var(--bg-dark-2);
+            border: 3px solid var(--primary);
+            border-radius: 30px;
+            padding: 60px;
+            max-width: 1000px;
+            box-shadow: 0 20px 80px rgba(102, 126, 234, 0.3);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .highlighted-participant {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .highlighted-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .highlighted-name {
+            font-size: 36px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .highlighted-answer {
+            font-size: 42px;
+            line-height: 1.6;
             color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* ═══ شاشة الفليب تشارت ═══ */
+        #flipchartScreen {
+            padding: 80px 60px;
+        }
+
+        .flipchart-container {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--bg-dark-2);
+            border: 3px solid var(--primary);
+            border-radius: 30px;
+            padding: 50px;
+            min-height: 500px;
+        }
+
+        .flipchart-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--bg-dark-3);
+        }
+
+        .flipchart-icon {
+            font-size: 48px;
+        }
+
+        .flipchart-title {
+            font-size: 36px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .flipchart-content {
+            font-size: 32px;
+            line-height: 2;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+        }
+
+        /* ═══ شاشة الاستبيان ═══ */
+        #surveyScreen {
+            padding: 80px 60px;
+        }
+
+        .survey-container {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        .survey-header {
+            margin-bottom: 50px;
+        }
+
+        .survey-title {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .survey-subtitle {
             font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 100;
+            color: var(--text-secondary);
         }
 
-        .fullscreen-btn:hover {
-            background: var(--primary-color);
-            transform: scale(1.1);
+        .survey-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 50px;
         }
 
-        /* Responsive للشاشات الصغيرة (للاختبار) */
-        @media (max-width: 1024px) {
-            .welcome-title { font-size: 48px; }
-            .welcome-subtitle { font-size: 24px; }
-            .question-text-large { font-size: 36px; }
-            .response-text-display { font-size: 18px; }
-            .stats-grid-display { grid-template-columns: 1fr; }
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
-        .hidden {
-            display: none !important;
+        .chart-label {
+            width: 200px;
+            text-align: right;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .chart-bar-container {
+            flex: 1;
+            height: 60px;
+            background: var(--bg-dark-3);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-bar-fill {
+            height: 100%;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 20px;
+            transition: width 1s ease-out;
+        }
+
+        .chart-bar-fill.executors {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .chart-bar-fill.middle {
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .chart-bar-fill.adopters {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        }
+
+        .chart-bar-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .survey-total {
+            font-size: 28px;
+            color: var(--text-secondary);
+            padding: 20px 40px;
+            background: var(--bg-dark-2);
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .survey-total strong {
+            color: var(--primary-light);
+            font-size: 36px;
+        }
+
+        /* ═══ شاشة المجموعات ═══ */
+        #groupsScreen {
+            padding: 80px 60px;
+        }
+
+        .groups-container {
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .groups-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .groups-title {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .group-card {
+            background: var(--bg-dark-2);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .group-card .group-number {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 900;
+            margin: 0 auto 20px;
+        }
+
+        .group-card .group-name {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .group-card .group-topic {
+            font-size: 16px;
+            color: var(--text-secondary);
+            padding: 15px;
+            background: var(--bg-dark-3);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .group-card .group-members {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* ═══ شاشة نتيجة مجموعة واحدة ═══ */
+        #singleGroupResultScreen {
+            padding: 80px 60px;
+            text-align: center;
+        }
+
+        .single-group-container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--bg-dark-2);
+            border: 3px solid var(--success);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 20px 80px rgba(16, 185, 129, 0.2);
+        }
+
+        .single-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .single-group-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .single-group-name {
+            font-size: 42px;
+            font-weight: 900;
+            background: var(--gradient-success);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .single-group-topic {
+            font-size: 24px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            padding: 20px 30px;
+            background: var(--bg-dark-3);
+            border-radius: 15px;
+        }
+
+        .single-group-result {
+            font-size: 32px;
+            line-height: 1.8;
+            color: var(--text-primary);
+            text-align: right;
+            white-space: pre-wrap;
+        }
+
+        .single-group-submitter {
+            margin-top: 30px;
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        /* ═══ شاشة الختام ═══ */
+        #endScreen {
+            text-align: center;
+            background: radial-gradient(circle at center, var(--bg-dark-2) 0%, var(--bg-dark) 100%);
+        }
+
+        .end-icon {
+            font-size: 120px;
+            margin-bottom: 30px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        .end-title {
+            font-size: 72px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .end-message {
+            font-size: 36px;
+            color: var(--text-secondary);
+            margin-bottom: 50px;
+        }
+
+        .end-quote {
+            font-size: 48px;
+            font-weight: 800;
+            padding: 40px 60px;
+            background: var(--bg-dark-2);
+            border: 3px solid var(--primary);
+            border-radius: 30px;
+            max-width: 900px;
+        }
+
+        .end-quote .highlight {
+            color: var(--success);
+        }
+
+        .end-quote .vs {
+            color: var(--text-muted);
+            font-size: 36px;
+        }
+
+        .end-quote .dim {
+            color: var(--error);
+        }
+
+        .end-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .end-stat {
+            text-align: center;
+            padding: 30px 50px;
+            background: var(--bg-dark-2);
+            border-radius: 20px;
+        }
+
+        .end-stat .number {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--primary-light);
+        }
+
+        .end-stat .label {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+
+        /* ═══ تنبيه انتهاء المؤقت ═══ */
+        .timer-alert-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(239, 68, 68, 0.95);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            animation: flashAlert 0.5s ease-in-out infinite;
+        }
+
+        .timer-alert-overlay.active {
+            display: flex;
+        }
+
+        @keyframes flashAlert {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .timer-alert-icon {
+            font-size: 150px;
+            margin-bottom: 30px;
+        }
+
+        .timer-alert-text {
+            font-size: 72px;
+            font-weight: 900;
+            color: white;
+        }
+
+        /* ═══ Scrollbar ═══ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark-2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-dark-3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
         }
     </style>
 </head>
 <body>
-    <div class="display-container">
-        <!-- شريط الحالة -->
-        <div class="status-bar">
-            <div class="status-left">
-                <div class="workshop-logo">
-                    <div class="logo-circle">🎯</div>
-                    <div class="workshop-title">من التنفيذ للتبني - عيش وملح</div>
-                </div>
-                <div class="phase-indicator">
-                    <div class="phase-dot"></div>
-                    <div class="phase-text" id="currentPhaseDisplay">في انتظار البدء</div>
-                </div>
+    <!-- شريط الحالة -->
+    <div class="status-bar">
+        <div class="logo">
+            <span class="logo-icon">🍞</span>
+            <span class="logo-text">ورشة عيش وملح - من التنفيذ للتبني</span>
+        </div>
+        
+        <div class="stats">
+            <div class="timer-container" id="timerContainer">
+                <span class="timer-icon">⏰</span>
+                <span class="timer-value" id="timerValue">--:--</span>
             </div>
-            <div class="status-right">
-                <div class="stat-mini">
-                    👥 <span class="stat-mini-value" id="participantsCountDisplay">0</span>
-                </div>
-                <div class="stat-mini">
-                    💬 <span class="stat-mini-value" id="responsesCountDisplay">0</span>
-                </div>
-                <div class="stat-mini">
-                    ⏱️ <span class="stat-mini-value" id="timerDisplay">00:00</span>
-                </div>
+            
+            <div class="stat-item">
+                <span class="stat-icon">👥</span>
+                <span class="stat-value" id="participantsCount">0</span>
+                <span class="stat-label">مشارك</span>
+            </div>
+            
+            <div class="stat-item">
+                <span class="stat-icon">💬</span>
+                <span class="stat-value" id="responsesCount">0</span>
+                <span class="stat-label">إجابة</span>
             </div>
         </div>
-
-        <!-- المحتوى الرئيسي -->
-        <div class="main-display">
-            <!-- شاشة الترحيب -->
-            <div id="welcomeScreen" class="welcome-screen">
-                <div class="welcome-icon">🎯</div>
-                <h1 class="welcome-title">
-                    من التنفيذ للتبني
-                </h1>
-                <p class="welcome-subtitle">
-                    مشروع عيش وملح - صناع الحياة
-                </p>
-                <div class="qr-display">
-                    <p class="qr-instruction">📱 امسح الرمز للانضمام</p>
-                    <div id="qrCodeDisplay"></div>
-                </div>
-            </div>
-
-            <!-- شاشة السؤال -->
-            <div id="questionScreen" class="question-screen hidden">
-                <div class="question-card">
-                    <div class="question-label">السؤال الافتتاحي</div>
-                    <div class="question-text-large" id="questionTextDisplay">
-                        صناع الحياة موجودة ليه؟
-                    </div>
-                    <div class="question-status" id="questionStatusDisplay">
-                        <div class="status-pulse"></div>
-                        <span>يمكنك الآن إرسال إجابتك من هاتفك</span>
-                    </div>
-                </div>
-
-                <div class="responses-display" id="responsesDisplayContainer">
-                    <!-- الإجابات ستظهر هنا -->
-                </div>
-            </div>
-
-            <!-- شاشة الفليب تشارت -->
-            <div id="flipchartScreen" class="flipchart-display hidden">
-                <h2 class="flipchart-title-display">📝 الملاحظات والأسباب</h2>
-                <div class="flipchart-content-display" id="flipchartContentDisplay">
-                    جاري التحميل...
-                </div>
-            </div>
-
-            <!-- شاشة إحصائيات الاستبيان -->
-            <div id="surveyStatsScreen" class="survey-stats-display hidden">
-                <div class="stats-grid-display">
-                    <div class="stat-card-large">
-                        <div class="stat-icon-large">📊</div>
-                        <div class="stat-value-huge" id="totalResponsesDisplay">0</div>
-                        <div class="stat-label-large">إجمالي الإجابات</div>
-                    </div>
-                    <div class="stat-card-large">
-                        <div class="stat-icon-large">⚡</div>
-                        <div class="stat-value-huge" id="executorsCountDisplay">0</div>
-                        <div class="stat-label-large">منفذون</div>
-                    </div>
-                    <div class="stat-card-large">
-                        <div class="stat-icon-large">🎯</div>
-                        <div class="stat-value-huge" id="adoptersCountDisplay">0</div>
-                        <div class="stat-label-large">متبنون</div>
-                    </div>
-                </div>
-
-                <div class="chart-display">
-                    <h3 class="chart-title">توزيع النتائج</h3>
-                    <div class="bar-chart" id="chartContainer">
-                        <!-- الرسم البياني سيتم توليده -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- شاشة المجموعات -->
-            <div id="groupsScreen" class="survey-stats-display hidden">
-                <h2 style="color: var(--text-primary); font-size: 36px; font-weight: 700; margin-bottom: 30px; text-align: center;">
-                    👥 المجموعات
-                </h2>
-                <div id="groupsDisplayContainer" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;">
-                    <!-- المجموعات ستظهر هنا -->
-                </div>
-            </div>
-        </div>
-
-        <!-- حالة الاتصال -->
-        <div class="connection-status-display">
-            <div class="connection-dot"></div>
-            <span class="connection-text">متصل</span>
-        </div>
-
-        <!-- زر ملء الشاشة -->
-        <button class="fullscreen-btn" onclick="toggleFullscreen()" title="ملء الشاشة">
-            ⛶
-        </button>
     </div>
 
-    <!-- QR Code Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- المحتوى الرئيسي -->
+    <div class="main-content">
+        <!-- شاشة الانتظار -->
+        <div class="screen active" id="waitingScreen">
+            <div class="waiting-icon">🎯</div>
+            <h1 class="waiting-title">ورشة عيش وملح</h1>
+            <p class="waiting-subtitle">في انتظار بدء الورشة...</p>
+        </div>
+
+        <!-- شاشة السؤال -->
+        <div class="screen" id="questionScreen">
+            <div class="question-label">
+                <span>🎤</span>
+                <span>السؤال الافتتاحي</span>
+            </div>
+            <h1 class="question-text" id="questionText">صناع الحياة موجودة ليه؟</h1>
+            <div class="question-instruction" id="questionInstruction">
+                💭 فكّر... وشاركنا رأيك
+            </div>
+        </div>
+
+        <!-- شاشة الإجابات -->
+        <div class="screen" id="responsesScreen">
+            <div class="responses-header">
+                <h2 class="responses-title">💬 إجابات المشاركين</h2>
+                <p class="responses-count">عدد الإجابات: <span id="displayResponsesCount">0</span></p>
+            </div>
+            <div class="responses-grid" id="responsesGrid"></div>
+        </div>
+
+        <!-- شاشة الإجابة المميزة -->
+        <div class="screen" id="highlightedResponseScreen">
+            <div class="highlighted-card">
+                <div class="highlighted-participant">
+                    <div class="highlighted-avatar">👤</div>
+                    <div class="highlighted-name" id="highlightedName">اسم المشارك</div>
+                </div>
+                <div class="highlighted-answer" id="highlightedAnswer">الإجابة هنا...</div>
+            </div>
+        </div>
+
+        <!-- شاشة الفليب تشارت -->
+        <div class="screen" id="flipchartScreen">
+            <div class="flipchart-container">
+                <div class="flipchart-header">
+                    <span class="flipchart-icon">📋</span>
+                    <h2 class="flipchart-title">ملخص الحوار</h2>
+                </div>
+                <div class="flipchart-content" id="flipchartContent">
+                    في انتظار المحتوى...
+                </div>
+            </div>
+        </div>
+
+        <!-- شاشة نتائج الاستبيان -->
+        <div class="screen" id="surveyScreen">
+            <div class="survey-container">
+                <div class="survey-header">
+                    <h2 class="survey-title">📊 نتائج استبيان "مين أنت فعلاً؟"</h2>
+                    <p class="survey-subtitle">توزيع المشاركين حسب مستوى التبني</p>
+                </div>
+                
+                <div class="survey-chart" id="surveyChart">
+                    <div class="chart-bar">
+                        <div class="chart-label">منفذون</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar-fill executors" id="executorsBar" style="width: 0%;">
+                                <span class="chart-bar-value" id="executorsValue">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">في المنتصف</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar-fill middle" id="middleBar" style="width: 0%;">
+                                <span class="chart-bar-value" id="middleValue">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="chart-label">متبنون</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar-fill adopters" id="adoptersBar" style="width: 0%;">
+                                <span class="chart-bar-value" id="adoptersValue">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="survey-total">
+                    إجمالي المشاركين: <strong id="surveyTotalCount">0</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- شاشة المجموعات -->
+        <div class="screen" id="groupsScreen">
+            <div class="groups-container">
+                <div class="groups-header">
+                    <h2 class="groups-title">👥 المجموعات</h2>
+                </div>
+                <div class="groups-grid" id="groupsGrid"></div>
+            </div>
+        </div>
+
+        <!-- شاشة نتيجة مجموعة واحدة -->
+        <div class="screen" id="singleGroupResultScreen">
+            <div class="single-group-container">
+                <div class="single-group-header">
+                    <div class="single-group-icon">✅</div>
+                    <h2 class="single-group-name" id="singleGroupName">المجموعة</h2>
+                </div>
+                <div class="single-group-topic" id="singleGroupTopic">الموضوع</div>
+                <div class="single-group-result" id="singleGroupResult">النتائج...</div>
+                <div class="single-group-submitter" id="singleGroupSubmitter"></div>
+            </div>
+        </div>
+
+        <!-- شاشة الختام -->
+        <div class="screen" id="endScreen">
+            <div class="end-icon">🎉</div>
+            <h1 class="end-title">شكراً لمشاركتكم!</h1>
+            <p class="end-message">معاً نصنع الفارق... مش بس الأثر</p>
+            
+            <div class="end-quote">
+                <span class="highlight">المتبني</span>
+                <span class="vs">≠</span>
+                <span class="dim">المنفذ</span>
+            </div>
+            
+            <div class="end-stats">
+                <div class="end-stat">
+                    <div class="number" id="endParticipants">0</div>
+                    <div class="label">مشارك</div>
+                </div>
+                <div class="end-stat">
+                    <div class="number" id="endResponses">0</div>
+                    <div class="label">إجابة</div>
+                </div>
+                <div class="end-stat">
+                    <div class="number" id="endGroups">0</div>
+                    <div class="label">مجموعة</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- تنبيه انتهاء المؤقت -->
+    <div class="timer-alert-overlay" id="timerAlertOverlay">
+        <div class="timer-alert-icon">⏰</div>
+        <div class="timer-alert-text">انتهى الوقت!</div>
+    </div>
 
     <!-- Firebase -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
+    <script>
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
             authDomain: "life-makers-diagnostic.firebaseapp.com",
             projectId: "life-makers-diagnostic",
-            storageBucket: "life-makers-diagnostic.firebasestorage.app",
-            messagingSenderId: "819336926740",
-            appId: "1:819336926740:web:d338b3299e6d18e3b67901",
-            measurementId: "G-4Z1FWWKG1C"
+            storageBucket: "life-makers-diagnostic.appspot.com",
+            messagingSenderId: "137599837774",
+            appId: "1:137599837774:web:e5f2f6a5c547c265fc0fba"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        // Get Session ID
+        // Get session ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session');
 
@@ -649,168 +1011,223 @@
             alert('⚠️ لم يتم تحديد معرّف الجلسة');
         }
 
-        // Generate QR Code
-        const baseUrl = window.location.origin + window.location.pathname.replace('workshop-display.html', '');
-        const participantUrl = `${baseUrl}workshop-participate.html?session=${sessionId}`;
+        // Workshop data
+        let workshopData = null;
+        let previousTimerSeconds = -1;
 
-        new QRCode(document.getElementById('qrCodeDisplay'), {
-            text: participantUrl,
-            width: 300,
-            height: 300,
-            colorDark: '#0f172a',
-            colorLight: '#ffffff',
-            correctLevel: QRCode.CorrectLevel.H
-        });
-
-        // Timer
-        let startTime = Date.now();
-        setInterval(() => {
-            const elapsed = Date.now() - startTime;
-            const minutes = Math.floor(elapsed / 60000);
-            const seconds = Math.floor((elapsed % 60000) / 1000);
-            document.getElementById('timerDisplay').textContent = 
-                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }, 1000);
-
-        // Listen to Workshop Data
-        const workshopRef = doc(db, 'workshops', sessionId);
-        onSnapshot(workshopRef, (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                updateDisplay(data);
+        // Listen to workshop updates
+        db.collection('eish-wa-malh-workshops').doc(sessionId).onSnapshot((doc) => {
+            if (doc.exists) {
+                workshopData = doc.data();
+                updateDisplay();
             }
         });
 
-        function updateDisplay(data) {
+        // Update display based on workshop state
+        function updateDisplay() {
+            if (!workshopData) return;
+
             // Update stats
-            document.getElementById('participantsCountDisplay').textContent = 
-                data.participants ? data.participants.length : 0;
+            const participants = workshopData.participants?.length || 0;
+            const responses = workshopData.responses?.openingQuestion?.length || 0;
             
-            const responsesCount = data.responses?.openingQuestion?.length || 0;
-            document.getElementById('responsesCountDisplay').textContent = responsesCount;
+            document.getElementById('participantsCount').textContent = participants;
+            document.getElementById('responsesCount').textContent = responses;
 
-            // Update phase
-            if (data.currentPhase) {
-                const phaseNames = {
-                    'setup': 'في انتظار البدء',
-                    'phase-1-opening': 'الصدمة والمواجهة',
-                    'phase-1-question-active': 'السؤال الافتتاحي نشط',
-                    'phase-1-flipchart': 'الفليب تشارت',
-                    'phase-2': 'الفلسفة',
-                    'phase-3-survey': 'الاستبيان',
-                    'phase-3-groups': 'المجموعات'
-                };
-                document.getElementById('currentPhaseDisplay').textContent = 
-                    phaseNames[data.currentPhase] || data.currentPhase;
+            // Update timer
+            updateTimerFromFirebase();
+
+            // Check display mode
+            const displayMode = workshopData.displayMode || 'waiting';
+            
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show appropriate screen
+            switch(displayMode) {
+                case 'question':
+                    showQuestionScreen();
+                    break;
+                case 'responses':
+                    showResponsesScreen();
+                    break;
+                case 'highlighted':
+                    showHighlightedResponse();
+                    break;
+                case 'flipchart':
+                    showFlipchartScreen();
+                    break;
+                case 'survey':
+                    showSurveyScreen();
+                    break;
+                case 'groups':
+                    showGroupsScreen();
+                    break;
+                case 'group-result':
+                    showSingleGroupResult();
+                    break;
+                case 'end':
+                    showEndScreen();
+                    break;
+                default:
+                    document.getElementById('waitingScreen').classList.add('active');
             }
 
-            // Show appropriate screen based on phase
-            if (data.currentPhase === 'phase-3-groups' && data.groups?.length > 0) {
-                showGroupsScreen(data);
-            } else if (data.openingQuestion?.active) {
-                showQuestionScreen(data);
-            } else if (data.flipchart?.content) {
-                showFlipchartScreen(data.flipchart.content);
-            } else if (data.surveyActive && data.responses?.survey?.length > 0) {
-                showSurveyStats(data);
-            } else {
-                showWelcomeScreen();
-            }
-        }
-
-        function showWelcomeScreen() {
-            document.getElementById('welcomeScreen').classList.remove('hidden');
-            document.getElementById('questionScreen').classList.add('hidden');
-            document.getElementById('flipchartScreen').classList.add('hidden');
-            document.getElementById('surveyStatsScreen').classList.add('hidden');
-            document.getElementById('groupsScreen').classList.add('hidden');
-        }
-
-        function showQuestionScreen(data) {
-            document.getElementById('welcomeScreen').classList.add('hidden');
-            document.getElementById('questionScreen').classList.remove('hidden');
-            document.getElementById('flipchartScreen').classList.add('hidden');
-            document.getElementById('surveyStatsScreen').classList.add('hidden');
-            document.getElementById('groupsScreen').classList.add('hidden');
-
-            // Update question status
-            const statusEl = document.getElementById('questionStatusDisplay');
-            if (data.openingQuestion.acceptingResponses) {
-                statusEl.className = 'question-status';
-                statusEl.innerHTML = `
-                    <div class="status-pulse"></div>
-                    <span>يمكنك الآن إرسال إجابتك من هاتفك</span>
-                `;
-            } else {
-                statusEl.className = 'question-status closed';
-                statusEl.innerHTML = `
-                    <span>⏸️ تم إغلاق الإجابات</span>
-                `;
-            }
-
-            // Render responses
-            if (data.responses?.openingQuestion?.length > 0) {
-                renderResponses(data.responses.openingQuestion, data.highlightedResponse);
+            // Check for highlighted response
+            if (workshopData.highlightedResponse && displayMode !== 'highlighted') {
+                // Could auto-show highlighted response
             }
         }
 
-        function renderResponses(responses, highlightedResponse) {
-            const container = document.getElementById('responsesDisplayContainer');
-            container.innerHTML = '';
+        // Timer from Firebase
+        function updateTimerFromFirebase() {
+            const timer = workshopData?.timer;
+            const timerContainer = document.getElementById('timerContainer');
+            const timerValue = document.getElementById('timerValue');
+
+            if (!timer || !timer.active || timer.seconds <= 0) {
+                timerContainer.classList.remove('active');
+                
+                // Check if timer just ended
+                if (previousTimerSeconds > 0 && timer?.seconds === 0) {
+                    showTimerAlert();
+                }
+                previousTimerSeconds = timer?.seconds || 0;
+                return;
+            }
+
+            timerContainer.classList.add('active');
+            
+            const minutes = Math.floor(timer.seconds / 60);
+            const seconds = timer.seconds % 60;
+            const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            timerValue.textContent = display;
+
+            // Update color
+            timerValue.classList.remove('warning', 'danger');
+            if (timer.seconds <= 30) {
+                timerValue.classList.add('danger');
+            } else if (timer.seconds <= 60) {
+                timerValue.classList.add('warning');
+            }
+
+            previousTimerSeconds = timer.seconds;
+        }
+
+        // Timer Alert
+        function showTimerAlert() {
+            const overlay = document.getElementById('timerAlertOverlay');
+            overlay.classList.add('active');
+            
+            // Play sound
+            playAlertSound();
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                overlay.classList.remove('active');
+            }, 5000);
+        }
+
+        function playAlertSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Play 3 beeps
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = 800;
+                        oscillator.type = 'sine';
+                        gainNode.gain.value = 0.5;
+                        
+                        oscillator.start();
+                        setTimeout(() => oscillator.stop(), 300);
+                    }, i * 400);
+                }
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // Show Question Screen
+        function showQuestionScreen() {
+            document.getElementById('questionScreen').classList.add('active');
+            
+            const question = workshopData.openingQuestion;
+            if (question) {
+                document.getElementById('questionText').textContent = question.text || 'صناع الحياة موجودة ليه؟';
+                
+                if (question.acceptingResponses) {
+                    document.getElementById('questionInstruction').innerHTML = '📱 شارك إجابتك الآن!';
+                    document.getElementById('questionInstruction').style.borderColor = 'var(--success)';
+                } else {
+                    document.getElementById('questionInstruction').innerHTML = '💭 فكّر... وشاركنا رأيك';
+                    document.getElementById('questionInstruction').style.borderColor = 'var(--primary)';
+                }
+            }
+        }
+
+        // Show Responses Screen
+        function showResponsesScreen() {
+            document.getElementById('responsesScreen').classList.add('active');
+            
+            const responses = workshopData.responses?.openingQuestion || [];
+            document.getElementById('displayResponsesCount').textContent = responses.length;
+            
+            const grid = document.getElementById('responsesGrid');
+            grid.innerHTML = '';
+
+            const highlighted = workshopData.highlightedResponse;
 
             responses.forEach((response, index) => {
-                const item = document.createElement('div');
-                item.className = 'response-item-display';
+                const isHighlighted = highlighted && highlighted.index === index;
                 
-                // تمييز الإجابة المختارة من الأدمن
-                const isHighlighted = highlightedResponse && highlightedResponse.index === index;
-                if (isHighlighted) {
-                    item.classList.add('highlighted');
-                }
-                
-                item.innerHTML = `
-                    <div class="response-header-display">
-                        <span class="response-participant-display">
-                            ${isHighlighted ? '⭐ ' : '👤 '}${response.participantName || 'مشارك ' + (index + 1)}
-                        </span>
-                        ${isHighlighted ? '<span style="color: #fbbf24; font-weight: 700;">إجابة مميزة</span>' : ''}
+                const card = document.createElement('div');
+                card.className = `response-card ${isHighlighted ? 'highlighted' : ''}`;
+                card.innerHTML = `
+                    <div class="participant">
+                        <div class="participant-avatar">👤</div>
+                        <div class="participant-name">${response.participantName}</div>
                     </div>
-                    <div class="response-text-display">${response.answer}</div>
+                    <div class="answer">${response.answer}</div>
                 `;
-                
-                // إضافة في البداية لو مميزة، وإلا في النهاية
-                if (isHighlighted) {
-                    container.insertBefore(item, container.firstChild);
-                } else {
-                    container.appendChild(item);
-                }
+                grid.appendChild(card);
             });
         }
 
-        function showFlipchartScreen(content) {
-            document.getElementById('welcomeScreen').classList.add('hidden');
-            document.getElementById('questionScreen').classList.add('hidden');
-            document.getElementById('flipchartScreen').classList.remove('hidden');
-            document.getElementById('surveyStatsScreen').classList.add('hidden');
-            document.getElementById('groupsScreen').classList.add('hidden');
+        // Show Highlighted Response
+        function showHighlightedResponse() {
+            const response = workshopData.highlightedResponse;
+            if (!response) return;
 
-            document.getElementById('flipchartContentDisplay').textContent = content;
+            document.getElementById('highlightedResponseScreen').classList.add('active');
+            document.getElementById('highlightedName').textContent = response.participantName;
+            document.getElementById('highlightedAnswer').textContent = response.answer;
         }
 
-        function showSurveyStats(data) {
-            document.getElementById('welcomeScreen').classList.add('hidden');
-            document.getElementById('questionScreen').classList.add('hidden');
-            document.getElementById('flipchartScreen').classList.add('hidden');
-            document.getElementById('surveyStatsScreen').classList.remove('hidden');
-            document.getElementById('groupsScreen').classList.add('hidden');
+        // Show Flipchart Screen
+        function showFlipchartScreen() {
+            document.getElementById('flipchartScreen').classList.add('active');
+            
+            const content = workshopData.flipchart?.content || 'في انتظار المحتوى...';
+            document.getElementById('flipchartContent').textContent = content;
+        }
 
-            // Calculate stats
-            const responses = data.responses?.survey || [];
+        // Show Survey Screen
+        function showSurveyScreen() {
+            document.getElementById('surveyScreen').classList.add('active');
+            
+            const responses = workshopData.responses?.survey || [];
             const total = responses.length;
 
-            let executors = 0;  // 5-8
-            let middle = 0;     // 9-12
-            let adopters = 0;   // 13-15
+            let executors = 0, middle = 0, adopters = 0;
 
             responses.forEach(response => {
                 const score = response.totalScore;
@@ -819,88 +1236,79 @@
                 else if (score >= 13 && score <= 15) adopters++;
             });
 
-            // Update display
-            document.getElementById('totalResponsesDisplay').textContent = total;
-            document.getElementById('executorsCountDisplay').textContent = executors;
-            document.getElementById('adoptersCountDisplay').textContent = adopters;
+            // Update bars with animation
+            setTimeout(() => {
+                const execPercent = total > 0 ? (executors / total * 100) : 0;
+                const midPercent = total > 0 ? (middle / total * 100) : 0;
+                const adoptPercent = total > 0 ? (adopters / total * 100) : 0;
 
-            // Create chart
-            const chartContainer = document.getElementById('chartContainer');
-            chartContainer.innerHTML = '';
+                document.getElementById('executorsBar').style.width = execPercent + '%';
+                document.getElementById('executorsValue').textContent = `${executors} (${execPercent.toFixed(0)}%)`;
 
-            const chartData = [
-                { label: 'منفذون (5-8)', value: executors, color: 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)' },
-                { label: 'في المنتصف (9-12)', value: middle, color: 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' },
-                { label: 'متبنون (13-15)', value: adopters, color: 'linear-gradient(90deg, #10b981 0%, #059669 100%)' }
-            ];
+                document.getElementById('middleBar').style.width = midPercent + '%';
+                document.getElementById('middleValue').textContent = `${middle} (${midPercent.toFixed(0)}%)`;
 
-            chartData.forEach(item => {
-                const percentage = total > 0 ? (item.value / total * 100).toFixed(1) : 0;
-                
-                const barItem = document.createElement('div');
-                barItem.className = 'bar-item';
-                barItem.innerHTML = `
-                    <div class="bar-label">${item.label}</div>
-                    <div class="bar-container">
-                        <div class="bar-fill" style="width: ${percentage}%; background: ${item.color};">
-                            <span class="bar-value">${item.value} (${percentage}%)</span>
-                        </div>
-                    </div>
-                `;
-                chartContainer.appendChild(barItem);
-            });
+                document.getElementById('adoptersBar').style.width = adoptPercent + '%';
+                document.getElementById('adoptersValue').textContent = `${adopters} (${adoptPercent.toFixed(0)}%)`;
+
+                document.getElementById('surveyTotalCount').textContent = total;
+            }, 100);
         }
 
-        function showGroupsScreen(data) {
-            document.getElementById('welcomeScreen').classList.add('hidden');
-            document.getElementById('questionScreen').classList.add('hidden');
-            document.getElementById('flipchartScreen').classList.add('hidden');
-            document.getElementById('surveyStatsScreen').classList.add('hidden');
-            document.getElementById('groupsScreen').classList.remove('hidden');
-
-            const groups = data.groups || [];
-            const container = document.getElementById('groupsDisplayContainer');
-            container.innerHTML = '';
+        // Show Groups Screen
+        function showGroupsScreen() {
+            document.getElementById('groupsScreen').classList.add('active');
+            
+            const groups = workshopData.groups || [];
+            const grid = document.getElementById('groupsGrid');
+            grid.innerHTML = '';
 
             groups.forEach((group, index) => {
                 const card = document.createElement('div');
                 card.className = 'group-card';
-                card.style.animation = `slideUp ${0.3 + index * 0.1}s ease`;
-                
                 card.innerHTML = `
-                    <div class="group-header">
-                        <h3 class="group-title">${group.name}</h3>
-                        <div class="group-badge">${group.members.length} أعضاء</div>
-                    </div>
-                    <div class="group-topic">
-                        <div class="group-topic-label">📌 الموضوع</div>
-                        <div class="group-topic-text">${group.topic}</div>
-                    </div>
-                    <div style="margin-top: 15px;">
-                        <div style="font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px;">
-                            👥 الأعضاء
-                        </div>
-                        <div class="group-members">
-                            ${group.members.map(m => `
-                                <span class="member-badge">${m.name}</span>
-                            `).join('')}
-                        </div>
-                    </div>
+                    <div class="group-number">${index + 1}</div>
+                    <div class="group-name">${group.name}</div>
+                    <div class="group-topic">📌 ${group.topic}</div>
+                    <div class="group-members">👥 ${group.members.length} أعضاء</div>
                 `;
-                container.appendChild(card);
+                grid.appendChild(card);
             });
         }
 
-        // Fullscreen Toggle
-        window.toggleFullscreen = function() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
-        };
+        // Show Single Group Result
+        function showSingleGroupResult() {
+            document.getElementById('singleGroupResultScreen').classList.add('active');
+            
+            const groupId = workshopData.displayGroupId;
+            const groups = workshopData.groups || [];
+            const group = groups.find(g => g.id === groupId);
 
-        console.log('Display Screen loaded for session:', sessionId);
+            if (group) {
+                document.getElementById('singleGroupName').textContent = group.name;
+                document.getElementById('singleGroupTopic').textContent = '📌 ' + group.topic;
+                
+                if (group.results) {
+                    document.getElementById('singleGroupResult').textContent = group.results.text;
+                    document.getElementById('singleGroupSubmitter').textContent = '✍️ أرسلها: ' + group.results.submittedBy;
+                } else {
+                    document.getElementById('singleGroupResult').textContent = '⏳ في انتظار النتائج...';
+                    document.getElementById('singleGroupSubmitter').textContent = '';
+                }
+            }
+        }
+
+        // Show End Screen
+        function showEndScreen() {
+            document.getElementById('endScreen').classList.add('active');
+            
+            document.getElementById('endParticipants').textContent = workshopData.participants?.length || 0;
+            document.getElementById('endResponses').textContent = workshopData.responses?.openingQuestion?.length || 0;
+            document.getElementById('endGroups').textContent = workshopData.groups?.length || 0;
+        }
+
+        // Initialize
+        console.log('Display screen loaded for session:', sessionId);
     </script>
 </body>
 </html>
