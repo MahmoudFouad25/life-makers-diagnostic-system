@@ -1098,6 +1098,38 @@
             if (responsesCount > 0) {
                 renderResponses(workshopData.responses.openingQuestion);
             }
+
+            // ═══ استرجاع حالة السؤال الافتتاحي ═══
+            if (workshopData.openingQuestion?.active) {
+                document.getElementById('launchQuestionBtn').disabled = true;
+                document.getElementById('launchQuestionBtn').innerHTML = '✅ تم إطلاق السؤال';
+                
+                if (workshopData.openingQuestion?.acceptingResponses) {
+                    document.getElementById('enableResponsesBtn').disabled = true;
+                    document.getElementById('closeResponsesBtn').disabled = false;
+                } else {
+                    document.getElementById('enableResponsesBtn').disabled = false;
+                    document.getElementById('closeResponsesBtn').disabled = true;
+                }
+            }
+
+            // ═══ استرجاع محتوى الفليب تشارت ═══
+            if (workshopData.flipchart?.content) {
+                document.getElementById('flipchartInput').value = workshopData.flipchart.content;
+            }
+
+            // ═══ استرجاع حالة الاستبيان ═══
+            if (workshopData.surveyActive) {
+                document.getElementById('launchSurveyBtn').disabled = true;
+                document.getElementById('launchSurveyBtn').innerHTML = '✅ الاستبيان نشط';
+                document.getElementById('surveyStatsContainer').classList.remove('hidden');
+                updateSurveyStats();
+            }
+
+            // ═══ استرجاع المجموعات ═══
+            if (workshopData.groups?.length > 0) {
+                displayGroups(workshopData.groups);
+            }
         }
 
         function renderResponses(responses) {
