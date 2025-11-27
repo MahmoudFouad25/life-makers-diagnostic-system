@@ -1139,6 +1139,7 @@
             responses.forEach((response, index) => {
                 const item = document.createElement('div');
                 item.className = 'response-item';
+                item.id = `response-${index}`;
                 item.innerHTML = `
                     <div class="response-header">
                         <span class="response-participant">👤 ${response.participantName || 'مشارك ' + (index + 1)}</span>
@@ -1146,11 +1147,14 @@
                     </div>
                     <div class="response-text">${response.answer}</div>
                     <div class="response-actions">
-                        <button class="response-action-btn" onclick="highlightResponse(${index})">
-                            ⭐ تمييز
+                        <button class="response-action-btn" onclick="showOnDisplay(${index})" title="عرض على الشاشة">
+                            📺 عرض
                         </button>
                         <button class="response-action-btn" onclick="addToFlipchart('${response.answer.replace(/'/g, "\\'")}')">
-                            📝 إضافة للفليب تشارت
+                            📝 فليب تشارت
+                        </button>
+                        <button class="response-action-btn" onclick="deleteResponse(${index})" style="color: #ef4444;">
+                            🗑️ حذف
                         </button>
                     </div>
                 `;
@@ -1646,6 +1650,45 @@
             };
         }
 
+// ═══ حذف إجابة ═══
+        window.deleteResponse = async function(index) {
+            const confirmed = confirm('🗑️ هل أنت متأكد من حذف هذه الإجابة؟');
+            if (!confirmed) return;
+
+            try {
+                const responses = [...(workshopData.responses?.openingQuestion || [])];
+                responses.splice(index, 1);
+                
+                await updateDoc(workshopRef, {
+                    'responses.openingQuestion': responses
+                });
+                
+                showToast('success', '✅ تم حذف الإجابة');
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // ═══ عرض إجابة على الشاشة ═══
+        window.showOnDisplay = async function(index) {
+            try {
+                const response = workshopData.responses?.openingQuestion?.[index];
+                if (!response) return;
+
+                await updateDoc(workshopRef, {
+                    'highlightedResponse': {
+                        index: index,
+                        participantName: response.participantName,
+                        answer: response.answer,
+                        timestamp: new Date()
+                    }
+                });
+                
+                showToast('success', '📺 تم إرسال الإجابة لشاشة العرض');
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
         // Initialize
         console.log('Admin Dashboard loaded for session:', sessionId);
     </script>
