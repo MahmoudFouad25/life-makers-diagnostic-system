@@ -595,6 +595,16 @@
                     </div>
                 </div>
             </div>
+
+            <!-- شاشة المجموعات -->
+            <div id="groupsScreen" class="survey-stats-display hidden">
+                <h2 style="color: var(--text-primary); font-size: 36px; font-weight: 700; margin-bottom: 30px; text-align: center;">
+                    👥 المجموعات
+                </h2>
+                <div id="groupsDisplayContainer" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;">
+                    <!-- المجموعات ستظهر هنا -->
+                </div>
+            </div>
         </div>
 
         <!-- حالة الاتصال -->
@@ -694,12 +704,14 @@
                     phaseNames[data.currentPhase] || data.currentPhase;
             }
 
-            // Show appropriate screen
-            if (data.openingQuestion?.active) {
+            // Show appropriate screen based on phase
+            if (data.currentPhase === 'phase-3-groups' && data.groups?.length > 0) {
+                showGroupsScreen(data);
+            } else if (data.openingQuestion?.active) {
                 showQuestionScreen(data);
             } else if (data.flipchart?.content) {
                 showFlipchartScreen(data.flipchart.content);
-            } else if (data.surveyActive) {
+            } else if (data.surveyActive && data.responses?.survey?.length > 0) {
                 showSurveyStats(data);
             } else {
                 showWelcomeScreen();
@@ -711,6 +723,7 @@
             document.getElementById('questionScreen').classList.add('hidden');
             document.getElementById('flipchartScreen').classList.add('hidden');
             document.getElementById('surveyStatsScreen').classList.add('hidden');
+            document.getElementById('groupsScreen').classList.add('hidden');
         }
 
         function showQuestionScreen(data) {
@@ -718,6 +731,7 @@
             document.getElementById('questionScreen').classList.remove('hidden');
             document.getElementById('flipchartScreen').classList.add('hidden');
             document.getElementById('surveyStatsScreen').classList.add('hidden');
+            document.getElementById('groupsScreen').classList.add('hidden');
 
             // Update question status
             const statusEl = document.getElementById('questionStatusDisplay');
@@ -768,6 +782,7 @@
             document.getElementById('questionScreen').classList.add('hidden');
             document.getElementById('flipchartScreen').classList.remove('hidden');
             document.getElementById('surveyStatsScreen').classList.add('hidden');
+            document.getElementById('groupsScreen').classList.add('hidden');
 
             document.getElementById('flipchartContentDisplay').textContent = content;
         }
@@ -777,10 +792,93 @@
             document.getElementById('questionScreen').classList.add('hidden');
             document.getElementById('flipchartScreen').classList.add('hidden');
             document.getElementById('surveyStatsScreen').classList.remove('hidden');
+            document.getElementById('groupsScreen').classList.add('hidden');
 
-            // Calculate stats (will be implemented when survey is ready)
-            document.getElementById('totalResponsesDisplay').textContent = 
-                data.responses?.survey?.length || 0;
+            // Calculate stats
+            const responses = data.responses?.survey || [];
+            const total = responses.length;
+
+            let executors = 0;  // 5-8
+            let middle = 0;     // 9-12
+            let adopters = 0;   // 13-15
+
+            responses.forEach(response => {
+                const score = response.totalScore;
+                if (score >= 5 && score <= 8) executors++;
+                else if (score >= 9 && score <= 12) middle++;
+                else if (score >= 13 && score <= 15) adopters++;
+            });
+
+            // Update display
+            document.getElementById('totalResponsesDisplay').textContent = total;
+            document.getElementById('executorsCountDisplay').textContent = executors;
+            document.getElementById('adoptersCountDisplay').textContent = adopters;
+
+            // Create chart
+            const chartContainer = document.getElementById('chartContainer');
+            chartContainer.innerHTML = '';
+
+            const chartData = [
+                { label: 'منفذون (5-8)', value: executors, color: 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)' },
+                { label: 'في المنتصف (9-12)', value: middle, color: 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' },
+                { label: 'متبنون (13-15)', value: adopters, color: 'linear-gradient(90deg, #10b981 0%, #059669 100%)' }
+            ];
+
+            chartData.forEach(item => {
+                const percentage = total > 0 ? (item.value / total * 100).toFixed(1) : 0;
+                
+                const barItem = document.createElement('div');
+                barItem.className = 'bar-item';
+                barItem.innerHTML = `
+                    <div class="bar-label">${item.label}</div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: ${percentage}%; background: ${item.color};">
+                            <span class="bar-value">${item.value} (${percentage}%)</span>
+                        </div>
+                    </div>
+                `;
+                chartContainer.appendChild(barItem);
+            });
+        }
+
+        function showGroupsScreen(data) {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('questionScreen').classList.add('hidden');
+            document.getElementById('flipchartScreen').classList.add('hidden');
+            document.getElementById('surveyStatsScreen').classList.add('hidden');
+            document.getElementById('groupsScreen').classList.remove('hidden');
+
+            const groups = data.groups || [];
+            const container = document.getElementById('groupsDisplayContainer');
+            container.innerHTML = '';
+
+            groups.forEach((group, index) => {
+                const card = document.createElement('div');
+                card.className = 'group-card';
+                card.style.animation = `slideUp ${0.3 + index * 0.1}s ease`;
+                
+                card.innerHTML = `
+                    <div class="group-header">
+                        <h3 class="group-title">${group.name}</h3>
+                        <div class="group-badge">${group.members.length} أعضاء</div>
+                    </div>
+                    <div class="group-topic">
+                        <div class="group-topic-label">📌 الموضوع</div>
+                        <div class="group-topic-text">${group.topic}</div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <div style="font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px;">
+                            👥 الأعضاء
+                        </div>
+                        <div class="group-members">
+                            ${group.members.map(m => `
+                                <span class="member-badge">${m.name}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
         // Fullscreen Toggle
