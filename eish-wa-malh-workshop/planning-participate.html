@@ -1,0 +1,2254 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تخطيط المحافظة - عيش وملح</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-light: #7c8ff8;
+            --secondary: #f093fb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg-dark: #0f0f1a;
+            --bg-dark-2: #1a1a2e;
+            --bg-dark-3: #252542;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-muted: #64748b;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ═══ Header ═══ */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--bg-dark-2);
+            border-bottom: 2px solid var(--bg-dark-3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .header .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header .logo-icon {
+            font-size: 28px;
+        }
+
+        .header .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .gov-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            background: var(--bg-dark-3);
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+        }
+
+        .header .gov-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        /* ═══ Progress Bar ═══ */
+        .progress-container {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: var(--bg-dark-2);
+            padding: 15px 20px;
+            z-index: 999;
+            border-bottom: 1px solid var(--bg-dark-3);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-dark-3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-success);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* ═══ Main Content ═══ */
+        .main-content {
+            padding-top: 140px;
+            padding-bottom: 100px;
+        }
+
+        /* ═══ Screens ═══ */
+        .screen {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ═══ Registration Screen ═══ */
+        #registrationScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 140px);
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .registration-icon {
+            font-size: 100px;
+            margin-bottom: 25px;
+        }
+
+        .registration-title {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .registration-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .registration-form {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* ═══ Form Elements ═══ */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .form-label .required {
+            color: var(--error);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--bg-dark-2);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Tajawal', sans-serif;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-select {
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+            line-height: 1.8;
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* ═══ Buttons ═══ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 32px;
+            font-size: 17px;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: var(--gradient-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-dark-3);
+            color: var(--text-secondary);
+            border: 2px solid var(--bg-dark-3);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        /* ═══ Section Card ═══ */
+        .section-card {
+            background: var(--bg-dark-2);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 20px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: var(--bg-dark-3);
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .section-header:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .section-icon {
+            font-size: 32px;
+        }
+
+        .section-info {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .section-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .section-status.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .section-status.completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .section-toggle {
+            font-size: 24px;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .section-card.open .section-toggle {
+            transform: rotate(180deg);
+        }
+
+        .section-body {
+            display: none;
+            padding: 25px;
+            border-top: 2px solid var(--bg-dark-3);
+        }
+
+        .section-card.open .section-body {
+            display: block;
+        }
+
+        /* ═══ Sub-Section ═══ */
+        .sub-section {
+            background: var(--bg-dark);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .sub-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .sub-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--bg-dark-3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ═══ Dynamic List ═══ */
+        .dynamic-list {
+            margin-bottom: 15px;
+        }
+
+        .dynamic-item {
+            background: var(--bg-dark-2);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .dynamic-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .dynamic-item-number {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .dynamic-item-remove {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(239, 68, 68, 0.2);
+            border: none;
+            color: var(--error);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dynamic-item-remove:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .dynamic-item-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .dynamic-item-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .add-item-btn {
+            width: 100%;
+            padding: 14px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            color: var(--primary-light);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .add-item-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        /* ═══ Checkbox Group ═══ */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            background: var(--bg-dark-2);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: var(--primary);
+        }
+
+        .checkbox-item.checked {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .checkbox-item input {
+            display: none;
+        }
+
+        .checkbox-box {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--text-muted);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item.checked .checkbox-box {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checkbox-item.checked .checkbox-box::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .checkbox-label {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .checkbox-item.checked .checkbox-label {
+            color: var(--text-primary);
+        }
+
+        /* ═══ Table ═══ */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 2px solid var(--bg-dark-3);
+        }
+
+        .data-table th {
+            background: var(--bg-dark-3);
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .data-table td {
+            background: var(--bg-dark-2);
+        }
+
+        .data-table input {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-dark);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: 'Tajawal', sans-serif;
+            text-align: center;
+        }
+
+        .data-table input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* ═══ Navigation Buttons ═══ */
+        .nav-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-dark-2);
+            border-top: 2px solid var(--bg-dark-3);
+            padding: 15px 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .nav-buttons .btn {
+            flex: 1;
+        }
+
+        /* ═══ Toast ═══ */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 16px 30px;
+            background: var(--bg-dark-2);
+            border: 2px solid var(--success);
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            z-index: 9999;
+            animation: toastIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.error {
+            border-color: var(--error);
+        }
+
+        .toast.warning {
+            border-color: var(--warning);
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* ═══ Loading ═══ */
+        .loading {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ═══ Summary Screen ═══ */
+        .summary-card {
+            background: var(--bg-dark-2);
+            border: 2px solid var(--success);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .summary-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .summary-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+        }
+
+        .summary-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+
+        .summary-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .summary-section {
+            background: var(--bg-dark);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .summary-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--bg-dark-3);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+        }
+
+        .summary-value {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* ═══ Responsive ═══ */
+        @media (max-width: 600px) {
+            .dynamic-item-row {
+                grid-template-columns: 1fr;
+            }
+
+            .data-table {
+                font-size: 13px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px 5px;
+            }
+
+            .checkbox-group {
+                flex-direction: column;
+            }
+
+            .checkbox-item {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <span class="logo-icon">🍞</span>
+            <span class="logo-text">تخطيط عيش وملح</span>
+        </div>
+        <div class="gov-info" id="govInfo" style="display: none;">
+            <span>🏛️</span>
+            <span class="gov-name" id="govName">المحافظة</span>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container" id="progressContainer" style="display: none;">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+        <div class="progress-text">
+            <span id="progressLabel">القسم 1 من 6</span>
+            <span id="progressPercent">0%</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- شاشة التسجيل -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <div class="screen active" id="registrationScreen">
+            <div class="registration-icon">🏛️</div>
+            <h1 class="registration-title">تخطيط المحافظة</h1>
+            <p class="registration-subtitle">سجّل بيانات محافظتك لبدء التخطيط</p>
+            
+            <div class="registration-form">
+                <div class="form-group">
+                    <label class="form-label">اسم المحافظة <span class="required">*</span></label>
+                    <select class="form-select" id="governorateSelect">
+                        <option value="">-- اختر المحافظة --</option>
+                        <option value="القاهرة">القاهرة</option>
+                        <option value="الجيزة">الجيزة</option>
+                        <option value="الإسكندرية">الإسكندرية</option>
+                        <option value="الدقهلية">الدقهلية</option>
+                        <option value="البحيرة">البحيرة</option>
+                        <option value="الشرقية">الشرقية</option>
+                        <option value="الغربية">الغربية</option>
+                        <option value="المنوفية">المنوفية</option>
+                        <option value="القليوبية">القليوبية</option>
+                        <option value="كفر الشيخ">كفر الشيخ</option>
+                        <option value="دمياط">دمياط</option>
+                        <option value="بورسعيد">بورسعيد</option>
+                        <option value="الإسماعيلية">الإسماعيلية</option>
+                        <option value="السويس">السويس</option>
+                        <option value="الفيوم">الفيوم</option>
+                        <option value="بني سويف">بني سويف</option>
+                        <option value="المنيا">المنيا</option>
+                        <option value="أسيوط">أسيوط</option>
+                        <option value="سوهاج">سوهاج</option>
+                        <option value="قنا">قنا</option>
+                        <option value="الأقصر">الأقصر</option>
+                        <option value="أسوان">أسوان</option>
+                        <option value="البحر الأحمر">البحر الأحمر</option>
+                        <option value="الوادي الجديد">الوادي الجديد</option>
+                        <option value="مطروح">مطروح</option>
+                        <option value="شمال سيناء">شمال سيناء</option>
+                        <option value="جنوب سيناء">جنوب سيناء</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">اسم منسق المحافظة <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="coordinatorName" placeholder="مثال: أحمد محمد">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">المستهدف الكلي (عدد الوجبات) <span class="required">*</span></label>
+                    <input type="number" class="form-input" id="totalTarget" placeholder="مثال: 100000">
+                    <div class="form-hint">أدخل العدد الكلي للوجبات المستهدفة للمحافظة</div>
+                </div>
+                
+                <button class="btn btn-primary" id="startPlanningBtn">
+                    <span>بدء التخطيط</span>
+                    <span>🚀</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- شاشة التخطيط الرئيسية -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <div class="screen" id="planningScreen">
+            
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- القسم 1: ملف الشراكات -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div class="section-card open" id="section1" data-section="1">
+                <div class="section-header" onclick="toggleSection(1)">
+                    <div class="section-icon">🤝</div>
+                    <div class="section-info">
+                        <div class="section-title">ملف الشراكات (20%)</div>
+                        <div class="section-subtitle">المستهدف: <span id="partnershipsTarget">0</span> وجبة</div>
+                    </div>
+                    <div class="section-status pending" id="section1Status">لم يكتمل</div>
+                    <div class="section-toggle">▼</div>
+                </div>
+                <div class="section-body">
+                    
+                    <!-- المطاعم -->
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>🍽️</span>
+                            <span>المطاعم</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">عدد المطاعم المستهدفة</label>
+                            <input type="number" class="form-input" id="restaurantsCount" placeholder="مثال: 10">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">متوسط الوجبات من كل مطعم</label>
+                            <input type="number" class="form-input" id="avgMealsPerRestaurant" placeholder="مثال: 500">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">قائمة المطاعم المحتملة</label>
+                            <div class="dynamic-list" id="restaurantsList">
+                                <!-- سيتم إضافة المطاعم هنا -->
+                            </div>
+                            <button class="add-item-btn" onclick="addRestaurant()">
+                                <span>➕</span>
+                                <span>إضافة مطعم</span>
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">المسؤول عن التواصل مع المطاعم</label>
+                            <input type="text" class="form-input" id="restaurantsResponsible" placeholder="اسم المسؤول">
+                        </div>
+                    </div>
+
+                    <!-- الشاشات والإعلانات -->
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>📺</span>
+                            <span>الشاشات والإعلانات</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">عدد الشاشات المستهدفة</label>
+                            <input type="number" class="form-input" id="screensCount" placeholder="مثال: 5">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">أماكن الشاشات المحتملة</label>
+                            <div class="dynamic-list" id="screensList">
+                                <!-- سيتم إضافة الشاشات هنا -->
+                            </div>
+                            <button class="add-item-btn" onclick="addScreen()">
+                                <span>➕</span>
+                                <span>إضافة موقع شاشة</span>
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">المسؤول عن الشاشات</label>
+                            <input type="text" class="form-input" id="screensResponsible" placeholder="اسم المسؤول">
+                        </div>
+                    </div>
+
+                    <!-- رعاة آخرين -->
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>💼</span>
+                            <span>رعاة آخرين</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">عدد الرعاة المستهدفين</label>
+                            <input type="number" class="form-input" id="sponsorsCount" placeholder="مثال: 3">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">نوع الرعاية المتوقعة</label>
+                            <div class="checkbox-group" id="sponsorshipTypes">
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="مالية">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">💰 مالية</span>
+                                </label>
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="عينية">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">📦 عينية</span>
+                                </label>
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="خدمات">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">🔧 خدمات</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">قائمة الرعاة المحتملين</label>
+                            <div class="dynamic-list" id="sponsorsList">
+                                <!-- سيتم إضافة الرعاة هنا -->
+                            </div>
+                            <button class="add-item-btn" onclick="addSponsor()">
+                                <span>➕</span>
+                                <span>إضافة راعي</span>
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">المسؤول عن الرعاة</label>
+                            <input type="text" class="form-input" id="sponsorsResponsible" placeholder="اسم المسؤول">
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- القسم 2: ملف المتطوعين -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div class="section-card" id="section2" data-section="2">
+                <div class="section-header" onclick="toggleSection(2)">
+                    <div class="section-icon">👥</div>
+                    <div class="section-info">
+                        <div class="section-title">ملف المتطوعين (30%)</div>
+                        <div class="section-subtitle">المستهدف: <span id="volunteersTarget">0</span> وجبة</div>
+                    </div>
+                    <div class="section-status pending" id="section2Status">لم يكتمل</div>
+                    <div class="section-toggle">▼</div>
+                </div>
+                <div class="section-body">
+                    
+                    <!-- المتطوعين كجامعين تبرعات -->
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>🙋</span>
+                            <span>المتطوعين كجامعين تبرعات</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">عدد المتطوعين المستهدف</label>
+                            <input type="number" class="form-input" id="collectorsCount" placeholder="مثال: 50">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">متوسط التبرعات لكل متطوع (جنيه أو وجبة)</label>
+                            <input type="number" class="form-input" id="avgPerCollector" placeholder="مثال: 1000">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">من أين سنجذب المتطوعين؟</label>
+                            <div class="checkbox-group" id="volunteerSources">
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="جامعات">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">🎓 جامعات</span>
+                                </label>
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="مدارس">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">🏫 مدارس</span>
+                                </label>
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="شركات">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">🏢 شركات</span>
+                                </label>
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="أونلاين">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">🌐 أونلاين</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">تفاصيل المصادر (أسماء الجامعات/المدارس/الشركات)</label>
+                            <textarea class="form-textarea" id="volunteerSourcesDetails" placeholder="اكتب تفاصيل كل مصدر..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">المسؤول عن تجنيد المتطوعين</label>
+                            <input type="text" class="form-input" id="collectorsResponsible" placeholder="اسم المسؤول">
+                        </div>
+                    </div>
+
+                    <!-- المتبرعين الأفراد -->
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>💳</span>
+                            <span>المتبرعين الأفراد</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">عدد المتبرعين المستهدف</label>
+                            <input type="number" class="form-input" id="donorsCount" placeholder="مثال: 200">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">متوسط التبرع (جنيه)</label>
+                            <input type="number" class="form-input" id="avgDonation" placeholder="مثال: 500">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">قنوات الوصول للمتبرعين</label>
+                            <div class="checkbox-group" id="donorChannels">
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="سوشيال ميديا">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">📱 سوشيال ميديا</span>
+                                </label>
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="واتساب">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">💬 واتساب</span>
+                                </label>
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="مساجد">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">🕌 مساجد</span>
+                                </label>
+                                <label class="checkbox-item" onclick="toggleCheckbox(this)">
+                                    <input type="checkbox" value="شركات">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">🏢 شركات</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">تفاصيل القنوات</label>
+                            <textarea class="form-textarea" id="donorChannelsDetails" placeholder="مثال: صفحة فيسبوك المحافظة (50 ألف متابع)، 10 جروبات واتساب..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">المسؤول عن التواصل مع المتبرعين</label>
+                            <input type="text" class="form-input" id="donorsResponsible" placeholder="اسم المسؤول">
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- القسم 3: ملف الجمعيات القاعدية -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div class="section-card" id="section3" data-section="3">
+                <div class="section-header" onclick="toggleSection(3)">
+                    <div class="section-icon">🏢</div>
+                    <div class="section-info">
+                        <div class="section-title">ملف الجمعيات القاعدية (50%)</div>
+                        <div class="section-subtitle">المستهدف: <span id="ngosTarget">0</span> وجبة</div>
+                    </div>
+                    <div class="section-status pending" id="section3Status">لم يكتمل</div>
+                    <div class="section-toggle">▼</div>
+                </div>
+                <div class="section-body">
+                    
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>📋</span>
+                            <span>الجمعيات الشريكة</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">عدد الجمعيات المستهدفة</label>
+                            <input type="number" class="form-input" id="ngosCount" placeholder="مثال: 10">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">متوسط الوجبات من كل جمعية</label>
+                            <input type="number" class="form-input" id="avgMealsPerNgo" placeholder="مثال: 5000">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">قائمة الجمعيات</label>
+                            <div class="dynamic-list" id="ngosList">
+                                <!-- سيتم إضافة الجمعيات هنا -->
+                            </div>
+                            <button class="add-item-btn" onclick="addNgo()">
+                                <span>➕</span>
+                                <span>إضافة جمعية</span>
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">هل الجمعيات دي اشتغلنا معاها قبل كده؟</label>
+                            <div class="checkbox-group" id="ngosExperience">
+                                <label class="checkbox-item" onclick="toggleCheckbox(this, true)">
+                                    <input type="radio" name="ngosExp" value="نعم">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">✅ نعم (كلها أو معظمها)</span>
+                                </label>
+                                <label class="checkbox-item" onclick="toggleCheckbox(this, true)">
+                                    <input type="radio" name="ngosExp" value="لا">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">❌ لا (جديدة كلها)</span>
+                                </label>
+                                <label class="checkbox-item" onclick="toggleCheckbox(this, true)">
+                                    <input type="radio" name="ngosExp" value="مزيج">
+                                    <div class="checkbox-box"></div>
+                                    <span class="checkbox-label">🔄 مزيج</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">المسؤول الرئيسي عن ملف الجمعيات</label>
+                            <input type="text" class="form-input" id="ngosResponsible" placeholder="اسم المسؤول">
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- القسم 4: التوزيع الشهري -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div class="section-card" id="section4" data-section="4">
+                <div class="section-header" onclick="toggleSection(4)">
+                    <div class="section-icon">📅</div>
+                    <div class="section-info">
+                        <div class="section-title">التوزيع الشهري</div>
+                        <div class="section-subtitle">توزيع المستهدف على 4 شهور</div>
+                    </div>
+                    <div class="section-status pending" id="section4Status">لم يكتمل</div>
+                    <div class="section-toggle">▼</div>
+                </div>
+                <div class="section-body">
+                    
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>📊</span>
+                            <span>جدول التوزيع</span>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="data-table" id="monthlyTable">
+                                <thead>
+                                    <tr>
+                                        <th>الشهر</th>
+                                        <th>شراكات (20%)</th>
+                                        <th>متطوعين (30%)</th>
+                                        <th>جمعيات (50%)</th>
+                                        <th>الإجمالي</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>شهر 1 (15%)</strong></td>
+                                        <td><input type="number" id="m1_partnerships" onchange="calculateMonthlyTotals()"></td>
+                                        <td><input type="number" id="m1_volunteers" onchange="calculateMonthlyTotals()"></td>
+                                        <td><input type="number" id="m1_ngos" onchange="calculateMonthlyTotals()"></td>
+                                        <td><strong id="m1_total">0</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>شهر 2 (20%)</strong></td>
+                                        <td><input type="number" id="m2_partnerships" onchange="calculateMonthlyTotals()"></td>
+                                        <td><input type="number" id="m2_volunteers" onchange="calculateMonthlyTotals()"></td>
+                                        <td><input type="number" id="m2_ngos" onchange="calculateMonthlyTotals()"></td>
+                                        <td><strong id="m2_total">0</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>شهر 3 (30%)</strong></td>
+                                        <td><input type="number" id="m3_partnerships" onchange="calculateMonthlyTotals()"></td>
+                                        <td><input type="number" id="m3_volunteers" onchange="calculateMonthlyTotals()"></td>
+                                        <td><input type="number" id="m3_ngos" onchange="calculateMonthlyTotals()"></td>
+                                        <td><strong id="m3_total">0</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>شهر 4 (35%)</strong></td>
+                                        <td><input type="number" id="m4_partnerships" onchange="calculateMonthlyTotals()"></td>
+                                        <td><input type="number" id="m4_volunteers" onchange="calculateMonthlyTotals()"></td>
+                                        <td><input type="number" id="m4_ngos" onchange="calculateMonthlyTotals()"></td>
+                                        <td><strong id="m4_total">0</strong></td>
+                                    </tr>
+                                    <tr style="background: var(--bg-dark-3);">
+                                        <td><strong>الإجمالي</strong></td>
+                                        <td><strong id="total_partnerships">0</strong></td>
+                                        <td><strong id="total_volunteers">0</strong></td>
+                                        <td><strong id="total_ngos">0</strong></td>
+                                        <td><strong id="grand_total">0</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <button class="btn btn-secondary" style="margin-top: 15px;" onclick="autoFillMonthly()">
+                            <span>🔄</span>
+                            <span>ملء تلقائي حسب النسب المقترحة</span>
+                        </button>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- القسم 5: الموارد البشرية والداعمين -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div class="section-card" id="section5" data-section="5">
+                <div class="section-header" onclick="toggleSection(5)">
+                    <div class="section-icon">👷</div>
+                    <div class="section-info">
+                        <div class="section-title">الموارد البشرية والداعمين</div>
+                        <div class="section-subtitle">الفريق والداعمين</div>
+                    </div>
+                    <div class="section-status pending" id="section5Status">لم يكتمل</div>
+                    <div class="section-toggle">▼</div>
+                </div>
+                <div class="section-body">
+                    
+                    <!-- الموارد البشرية -->
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>👥</span>
+                            <span>الموارد البشرية</span>
+                        </div>
+                        
+                        <div style="overflow-x: auto;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>الدور</th>
+                                        <th>العدد المطلوب</th>
+                                        <th>من أين؟</th>
+                                        <th>المسؤول عن تجنيدهم</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>متطوعين للجمع</td>
+                                        <td><input type="number" id="hr_collectors"></td>
+                                        <td><input type="text" id="hr_collectors_source" placeholder="المصدر"></td>
+                                        <td><input type="text" id="hr_collectors_resp" placeholder="المسؤول"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>متطوعين للتوزيع</td>
+                                        <td><input type="number" id="hr_distributors"></td>
+                                        <td><input type="text" id="hr_distributors_source" placeholder="المصدر"></td>
+                                        <td><input type="text" id="hr_distributors_resp" placeholder="المسؤول"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>متطوعين للتواصل</td>
+                                        <td><input type="number" id="hr_communicators"></td>
+                                        <td><input type="text" id="hr_communicators_source" placeholder="المصدر"></td>
+                                        <td><input type="text" id="hr_communicators_resp" placeholder="المسؤول"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>متطوعين للسوشيال</td>
+                                        <td><input type="number" id="hr_social"></td>
+                                        <td><input type="text" id="hr_social_source" placeholder="المصدر"></td>
+                                        <td><input type="text" id="hr_social_resp" placeholder="المسؤول"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>متطوعين للوجستيات</td>
+                                        <td><input type="number" id="hr_logistics"></td>
+                                        <td><input type="text" id="hr_logistics_source" placeholder="المصدر"></td>
+                                        <td><input type="text" id="hr_logistics_resp" placeholder="المسؤول"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- الداعمين -->
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>⭐</span>
+                            <span>الداعمين (ناس/جهات هتساعدنا)</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">قائمة الداعمين</label>
+                            <div class="dynamic-list" id="supportersList">
+                                <!-- سيتم إضافة الداعمين هنا -->
+                            </div>
+                            <button class="add-item-btn" onclick="addSupporter()">
+                                <span>➕</span>
+                                <span>إضافة داعم</span>
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">المسؤول عن ملف الداعمين</label>
+                            <input type="text" class="form-input" id="supportersResponsible" placeholder="اسم المسؤول">
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════════════════════ -->
+            <!-- القسم 6: خطة المتبني والالتزام -->
+            <!-- ══════════════════════════════════════════════════════ -->
+            <div class="section-card" id="section6" data-section="6">
+                <div class="section-header" onclick="toggleSection(6)">
+                    <div class="section-icon">🎯</div>
+                    <div class="section-info">
+                        <div class="section-title">خطة المتبني والالتزام</div>
+                        <div class="section-subtitle">الخطط البديلة والالتزامات</div>
+                    </div>
+                    <div class="section-status pending" id="section6Status">لم يكتمل</div>
+                    <div class="section-toggle">▼</div>
+                </div>
+                <div class="section-body">
+                    
+                    <!-- خطة المتبني -->
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>🛡️</span>
+                            <span>خطة المتبني (البدائل)</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">لو الشراكات محققتش المستهدف... البديل إيه؟</label>
+                            <textarea class="form-textarea" id="backup_partnerships" placeholder="اكتب خطة البديل..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">لو الجمعيات اعتذرت أو قللت... البديل إيه؟</label>
+                            <textarea class="form-textarea" id="backup_ngos" placeholder="اكتب خطة البديل..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">لو المتطوعين مجمعوش الأرقام المتوقعة... البديل إيه؟</label>
+                            <textarea class="form-textarea" id="backup_volunteers" placeholder="اكتب خطة البديل..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- المخاطر -->
+                    <div class="sub-section">
+                        <div class="sub-section-title">
+                            <span>⚠️</span>
+                            <span>المخاطر وخطة التعامل</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">أكبر 3 مخاطر ممكن تواجهنا</label>
+                            <div class="dynamic-list" id="risksList">
+                                <!-- سيتم إضافة المخاطر هنا -->
+                            </div>
+                            <button class="add-item-btn" onclick="addRisk()">
+                                <span>➕</span>
+                                <span>إضافة خطر</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- الالتزام -->
+                    <div class="sub-section" style="background: rgba(16, 185, 129, 0.1); border-color: var(--success);">
+                        <div class="sub-section-title" style="color: var(--success);">
+                            <span>✅</span>
+                            <span>الالتزام النهائي</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">أول 3 خطوات هنعملها أول ما نرجع المحافظة</label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">الخطوة الأولى</label>
+                            <input type="text" class="form-input" id="step1_action" placeholder="الخطوة">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                                <input type="text" class="form-input" id="step1_who" placeholder="مين المسؤول؟">
+                                <input type="date" class="form-input" id="step1_when">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">الخطوة الثانية</label>
+                            <input type="text" class="form-input" id="step2_action" placeholder="الخطوة">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                                <input type="text" class="form-input" id="step2_who" placeholder="مين المسؤول؟">
+                                <input type="date" class="form-input" id="step2_when">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">الخطوة الثالثة</label>
+                            <input type="text" class="form-input" id="step3_action" placeholder="الخطوة">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                                <input type="text" class="form-input" id="step3_who" placeholder="مين المسؤول؟">
+                                <input type="date" class="form-input" id="step3_when">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">أول Check-in مع القيادة</label>
+                            <input type="date" class="form-input" id="firstCheckin">
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- شاشة الملخص والإرسال -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <div class="screen" id="summaryScreen">
+            <div class="summary-card">
+                <div class="summary-header">
+                    <div class="summary-icon">✅</div>
+                    <h2 class="summary-title">تم حفظ الخطة!</h2>
+                    <p class="summary-subtitle" id="summaryGovName">محافظة ...</p>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-section-title">
+                        <span>📊</span>
+                        <span>ملخص الأرقام</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">المستهدف الكلي:</span>
+                        <span class="summary-value" id="summaryTotal">0 وجبة</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">من الشراكات (20%):</span>
+                        <span class="summary-value" id="summaryPartnerships">0 وجبة</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">من المتطوعين (30%):</span>
+                        <span class="summary-value" id="summaryVolunteers">0 وجبة</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">من الجمعيات (50%):</span>
+                        <span class="summary-value" id="summaryNgos">0 وجبة</span>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-section-title">
+                        <span>✅</span>
+                        <span>أول 3 خطوات</span>
+                    </div>
+                    <div id="summarySteps">
+                        <!-- سيتم ملؤها -->
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-section-title">
+                        <span>📅</span>
+                        <span>أول Check-in</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">التاريخ:</span>
+                        <span class="summary-value" id="summaryCheckin">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="editPlan()">
+                <span>✏️</span>
+                <span>تعديل الخطة</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons" id="navButtons" style="display: none;">
+        <button class="btn btn-secondary" id="prevBtn" onclick="previousSection()">
+            <span>→</span>
+            <span>السابق</span>
+        </button>
+        <button class="btn btn-success" id="saveBtn" onclick="saveProgress()">
+            <span>💾</span>
+            <span>حفظ</span>
+        </button>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextSection()">
+            <span>التالي</span>
+            <span>←</span>
+        </button>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+            authDomain: "life-makers-diagnostic.firebaseapp.com",
+            projectId: "life-makers-diagnostic",
+            storageBucket: "life-makers-diagnostic.appspot.com",
+            messagingSenderId: "137599837774",
+            appId: "1:137599837774:web:e5f2f6a5c547c265fc0fba"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Get session ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session');
+
+        if (!sessionId) {
+            alert('⚠️ رابط غير صحيح. تأكد من مسح QR Code بشكل صحيح.');
+        }
+
+        // Global State
+        let governorateData = {
+            governorate: '',
+            coordinator: '',
+            totalTarget: 0,
+            partnershipsTarget: 0,
+            volunteersTarget: 0,
+            ngosTarget: 0,
+            sections: {}
+        };
+
+        let currentSection = 1;
+        const totalSections = 6;
+
+        // ═══════════════════════════════════════════════════════════
+        // التسجيل وبدء التخطيط
+        // ═══════════════════════════════════════════════════════════
+
+        document.getElementById('startPlanningBtn').onclick = async () => {
+            const governorate = document.getElementById('governorateSelect').value;
+            const coordinator = document.getElementById('coordinatorName').value.trim();
+            const totalTarget = parseInt(document.getElementById('totalTarget').value) || 0;
+
+            if (!governorate) {
+                showToast('error', '⚠️ اختر المحافظة');
+                return;
+            }
+            if (!coordinator) {
+                showToast('error', '⚠️ أدخل اسم المنسق');
+                return;
+            }
+            if (!totalTarget || totalTarget < 1000) {
+                showToast('error', '⚠️ أدخل مستهدف صحيح (1000 على الأقل)');
+                return;
+            }
+
+            const btn = document.getElementById('startPlanningBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> جاري التسجيل...';
+
+            try {
+                // Calculate targets
+                governorateData.governorate = governorate;
+                governorateData.coordinator = coordinator;
+                governorateData.totalTarget = totalTarget;
+                governorateData.partnershipsTarget = Math.round(totalTarget * 0.20);
+                governorateData.volunteersTarget = Math.round(totalTarget * 0.30);
+                governorateData.ngosTarget = Math.round(totalTarget * 0.50);
+
+                // Save to Firebase
+                const docRef = db.collection('eish-wa-malh-planning').doc(sessionId);
+                const doc = await docRef.get();
+
+                if (doc.exists) {
+                    const data = doc.data();
+                    const governorates = data.governorates || {};
+                    
+                    governorates[governorate] = {
+                        ...governorateData,
+                        registeredAt: new Date(),
+                        lastUpdated: new Date(),
+                        status: 'in-progress'
+                    };
+
+                    await docRef.update({ governorates: governorates });
+                }
+
+                // Update UI
+                document.getElementById('govName').textContent = governorate;
+                document.getElementById('govInfo').style.display = 'flex';
+                document.getElementById('progressContainer').style.display = 'block';
+                
+                document.getElementById('partnershipsTarget').textContent = governorateData.partnershipsTarget.toLocaleString();
+                document.getElementById('volunteersTarget').textContent = governorateData.volunteersTarget.toLocaleString();
+                document.getElementById('ngosTarget').textContent = governorateData.ngosTarget.toLocaleString();
+
+                // Show planning screen
+                showScreen('planningScreen');
+                document.getElementById('navButtons').style.display = 'flex';
+                updateProgress();
+
+                showToast('success', '✅ تم التسجيل بنجاح!');
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+                btn.disabled = false;
+                btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════
+        // إدارة الأقسام
+        // ═══════════════════════════════════════════════════════════
+
+        function toggleSection(sectionNum) {
+            const section = document.getElementById(`section${sectionNum}`);
+            section.classList.toggle('open');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function updateProgress() {
+            const percent = Math.round((currentSection / totalSections) * 100);
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressLabel').textContent = `القسم ${currentSection} من ${totalSections}`;
+            document.getElementById('progressPercent').textContent = percent + '%';
+
+            // Update nav buttons
+            document.getElementById('prevBtn').style.visibility = currentSection > 1 ? 'visible' : 'hidden';
+            
+            if (currentSection === totalSections) {
+                document.getElementById('nextBtn').innerHTML = '<span>إرسال الخطة</span><span>📤</span>';
+            } else {
+                document.getElementById('nextBtn').innerHTML = '<span>التالي</span><span>←</span>';
+            }
+        }
+
+        function nextSection() {
+            if (currentSection < totalSections) {
+                // Close current section
+                document.getElementById(`section${currentSection}`).classList.remove('open');
+                
+                currentSection++;
+                
+                // Open next section
+                document.getElementById(`section${currentSection}`).classList.add('open');
+                
+                // Scroll to top
+                window.scrollTo({ top: 150, behavior: 'smooth' });
+                
+                updateProgress();
+            } else {
+                // Submit plan
+                submitPlan();
+            }
+        }
+
+        function previousSection() {
+            if (currentSection > 1) {
+                document.getElementById(`section${currentSection}`).classList.remove('open');
+                currentSection--;
+                document.getElementById(`section${currentSection}`).classList.add('open');
+                window.scrollTo({ top: 150, behavior: 'smooth' });
+                updateProgress();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // القوائم الديناميكية
+        // ═══════════════════════════════════════════════════════════
+
+        let restaurantCounter = 0;
+        let screenCounter = 0;
+        let sponsorCounter = 0;
+        let ngoCounter = 0;
+        let supporterCounter = 0;
+        let riskCounter = 0;
+
+        function addRestaurant() {
+            restaurantCounter++;
+            const list = document.getElementById('restaurantsList');
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+            item.id = `restaurant-${restaurantCounter}`;
+            item.innerHTML = `
+                <div class="dynamic-item-header">
+                    <span class="dynamic-item-number">مطعم ${restaurantCounter}</span>
+                    <button class="dynamic-item-remove" onclick="removeItem('restaurant-${restaurantCounter}')">✕</button>
+                </div>
+                <div class="dynamic-item-row">
+                    <input type="text" class="form-input" placeholder="اسم المطعم" data-field="name">
+                    <input type="number" class="form-input" placeholder="الوجبات المتوقعة" data-field="meals">
+                </div>
+            `;
+            list.appendChild(item);
+        }
+
+        function addScreen() {
+            screenCounter++;
+            const list = document.getElementById('screensList');
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+            item.id = `screen-${screenCounter}`;
+            item.innerHTML = `
+                <div class="dynamic-item-header">
+                    <span class="dynamic-item-number">شاشة ${screenCounter}</span>
+                    <button class="dynamic-item-remove" onclick="removeItem('screen-${screenCounter}')">✕</button>
+                </div>
+                <div class="dynamic-item-row">
+                    <input type="text" class="form-input" placeholder="مكان الشاشة" data-field="location">
+                    <select class="form-select" data-field="cost">
+                        <option value="">التكلفة</option>
+                        <option value="مجاني">مجاني</option>
+                        <option value="مدفوع">مدفوع</option>
+                    </select>
+                </div>
+            `;
+            list.appendChild(item);
+        }
+
+        function addSponsor() {
+            sponsorCounter++;
+            const list = document.getElementById('sponsorsList');
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+            item.id = `sponsor-${sponsorCounter}`;
+            item.innerHTML = `
+                <div class="dynamic-item-header">
+                    <span class="dynamic-item-number">راعي ${sponsorCounter}</span>
+                    <button class="dynamic-item-remove" onclick="removeItem('sponsor-${sponsorCounter}')">✕</button>
+                </div>
+                <div class="dynamic-item-row">
+                    <input type="text" class="form-input" placeholder="اسم الراعي" data-field="name">
+                    <select class="form-select" data-field="type">
+                        <option value="">نوع الرعاية</option>
+                        <option value="مالية">مالية</option>
+                        <option value="عينية">عينية</option>
+                        <option value="خدمات">خدمات</option>
+                    </select>
+                </div>
+            `;
+            list.appendChild(item);
+        }
+
+        function addNgo() {
+            ngoCounter++;
+            const list = document.getElementById('ngosList');
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+            item.id = `ngo-${ngoCounter}`;
+            item.innerHTML = `
+                <div class="dynamic-item-header">
+                    <span class="dynamic-item-number">جمعية ${ngoCounter}</span>
+                    <button class="dynamic-item-remove" onclick="removeItem('ngo-${ngoCounter}')">✕</button>
+                </div>
+                <div class="dynamic-item-row">
+                    <input type="text" class="form-input" placeholder="اسم الجمعية" data-field="name">
+                    <input type="number" class="form-input" placeholder="الوجبات المتوقعة" data-field="meals">
+                </div>
+                <div class="dynamic-item-row single" style="margin-top: 10px;">
+                    <input type="text" class="form-input" placeholder="المسؤول عن التواصل" data-field="responsible">
+                </div>
+            `;
+            list.appendChild(item);
+        }
+
+        function addSupporter() {
+            supporterCounter++;
+            const list = document.getElementById('supportersList');
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+            item.id = `supporter-${supporterCounter}`;
+            item.innerHTML = `
+                <div class="dynamic-item-header">
+                    <span class="dynamic-item-number">داعم ${supporterCounter}</span>
+                    <button class="dynamic-item-remove" onclick="removeItem('supporter-${supporterCounter}')">✕</button>
+                </div>
+                <div class="dynamic-item-row">
+                    <select class="form-select" data-field="type">
+                        <option value="">نوع الداعم</option>
+                        <option value="شخصية مؤثرة">شخصية مؤثرة</option>
+                        <option value="رجل أعمال">رجل أعمال</option>
+                        <option value="إعلامي">إعلامي</option>
+                        <option value="إمام/داعية">إمام/داعية</option>
+                        <option value="أستاذ جامعة">أستاذ جامعة</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
+                    <input type="text" class="form-input" placeholder="الاسم" data-field="name">
+                </div>
+                <div class="dynamic-item-row single" style="margin-top: 10px;">
+                    <div class="checkbox-group" style="flex-wrap: nowrap;">
+                        <label class="checkbox-item" onclick="toggleCheckbox(this)" style="flex: 1;">
+                            <input type="checkbox" value="نشر">
+                            <div class="checkbox-box"></div>
+                            <span class="checkbox-label">نشر</span>
+                        </label>
+                        <label class="checkbox-item" onclick="toggleCheckbox(this)" style="flex: 1;">
+                            <input type="checkbox" value="تبرع">
+                            <div class="checkbox-box"></div>
+                            <span class="checkbox-label">تبرع</span>
+                        </label>
+                        <label class="checkbox-item" onclick="toggleCheckbox(this)" style="flex: 1;">
+                            <input type="checkbox" value="تواصل">
+                            <div class="checkbox-box"></div>
+                            <span class="checkbox-label">تواصل</span>
+                        </label>
+                    </div>
+                </div>
+            `;
+            list.appendChild(item);
+        }
+
+        function addRisk() {
+            riskCounter++;
+            const list = document.getElementById('risksList');
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+            item.id = `risk-${riskCounter}`;
+            item.innerHTML = `
+                <div class="dynamic-item-header">
+                    <span class="dynamic-item-number">خطر ${riskCounter}</span>
+                    <button class="dynamic-item-remove" onclick="removeItem('risk-${riskCounter}')">✕</button>
+                </div>
+                <div class="dynamic-item-row single">
+                    <input type="text" class="form-input" placeholder="وصف الخطر" data-field="description">
+                </div>
+                <div class="dynamic-item-row single" style="margin-top: 10px;">
+                    <textarea class="form-textarea" placeholder="خطة التعامل مع الخطر" data-field="plan" style="min-height: 80px;"></textarea>
+                </div>
+            `;
+            list.appendChild(item);
+        }
+
+        function removeItem(itemId) {
+            const item = document.getElementById(itemId);
+            if (item) {
+                item.remove();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // Checkbox Toggle
+        // ═══════════════════════════════════════════════════════════
+
+        function toggleCheckbox(element, isRadio = false) {
+            const input = element.querySelector('input');
+            
+            if (isRadio) {
+                // For radio buttons, uncheck all siblings first
+                const parent = element.parentElement;
+                parent.querySelectorAll('.checkbox-item').forEach(item => {
+                    item.classList.remove('checked');
+                    item.querySelector('input').checked = false;
+                });
+            }
+            
+            input.checked = !input.checked || isRadio;
+            element.classList.toggle('checked', input.checked);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // التوزيع الشهري
+        // ═══════════════════════════════════════════════════════════
+
+        function calculateMonthlyTotals() {
+            for (let m = 1; m <= 4; m++) {
+                const partnerships = parseInt(document.getElementById(`m${m}_partnerships`).value) || 0;
+                const volunteers = parseInt(document.getElementById(`m${m}_volunteers`).value) || 0;
+                const ngos = parseInt(document.getElementById(`m${m}_ngos`).value) || 0;
+                document.getElementById(`m${m}_total`).textContent = (partnerships + volunteers + ngos).toLocaleString();
+            }
+
+            // Calculate column totals
+            let totalP = 0, totalV = 0, totalN = 0;
+            for (let m = 1; m <= 4; m++) {
+                totalP += parseInt(document.getElementById(`m${m}_partnerships`).value) || 0;
+                totalV += parseInt(document.getElementById(`m${m}_volunteers`).value) || 0;
+                totalN += parseInt(document.getElementById(`m${m}_ngos`).value) || 0;
+            }
+            
+            document.getElementById('total_partnerships').textContent = totalP.toLocaleString();
+            document.getElementById('total_volunteers').textContent = totalV.toLocaleString();
+            document.getElementById('total_ngos').textContent = totalN.toLocaleString();
+            document.getElementById('grand_total').textContent = (totalP + totalV + totalN).toLocaleString();
+        }
+
+        function autoFillMonthly() {
+            const pTarget = governorateData.partnershipsTarget;
+            const vTarget = governorateData.volunteersTarget;
+            const nTarget = governorateData.ngosTarget;
+
+            // Month percentages: 15%, 20%, 30%, 35%
+            const percentages = [0.15, 0.20, 0.30, 0.35];
+
+            for (let m = 1; m <= 4; m++) {
+                document.getElementById(`m${m}_partnerships`).value = Math.round(pTarget * percentages[m-1]);
+                document.getElementById(`m${m}_volunteers`).value = Math.round(vTarget * percentages[m-1]);
+                document.getElementById(`m${m}_ngos`).value = Math.round(nTarget * percentages[m-1]);
+            }
+
+            calculateMonthlyTotals();
+            showToast('success', '✅ تم الملء التلقائي');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // جمع البيانات
+        // ═══════════════════════════════════════════════════════════
+
+        function collectAllData() {
+            const data = {
+                // Basic info
+                governorate: governorateData.governorate,
+                coordinator: governorateData.coordinator,
+                totalTarget: governorateData.totalTarget,
+                partnershipsTarget: governorateData.partnershipsTarget,
+                volunteersTarget: governorateData.volunteersTarget,
+                ngosTarget: governorateData.ngosTarget,
+
+                // Section 1: Partnerships
+                partnerships: {
+                    restaurants: {
+                        count: document.getElementById('restaurantsCount').value,
+                        avgMeals: document.getElementById('avgMealsPerRestaurant').value,
+                        list: collectDynamicList('restaurantsList'),
+                        responsible: document.getElementById('restaurantsResponsible').value
+                    },
+                    screens: {
+                        count: document.getElementById('screensCount').value,
+                        list: collectDynamicList('screensList'),
+                        responsible: document.getElementById('screensResponsible').value
+                    },
+                    sponsors: {
+                        count: document.getElementById('sponsorsCount').value,
+                        types: collectCheckboxes('sponsorshipTypes'),
+                        list: collectDynamicList('sponsorsList'),
+                        responsible: document.getElementById('sponsorsResponsible').value
+                    }
+                },
+
+                // Section 2: Volunteers
+                volunteers: {
+                    collectors: {
+                        count: document.getElementById('collectorsCount').value,
+                        avgPerCollector: document.getElementById('avgPerCollector').value,
+                        sources: collectCheckboxes('volunteerSources'),
+                        sourcesDetails: document.getElementById('volunteerSourcesDetails').value,
+                        responsible: document.getElementById('collectorsResponsible').value
+                    },
+                    donors: {
+                        count: document.getElementById('donorsCount').value,
+                        avgDonation: document.getElementById('avgDonation').value,
+                        channels: collectCheckboxes('donorChannels'),
+                        channelsDetails: document.getElementById('donorChannelsDetails').value,
+                        responsible: document.getElementById('donorsResponsible').value
+                    }
+                },
+
+                // Section 3: NGOs
+                ngos: {
+                    count: document.getElementById('ngosCount').value,
+                    avgMeals: document.getElementById('avgMealsPerNgo').value,
+                    list: collectDynamicList('ngosList'),
+                    experience: collectRadio('ngosExp'),
+                    responsible: document.getElementById('ngosResponsible').value
+                },
+
+                // Section 4: Monthly Distribution
+                monthlyDistribution: {
+                    month1: {
+                        partnerships: document.getElementById('m1_partnerships').value,
+                        volunteers: document.getElementById('m1_volunteers').value,
+                        ngos: document.getElementById('m1_ngos').value
+                    },
+                    month2: {
+                        partnerships: document.getElementById('m2_partnerships').value,
+                        volunteers: document.getElementById('m2_volunteers').value,
+                        ngos: document.getElementById('m2_ngos').value
+                    },
+                    month3: {
+                        partnerships: document.getElementById('m3_partnerships').value,
+                        volunteers: document.getElementById('m3_volunteers').value,
+                        ngos: document.getElementById('m3_ngos').value
+                    },
+                    month4: {
+                        partnerships: document.getElementById('m4_partnerships').value,
+                        volunteers: document.getElementById('m4_volunteers').value,
+                        ngos: document.getElementById('m4_ngos').value
+                    }
+                },
+
+                // Section 5: HR & Supporters
+                humanResources: {
+                    collectors: {
+                        count: document.getElementById('hr_collectors').value,
+                        source: document.getElementById('hr_collectors_source').value,
+                        responsible: document.getElementById('hr_collectors_resp').value
+                    },
+                    distributors: {
+                        count: document.getElementById('hr_distributors').value,
+                        source: document.getElementById('hr_distributors_source').value,
+                        responsible: document.getElementById('hr_distributors_resp').value
+                    },
+                    communicators: {
+                        count: document.getElementById('hr_communicators').value,
+                        source: document.getElementById('hr_communicators_source').value,
+                        responsible: document.getElementById('hr_communicators_resp').value
+                    },
+                    social: {
+                        count: document.getElementById('hr_social').value,
+                        source: document.getElementById('hr_social_source').value,
+                        responsible: document.getElementById('hr_social_resp').value
+                    },
+                    logistics: {
+                        count: document.getElementById('hr_logistics').value,
+                        source: document.getElementById('hr_logistics_source').value,
+                        responsible: document.getElementById('hr_logistics_resp').value
+                    }
+                },
+                supporters: {
+                    list: collectDynamicList('supportersList'),
+                    responsible: document.getElementById('supportersResponsible').value
+                },
+
+                // Section 6: Adopter Plan & Commitment
+                backupPlans: {
+                    partnerships: document.getElementById('backup_partnerships').value,
+                    ngos: document.getElementById('backup_ngos').value,
+                    volunteers: document.getElementById('backup_volunteers').value
+                },
+                risks: collectDynamicList('risksList'),
+                commitment: {
+                    step1: {
+                        action: document.getElementById('step1_action').value,
+                        who: document.getElementById('step1_who').value,
+                        when: document.getElementById('step1_when').value
+                    },
+                    step2: {
+                        action: document.getElementById('step2_action').value,
+                        who: document.getElementById('step2_who').value,
+                        when: document.getElementById('step2_when').value
+                      },
+                step3: {
+                    action: document.getElementById('step3_action').value,
+                    who: document.getElementById('step3_who').value,
+                    when: document.getElementById('step3_when').value
+                },
+                firstCheckin: document.getElementById('firstCheckin').value
+            },
+
+            // Metadata
+            lastUpdated: new Date(),
+            status: 'submitted'
+        };
+
+        return data;
+    }
+
+    function collectDynamicList(listId) {
+        const list = document.getElementById(listId);
+        const items = [];
+        
+        list.querySelectorAll('.dynamic-item').forEach(item => {
+            const itemData = {};
+            item.querySelectorAll('[data-field]').forEach(field => {
+                itemData[field.dataset.field] = field.value;
+            });
+            
+            // Collect checkboxes if any
+            const checkboxes = item.querySelectorAll('.checkbox-item.checked input');
+            if (checkboxes.length > 0) {
+                itemData.options = Array.from(checkboxes).map(cb => cb.value);
+            }
+            
+            items.push(itemData);
+        });
+        
+        return items;
+    }
+
+    function collectCheckboxes(containerId) {
+        const container = document.getElementById(containerId);
+        const checked = container.querySelectorAll('.checkbox-item.checked input');
+        return Array.from(checked).map(cb => cb.value);
+    }
+
+    function collectRadio(name) {
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        return checked ? checked.value : '';
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // الحفظ والإرسال
+    // ═══════════════════════════════════════════════════════════
+
+    async function saveProgress() {
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading"></span>';
+
+        try {
+            const data = collectAllData();
+            data.status = 'in-progress';
+
+            const docRef = db.collection('eish-wa-malh-planning').doc(sessionId);
+            const doc = await docRef.get();
+
+            if (doc.exists) {
+                const sessionData = doc.data();
+                const governorates = sessionData.governorates || {};
+                governorates[governorateData.governorate] = data;
+                await docRef.update({ governorates: governorates });
+            }
+
+            showToast('success', '💾 تم الحفظ بنجاح!');
+
+        } catch (error) {
+            console.error('Save error:', error);
+            showToast('error', '❌ حدث خطأ في الحفظ');
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<span>💾</span><span>حفظ</span>';
+    }
+
+    async function submitPlan() {
+        const btn = document.getElementById('nextBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading"></span> جاري الإرسال...';
+
+        try {
+            const data = collectAllData();
+            data.status = 'submitted';
+            data.submittedAt = new Date();
+
+            const docRef = db.collection('eish-wa-malh-planning').doc(sessionId);
+            const doc = await docRef.get();
+
+            if (doc.exists) {
+                const sessionData = doc.data();
+                const governorates = sessionData.governorates || {};
+                governorates[governorateData.governorate] = data;
+                await docRef.update({ governorates: governorates });
+            }
+
+            // Show summary
+            showSummary(data);
+            showToast('success', '✅ تم إرسال الخطة بنجاح!');
+
+        } catch (error) {
+            console.error('Submit error:', error);
+            showToast('error', '❌ حدث خطأ في الإرسال');
+            btn.disabled = false;
+            btn.innerHTML = '<span>إرسال الخطة</span><span>📤</span>';
+        }
+    }
+
+    function showSummary(data) {
+        document.getElementById('navButtons').style.display = 'none';
+        document.getElementById('progressContainer').style.display = 'none';
+        
+        document.getElementById('summaryGovName').textContent = 'محافظة ' + data.governorate;
+        document.getElementById('summaryTotal').textContent = data.totalTarget.toLocaleString() + ' وجبة';
+        document.getElementById('summaryPartnerships').textContent = data.partnershipsTarget.toLocaleString() + ' وجبة';
+        document.getElementById('summaryVolunteers').textContent = data.volunteersTarget.toLocaleString() + ' وجبة';
+        document.getElementById('summaryNgos').textContent = data.ngosTarget.toLocaleString() + ' وجبة';
+
+        // Steps
+        const stepsHtml = `
+            <div class="summary-row">
+                <span class="summary-label">1. ${data.commitment.step1.action || '-'}</span>
+                <span class="summary-value">${data.commitment.step1.who || '-'}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">2. ${data.commitment.step2.action || '-'}</span>
+                <span class="summary-value">${data.commitment.step2.who || '-'}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">3. ${data.commitment.step3.action || '-'}</span>
+                <span class="summary-value">${data.commitment.step3.who || '-'}</span>
+            </div>
+        `;
+        document.getElementById('summarySteps').innerHTML = stepsHtml;
+
+        document.getElementById('summaryCheckin').textContent = data.commitment.firstCheckin || '-';
+
+        showScreen('summaryScreen');
+    }
+
+    function editPlan() {
+        document.getElementById('navButtons').style.display = 'flex';
+        document.getElementById('progressContainer').style.display = 'block';
+        showScreen('planningScreen');
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // Toast
+    // ═══════════════════════════════════════════════════════════
+
+    function showToast(type, message) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // Initialize
+    // ═══════════════════════════════════════════════════════════
+
+    console.log('Planning participate page loaded for session:', sessionId);
+</script>
+</body>
+</html>
