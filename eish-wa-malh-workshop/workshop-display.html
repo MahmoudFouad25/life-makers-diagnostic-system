@@ -847,7 +847,7 @@
                 <span>🎤</span>
                 <span>السؤال الافتتاحي</span>
             </div>
-            <h1 class="question-text" id="questionText">صناع الحياة موجودة ليه؟</h1>
+            <h1 class="question-text" id="questionText">في رأيك، إيه السبب الحقيقي خلي إن الموضوع نجح؟</h1>
             <div class="question-instruction" id="questionInstruction">
                 💭 فكّر... وشاركنا رأيك
             </div>
@@ -1162,7 +1162,7 @@
             
             const question = workshopData.openingQuestion;
             if (question) {
-                document.getElementById('questionText').textContent = question.text || 'صناع الحياة موجودة ليه؟';
+                document.getElementById('questionText').textContent = question.text || 'في رأيك، إيه السبب الحقيقي خلي إن الموضوع نجح؟';
                 
                 if (question.acceptingResponses) {
                     document.getElementById('questionInstruction').innerHTML = '📱 شارك إجابتك الآن!';
