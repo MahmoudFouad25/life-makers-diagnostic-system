@@ -6,7 +6,7 @@
     <title>إنشاء جلسة - ورشة عيش وملح</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --primary: #667eea;
@@ -732,24 +732,23 @@
             document.getElementById('participantLink').href = participantUrl;
 
             // Generate QR Code
-            const qrContainer = document.getElementById('qrContainer');
-            qrContainer.innerHTML = '';
-            
-            QRCode.toCanvas(participantUrl, {
-                width: 250,
-                margin: 2,
-                color: {
-                    dark: '#1a1a2e',
-                    light: '#ffffff'
-                }
-            }, function(error, canvas) {
-                if (error) {
-                    console.error(error);
-                    qrContainer.innerHTML = '<p style="color: red;">خطأ في إنشاء QR</p>';
-                } else {
-                    qrContainer.appendChild(canvas);
-                }
-            });
+            // Generate QR Code
+const qrContainer = document.getElementById('qrContainer');
+qrContainer.innerHTML = '';
+
+try {
+    new QRCode(qrContainer, {
+        text: participantUrl,
+        width: 250,
+        height: 250,
+        colorDark: '#1a1a2e',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+    });
+} catch (error) {
+    console.error('QR Error:', error);
+    qrContainer.innerHTML = '<p style="color: #ef4444;">خطأ في إنشاء QR Code</p>';
+}
 
             // Reload sessions list
             loadPreviousSessions();
