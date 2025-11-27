@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ لوحة التحكم - ورشة "من التنفيذ للتبني"</title>
+    <link rel="stylesheet" href="workshop-styles.css">
+    <style>
+        /* تنسيقات خاصة بلوحة التحكم */
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        .admin-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            min-height: 100vh;
+        }
+
+        /* القائمة الجانبية */
+        .sidebar {
+            background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-dark-2) 100%);
+            border-left: 2px solid var(--bg-dark-3);
+            padding: 30px 20px;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .admin-logo {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid var(--bg-dark-3);
+        }
+
+        .admin-logo-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            margin: 0 auto 15px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            animation: pulse 3s ease infinite;
+        }
+
+        .admin-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .admin-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .session-badge {
+            background: rgba(102, 126, 234, 0.2);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .session-id-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .session-id-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* قائمة المراحل */
+        .phases-menu {
+            margin-bottom: 25px;
+        }
+
+        .menu-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding-right: 10px;
+        }
+
+        .phase-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .phase-item:hover {
+            background: var(--bg-dark-2);
+        }
+
+        .phase-item.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(240, 147, 251, 0.2) 100%);
+            border-color: var(--primary-color);
+        }
+
+        .phase-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .phase-text {
+            flex: 1;
+        }
+
+        .phase-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .phase-duration {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .phase-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .phase-item.active .phase-status {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s ease infinite;
+        }
+
+        .phase-item.completed .phase-status {
+            background: var(--info);
+        }
+
+        /* أزرار سريعة */
+        .quick-actions {
+            margin-top: 25px;
+        }
+
+        .quick-action-btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: var(--bg-dark-2);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--bg-dark-3);
+            color: var(--text-primary);
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--bg-dark-3);
+        }
+
+        .content-title-section {
+            flex: 1;
+        }
+
+        .content-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .content-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* إحصائيات مباشرة */
+        .live-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .live-stat-card {
+            background: linear-gradient(135deg, var(--bg-dark-2) 0%, var(--bg-dark-3) 100%);
+            border: 1px solid var(--bg-dark-3);
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .live-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .stat-icon-small {
+            font-size: 20px;
+        }
+
+        .stat-value-large {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--success);
+            margin-top: 8px;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s ease infinite;
+        }
+
+        /* بطاقة التحكم الرئيسية */
+        .control-panel {
+            background: linear-gradient(135deg, var(--bg-dark-2) 0%, var(--bg-dark-3) 100%);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--bg-dark-3);
+        }
+
+        .panel-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* بطاقة السؤال */
+        .question-control {
+            background: var(--bg-dark);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .question-text-display {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-right: 4px solid var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* قائمة الإجابات */
+        .responses-container {
+            margin-top: 25px;
+        }
+
+        .response-item {
+            background: var(--bg-dark);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .response-item:hover {
+            border-color: var(--primary-color);
+            transform: translateX(-5px);
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .response-participant {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .response-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .response-text {
+            font-size: 16px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .response-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .response-action-btn {
+            padding: 6px 12px;
+            background: var(--bg-dark-2);
+            border: 1px solid var(--bg-dark-3);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .response-action-btn:hover {
+            background: var(--bg-dark-3);
+            color: var(--text-primary);
+        }
+
+        /* الفليب تشارت الرقمي */
+        .flipchart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 400px;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .flipchart-canvas {
+            min-height: 350px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 18px;
+            color: #1e293b;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .flipchart-tools {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .flipchart-tool-btn {
+            padding: 10px 16px;
+            background: #f1f5f9;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .flipchart-tool-btn:hover {
+            background: #e2e8f0;
+            border-color: #94a3b8;
+        }
+
+        .flipchart-tool-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .flipchart-input {
+            width: 100%;
+            min-height: 350px;
+            padding: 20px;
+            border: 2px solid #cbd5e0;
+            border-radius: 10px;
+            font-size: 18px;
+            font-family: 'Segoe UI', sans-serif;
+            resize: vertical;
+            color: #1e293b;
+        }
+
+        .flipchart-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        /* حالة فارغة */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .empty-subtext {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* رسالة تحذير */
+        .warning-box {
+            background: rgba(245, 158, 11, 0.2);
+            border: 2px solid var(--warning);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .warning-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .warning-text {
+            flex: 1;
+            color: #fbbf24;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* التبويبات */
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--bg-dark-3);
+            padding-bottom: 0;
+        }
+
+        .tab-button {
+            padding: 14px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            animation: slideInUp 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
+        }
+
+        .toast.warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                height: auto;
+                border-left: none;
+                border-bottom: 2px solid var(--bg-dark-3);
+            }
+
+            .main-content {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- القائمة الجانبية -->
+        <aside class="sidebar">
+            <div class="admin-logo">
+                <div class="admin-logo-icon">⚙️</div>
+                <div class="admin-title">لوحة التحكم</div>
+                <div class="admin-subtitle">ورشة عيش وملح</div>
+            </div>
+
+            <div class="session-badge">
+                <div class="session-id-text">معرّف الجلسة</div>
+                <div class="session-id-value" id="sidebarSessionId">loading...</div>
+            </div>
+
+            <!-- قائمة المراحل -->
+            <div class="phases-menu">
+                <div class="menu-label">مراحل الورشة</div>
+                
+                <div class="phase-item" data-phase="phase-1" onclick="switchPhase('phase-1')">
+                    <div class="phase-icon">🎤</div>
+                    <div class="phase-text">
+                        <div class="phase-name">الصدمة والمواجهة</div>
+                        <div class="phase-duration">25 دقيقة</div>
+                    </div>
+                    <div class="phase-status"></div>
+                </div>
+
+                <div class="phase-item" data-phase="phase-2" onclick="switchPhase('phase-2')">
+                    <div class="phase-icon">💡</div>
+                    <div class="phase-text">
+                        <div class="phase-name">الفلسفة</div>
+                        <div class="phase-duration">25 دقيقة</div>
+                    </div>
+                    <div class="phase-status"></div>
+                </div>
+
+                <div class="phase-item" data-phase="phase-3" onclick="switchPhase('phase-3')">
+                    <div class="phase-icon">📝</div>
+                    <div class="phase-text">
+                        <div class="phase-name">التفكيك والاستبيان</div>
+                        <div class="phase-duration">40 دقيقة</div>
+                    </div>
+                    <div class="phase-status"></div>
+                </div>
+            </div>
+
+            <!-- أزرار سريعة -->
+            <div class="quick-actions">
+                <div class="menu-label">إجراءات سريعة</div>
+                <button class="quick-action-btn" onclick="openDisplayScreen()">
+                    📺 فتح شاشة العرض
+                </button>
+                <button class="quick-action-btn" onclick="exportAllData()">
+                    💾 تصدير البيانات
+                </button>
+                <button class="quick-action-btn" onclick="resetWorkshop()">
+                    🔄 إعادة تعيين
+                </button>
+            </div>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <!-- رأس المحتوى -->
+            <div class="content-header">
+                <div class="content-title-section">
+                    <h1 class="content-title">
+                        <span id="phaseIcon">🎤</span>
+                        <span id="phaseTitle">الصدمة والمواجهة</span>
+                    </h1>
+                    <p class="content-subtitle" id="phaseDescription">إطلاق السؤال الافتتاحي والحوار العميق</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="location.reload()">
+                        🔄 تحديث
+                    </button>
+                </div>
+            </div>
+
+            <!-- الإحصائيات المباشرة -->
+            <div class="live-stats">
+                <div class="live-stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">المشاركون المتصلون</span>
+                        <span class="stat-icon-small">👥</span>
+                    </div>
+                    <div class="stat-value-large" id="participantsCount">0</div>
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        <span>مباشر</span>
+                    </div>
+                </div>
+
+                <div class="live-stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">الإجابات الواردة</span>
+                        <span class="stat-icon-small">💬</span>
+                    </div>
+                    <div class="stat-value-large" id="responsesCount">0</div>
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        <span>مباشر</span>
+                    </div>
+                </div>
+
+                <div class="live-stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">الوقت المنقضي</span>
+                        <span class="stat-icon-small">⏱️</span>
+                    </div>
+                    <div class="stat-value-large" id="elapsedTime">00:00</div>
+                </div>
+            </div>
+
+            <!-- محتوى المرحلة 1 -->
+            <div id="phase1Content" class="phase-content">
+                <!-- التحكم في السؤال الافتتاحي -->
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            ❓ السؤال الافتتاحي
+                        </h2>
+                        <div class="panel-actions">
+                            <button class="btn btn-primary" id="launchQuestionBtn">
+                                🚀 إطلاق السؤال
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="question-control">
+                        <div class="question-text-display" id="openingQuestionText">
+                            صناع الحياة موجودة ليه؟
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-success" id="enableResponsesBtn" disabled>
+                                ✅ تفعيل الإجابات
+                            </button>
+                            <button class="btn btn-warning" id="closeResponsesBtn" disabled>
+                                ⏸️ إيقاف الإجابات
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- قائمة الإجابات -->
+                    <div class="responses-container">
+                        <h3 style="color: var(--text-primary); font-size: 18px; font-weight: 700; margin-bottom: 15px;">
+                            📥 الإجابات الواردة (<span id="responsesCountDisplay">0</span>)
+                        </h3>
+                        <div id="responsesList">
+                            <div class="empty-state">
+                                <div class="empty-icon">📭</div>
+                                <div class="empty-text">لا توجد إجابات بعد</div>
+                                <div class="empty-subtext">ستظهر الإجابات هنا فور إرسالها من المشاركين</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- الفليب تشارت الرقمي -->
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            📝 الفليب تشارت الرقمي
+                        </h2>
+                        <div class="panel-actions">
+                            <button class="btn btn-success" id="saveFlipchartBtn">
+                                💾 حفظ
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flipchart-container">
+                        <div class="flipchart-tools">
+                            <button class="flipchart-tool-btn active" onclick="setFlipchartMode('text')">
+                                ✍️ كتابة
+                            </button>
+                            <button class="flipchart-tool-btn" onclick="clearFlipchart()">
+                                🗑️ مسح
+                            </button>
+                        </div>
+                        <textarea 
+                            class="flipchart-input" 
+                            id="flipchartInput"
+                            placeholder="اكتب هنا الأسباب والملاحظات..."
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- محتوى المرحلة 2 -->
+            <div id="phase2Content" class="phase-content hidden">
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            💡 مرحلة الفلسفة
+                        </h2>
+                    </div>
+                    <div class="alert alert-info">
+                        ℹ️ هذه مرحلة شرح فقط - لا يوجد تفاعل من المشاركين. استخدم شاشة العرض لعرض المحتوى الفلسفي.
+                    </div>
+                </div>
+            </div>
+
+            <!-- محتوى المرحلة 3 -->
+            <div id="phase3Content" class="phase-content hidden">
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            📝 الاستبيان والمجموعات
+                        </h2>
+                        <div class="panel-actions">
+                            <button class="btn btn-primary" id="launchSurveyBtn">
+                                📊 إطلاق الاستبيان
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <div class="warning-icon">⚠️</div>
+                        <div class="warning-text">
+                            تأكد من أن جميع المشاركين متصلون قبل إطلاق الاستبيان
+                        </div>
+                    </div>
+
+                    <div id="surveyStatsContainer" class="hidden">
+                        <!-- سيتم ملء الإحصائيات هنا -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- شاشة التحميل -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">جاري التحميل...</div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, orderBy, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+            authDomain: "life-makers-diagnostic.firebaseapp.com",
+            projectId: "life-makers-diagnostic",
+            storageBucket: "life-makers-diagnostic.firebasestorage.app",
+            messagingSenderId: "819336926740",
+            appId: "1:819336926740:web:d338b3299e6d18e3b67901",
+            measurementId: "G-4Z1FWWKG1C"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Get Session ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session');
+
+        if (!sessionId) {
+            alert('⚠️ لم يتم تحديد معرّف الجلسة. سيتم إعادة التوجيه إلى صفحة التحضير.');
+            window.location.href = 'workshop-setup.html';
+        }
+
+        document.getElementById('sidebarSessionId').textContent = sessionId;
+
+        // Global State
+        let currentPhase = 'phase-1';
+        let startTime = Date.now();
+        let workshopData = null;
+
+        // Timer
+        setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('elapsedTime').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }, 1000);
+
+        // Listen to Workshop Data
+        const workshopRef = doc(db, 'workshops', sessionId);
+        onSnapshot(workshopRef, (docSnap) => {
+            if (docSnap.exists()) {
+                workshopData = docSnap.data();
+                updateUI();
+            }
+        });
+
+        function updateUI() {
+            if (!workshopData) return;
+
+            // Update participants count
+            document.getElementById('participantsCount').textContent = 
+                workshopData.participants ? workshopData.participants.length : 0;
+
+            // Update responses count
+            const responsesCount = workshopData.responses?.openingQuestion?.length || 0;
+            document.getElementById('responsesCount').textContent = responsesCount;
+            document.getElementById('responsesCountDisplay').textContent = responsesCount;
+
+            // Update responses list
+            if (responsesCount > 0) {
+                renderResponses(workshopData.responses.openingQuestion);
+            }
+        }
+
+        function renderResponses(responses) {
+            const container = document.getElementById('responsesList');
+            container.innerHTML = '';
+
+            responses.forEach((response, index) => {
+                const item = document.createElement('div');
+                item.className = 'response-item';
+                item.innerHTML = `
+                    <div class="response-header">
+                        <span class="response-participant">👤 ${response.participantName || 'مشارك ' + (index + 1)}</span>
+                        <span class="response-time">${formatTime(response.timestamp)}</span>
+                    </div>
+                    <div class="response-text">${response.answer}</div>
+                    <div class="response-actions">
+                        <button class="response-action-btn" onclick="highlightResponse(${index})">
+                            ⭐ تمييز
+                        </button>
+                        <button class="response-action-btn" onclick="addToFlipchart('${response.answer.replace(/'/g, "\\'")}')">
+                            📝 إضافة للفليب تشارت
+                        </button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function formatTime(timestamp) {
+            if (!timestamp) return 'الآن';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Launch Opening Question
+        document.getElementById('launchQuestionBtn').onclick = async () => {
+            try {
+                await updateDoc(workshopRef, {
+                    currentPhase: 'phase-1-question-active',
+                    openingQuestion: {
+                        text: 'صناع الحياة موجودة ليه؟',
+                        active: true,
+                        acceptingResponses: false,
+                        launchedAt: new Date()
+                    }
+                });
+
+                showToast('success', '✅ تم إطلاق السؤال الافتتاحي');
+                document.getElementById('launchQuestionBtn').disabled = true;
+                document.getElementById('enableResponsesBtn').disabled = false;
+
+            } catch (error) {
+                console.error('Error launching question:', error);
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // Enable Responses
+        document.getElementById('enableResponsesBtn').onclick = async () => {
+            try {
+                await updateDoc(workshopRef, {
+                    'openingQuestion.acceptingResponses': true
+                });
+                showToast('success', '✅ تم تفعيل الإجابات');
+                document.getElementById('enableResponsesBtn').disabled = true;
+                document.getElementById('closeResponsesBtn').disabled = false;
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // Close Responses
+        document.getElementById('closeResponsesBtn').onclick = async () => {
+            try {
+                await updateDoc(workshopRef, {
+                    'openingQuestion.acceptingResponses': false
+                });
+                showToast('warning', '⏸️ تم إيقاف الإجابات');
+                document.getElementById('closeResponsesBtn').disabled = true;
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // Save Flipchart
+        document.getElementById('saveFlipchartBtn').onclick = async () => {
+            const content = document.getElementById('flipchartInput').value;
+            try {
+                await updateDoc(workshopRef, {
+                    flipchart: {
+                        content: content,
+                        lastUpdated: new Date()
+                    }
+                });
+                showToast('success', '💾 تم حفظ الفليب تشارت');
+            } catch (error) {
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // Switch Phase
+        window.switchPhase = function(phase) {
+            currentPhase = phase;
+            
+            // Update sidebar
+            document.querySelectorAll('.phase-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-phase="${phase}"]`).classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.phase-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            const phaseInfo = {
+                'phase-1': {
+                    icon: '🎤',
+                    title: 'الصدمة والمواجهة',
+                    description: 'إطلاق السؤال الافتتاحي والحوار العميق'
+                },
+                'phase-2': {
+                    icon: '💡',
+                    title: 'الفلسفة',
+                    description: 'شرح فلسفة صناع الحياة والفرق بين الأثر والفارق'
+                },
+                'phase-3': {
+                    icon: '📝',
+                    title: 'التفكيك والاستبيان',
+                    description: 'استبيان "مين أنت فعلاً؟" وتقسيم المجموعات'
+                }
+            };
+
+            document.getElementById('phaseIcon').textContent = phaseInfo[phase].icon;
+            document.getElementById('phaseTitle').textContent = phaseInfo[phase].title;
+            document.getElementById('phaseDescription').textContent = phaseInfo[phase].description;
+            document.getElementById(`${phase}Content`).classList.remove('hidden');
+        };
+
+        // Helper Functions
+        window.addToFlipchart = function(text) {
+            const input = document.getElementById('flipchartInput');
+            input.value += (input.value ? '\n' : '') + '• ' + text;
+            showToast('success', '✅ تم الإضافة للفليب تشارت');
+        };
+
+        window.clearFlipchart = function() {
+            if (confirm('🗑️ هل أنت متأكد من مسح الفليب تشارت؟')) {
+                document.getElementById('flipchartInput').value = '';
+            }
+        };
+
+        window.openDisplayScreen = function() {
+            window.open(`workshop-display.html?session=${sessionId}`, '_blank');
+        };
+
+        window.exportAllData = function() {
+            const dataStr = JSON.stringify(workshopData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `workshop-${sessionId}-${Date.now()}.json`;
+            link.click();
+            showToast('success', '💾 تم تصدير البيانات');
+        };
+
+        window.resetWorkshop = function() {
+            if (confirm('⚠️ هل أنت متأكد من إعادة تعيين الورشة؟ سيتم حذف جميع البيانات!')) {
+                // Implement reset logic
+                showToast('warning', '🔄 جاري إعادة التعيين...');
+            }
+        };
+
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Initialize
+        console.log('Admin Dashboard loaded for session:', sessionId);
+    </script>
+</body>
+</html>
