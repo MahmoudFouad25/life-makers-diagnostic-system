@@ -854,27 +854,167 @@
 
             <!-- محتوى المرحلة 3 -->
             <div id="phase3Content" class="phase-content hidden">
-                <div class="control-panel">
-                    <div class="panel-header">
-                        <h2 class="panel-title">
-                            📝 الاستبيان والمجموعات
-                        </h2>
-                        <div class="panel-actions">
-                            <button class="btn btn-primary" id="launchSurveyBtn">
-                                📊 إطلاق الاستبيان
+                <!-- تبويبات المرحلة 3 -->
+                <div class="tabs-container">
+                    <button class="tab-button active" onclick="switchTab('surveyTab')">
+                        📊 الاستبيان
+                    </button>
+                    <button class="tab-button" onclick="switchTab('groupsTab')">
+                        👥 المجموعات
+                    </button>
+                    <button class="tab-button" onclick="switchTab('resultsTab')">
+                        🎯 النتائج
+                    </button>
+                </div>
+
+                <!-- تبويب الاستبيان -->
+                <div id="surveyTab" class="tab-content active">
+                    <div class="control-panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title">
+                                📝 استبيان "مين أنت فعلاً؟"
+                            </h2>
+                            <div class="panel-actions">
+                                <button class="btn btn-primary" id="launchSurveyBtn">
+                                    🚀 إطلاق الاستبيان
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="warning-box">
+                            <div class="warning-icon">⚠️</div>
+                            <div class="warning-text">
+                                تأكد من أن جميع المشاركين متصلون قبل إطلاق الاستبيان
+                            </div>
+                        </div>
+
+                        <!-- إحصائيات الاستبيان -->
+                        <div id="surveyStatsContainer" class="hidden">
+                            <div class="stats-grid-display" style="margin-top: 30px;">
+                                <div class="stat-card-large">
+                                    <div class="stat-icon-large">📊</div>
+                                    <div class="stat-value-huge" id="totalSurveyResponses">0</div>
+                                    <div class="stat-label-large">إجمالي الإجابات</div>
+                                </div>
+                                <div class="stat-card-large">
+                                    <div class="stat-icon-large">⚡</div>
+                                    <div class="stat-value-huge" id="executorsCount">0</div>
+                                    <div class="stat-label-large">منفذون (5-8)</div>
+                                </div>
+                                <div class="stat-card-large">
+                                    <div class="stat-icon-large">🔄</div>
+                                    <div class="stat-value-huge" id="middleCount">0</div>
+                                    <div class="stat-label-large">في المنتصف (9-12)</div>
+                                </div>
+                                <div class="stat-card-large">
+                                    <div class="stat-icon-large">🎯</div>
+                                    <div class="stat-value-huge" id="adoptersCount">0</div>
+                                    <div class="stat-label-large">متبنون (13-15)</div>
+                                </div>
+                            </div>
+
+                            <!-- الرسم البياني -->
+                            <div class="chart-display" style="margin-top: 30px;">
+                                <h3 class="chart-title">📈 توزيع النتائج</h3>
+                                <div class="bar-chart" id="surveyChart">
+                                    <!-- سيتم توليده ديناميكياً -->
+                                </div>
+                            </div>
+
+                            <!-- قائمة التفاصيل -->
+                            <div style="margin-top: 30px;">
+                                <h3 style="color: var(--text-primary); font-size: 20px; font-weight: 700; margin-bottom: 20px;">
+                                    👥 تفاصيل المشاركين
+                                </h3>
+                                <div id="surveyDetailsList">
+                                    <!-- سيتم ملؤها ديناميكياً -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تبويب المجموعات -->
+                <div id="groupsTab" class="tab-content">
+                    <div class="control-panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title">
+                                👥 تقسيم المجموعات
+                            </h2>
+                            <div class="panel-actions">
+                                <button class="btn btn-success" id="autoGroupBtn">
+                                    🤖 تقسيم تلقائي
+                                </button>
+                                <button class="btn btn-secondary" id="manualGroupBtn">
+                                    ✋ تقسيم يدوي
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" style="margin-bottom: 25px;">
+                            💡 <strong>نصيحة:</strong> التقسيم التلقائي يوزع المشاركين بالتساوي على 7 مجموعات حسب المواضيع السبعة.
+                        </div>
+
+                        <!-- إعدادات التقسيم -->
+                        <div style="background: var(--bg-dark); padding: 25px; border-radius: 15px; margin-bottom: 25px;">
+                            <h3 style="color: var(--text-primary); font-size: 18px; font-weight: 700; margin-bottom: 20px;">
+                                ⚙️ إعدادات المجموعات
+                            </h3>
+                            
+                            <div class="input-group">
+                                <label class="input-label">عدد المجموعات</label>
+                                <input type="number" id="groupsCountInput" class="input-field" value="7" min="1" max="10">
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">المواضيع (موضوع لكل مجموعة)</label>
+                                <textarea id="groupTopicsInput" class="input-field" style="min-height: 150px;">المتبني بيتعامل مع المشاكل إزاي؟
+المتبني بيتعامل مع الفشل إزاي؟
+المتبني بيتواصل إزاي؟
+المتبني بيتعامل مع نقص الموارد إزاي؟
+المتبني بيحافظ على الحماس إزاي؟
+المتبني بيبني علاقات وشراكات إزاي؟
+المتبني بيفكر في المستقبل إزاي؟</textarea>
+                            </div>
+
+                            <button class="btn btn-primary" id="applyGroupsBtn">
+                                ✅ تطبيق التقسيم
                             </button>
                         </div>
-                    </div>
 
-                    <div class="warning-box">
-                        <div class="warning-icon">⚠️</div>
-                        <div class="warning-text">
-                            تأكد من أن جميع المشاركين متصلون قبل إطلاق الاستبيان
+                        <!-- عرض المجموعات -->
+                        <div id="groupsDisplay" class="hidden">
+                            <h3 style="color: var(--text-primary); font-size: 20px; font-weight: 700; margin-bottom: 20px;">
+                                📋 المجموعات المشكلة
+                            </h3>
+                            <div id="groupsList">
+                                <!-- سيتم توليدها ديناميكياً -->
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div id="surveyStatsContainer" class="hidden">
-                        <!-- سيتم ملء الإحصائيات هنا -->
+                <!-- تبويب النتائج -->
+                <div id="resultsTab" class="tab-content">
+                    <div class="control-panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title">
+                                🎯 نتائج المجموعات
+                            </h2>
+                            <div class="panel-actions">
+                                <button class="btn btn-success" id="exportAllBtn">
+                                    📥 تصدير الكل
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="groupResultsContainer">
+                            <div class="empty-state">
+                                <div class="empty-icon">📭</div>
+                                <div class="empty-text">لا توجد نتائج بعد</div>
+                                <div class="empty-subtext">ستظهر نتائج المجموعات هنا بعد انتهاء العمل الجماعي</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1142,6 +1282,262 @@
                 toast.remove();
             }, 3000);
         }
+
+        // ════════════════════════════════════════════════════════
+        // المرحلة الثالثة: الاستبيان والمجموعات
+        // ════════════════════════════════════════════════════════
+
+        // Launch Survey
+        document.getElementById('launchSurveyBtn').onclick = async () => {
+            const confirmed = window.confirm('🚀 هل تريد إطلاق الاستبيان للمشاركين؟');
+            if (!confirmed) return;
+
+            try {
+                await updateDoc(workshopRef, {
+                    currentPhase: 'phase-3-survey',
+                    surveyActive: true,
+                    surveyLaunchedAt: new Date()
+                });
+
+                showToast('success', '✅ تم إطلاق الاستبيان بنجاح!');
+                document.getElementById('launchSurveyBtn').disabled = true;
+                document.getElementById('surveyStatsContainer').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error launching survey:', error);
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // Update Survey Stats
+        function updateSurveyStats() {
+            if (!workshopData || !workshopData.responses?.survey) return;
+
+            const responses = workshopData.responses.survey;
+            const total = responses.length;
+
+            // تصنيف النتائج
+            let executors = 0;  // 5-8
+            let middle = 0;     // 9-12
+            let adopters = 0;   // 13-15
+
+            responses.forEach(response => {
+                const score = response.totalScore;
+                if (score >= 5 && score <= 8) executors++;
+                else if (score >= 9 && score <= 12) middle++;
+                else if (score >= 13 && score <= 15) adopters++;
+            });
+
+            // تحديث الإحصائيات
+            document.getElementById('totalSurveyResponses').textContent = total;
+            document.getElementById('executorsCount').textContent = executors;
+            document.getElementById('middleCount').textContent = middle;
+            document.getElementById('adoptersCount').textContent = adopters;
+
+            // رسم الرسم البياني
+            renderSurveyChart(executors, middle, adopters, total);
+
+            // عرض التفاصيل
+            renderSurveyDetails(responses);
+        }
+
+        function renderSurveyChart(executors, middle, adopters, total) {
+            const chart = document.getElementById('surveyChart');
+            chart.innerHTML = '';
+
+            const data = [
+                { label: 'منفذون (5-8)', value: executors, color: 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)' },
+                { label: 'في المنتصف (9-12)', value: middle, color: 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)' },
+                { label: 'متبنون (13-15)', value: adopters, color: 'linear-gradient(90deg, #10b981 0%, #059669 100%)' }
+            ];
+
+            data.forEach(item => {
+                const percentage = total > 0 ? (item.value / total * 100).toFixed(1) : 0;
+                
+                const barItem = document.createElement('div');
+                barItem.className = 'bar-item';
+                barItem.innerHTML = `
+                    <div class="bar-label">${item.label}</div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: ${percentage}%; background: ${item.color};">
+                            <span class="bar-value">${item.value} (${percentage}%)</span>
+                        </div>
+                    </div>
+                `;
+                chart.appendChild(barItem);
+            });
+        }
+
+        function renderSurveyDetails(responses) {
+            const container = document.getElementById('surveyDetailsList');
+            container.innerHTML = '';
+
+            // ترتيب حسب النتيجة (من الأعلى للأقل)
+            const sorted = [...responses].sort((a, b) => b.totalScore - a.totalScore);
+
+            sorted.forEach((response, index) => {
+                const score = response.totalScore;
+                let category, categoryColor;
+
+                if (score >= 5 && score <= 8) {
+                    category = 'منفذ';
+                    categoryColor = '#ef4444';
+                } else if (score >= 9 && score <= 12) {
+                    category = 'في المنتصف';
+                    categoryColor = '#f59e0b';
+                } else {
+                    category = 'متبني';
+                    categoryColor = '#10b981';
+                }
+
+                const item = document.createElement('div');
+                item.className = 'response-item';
+                item.innerHTML = `
+                    <div class="response-header">
+                        <span class="response-participant">👤 ${response.participantName}</span>
+                        <span style="color: ${categoryColor}; font-weight: 700; font-size: 16px;">
+                            ${score}/15 - ${category}
+                        </span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Tab Switching
+        window.switchTab = function(tabName) {
+            // Update buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+        };
+
+        // Auto Group Division
+        document.getElementById('autoGroupBtn').onclick = async () => {
+            const confirmed = window.confirm('🤖 هل تريد تقسيم المشاركين تلقائياً على 7 مجموعات؟');
+            if (!confirmed) return;
+
+            try {
+                const participants = workshopData.participants || [];
+                const groupsCount = parseInt(document.getElementById('groupsCountInput').value);
+                const topics = document.getElementById('groupTopicsInput').value.split('\n').filter(t => t.trim());
+
+                if (participants.length === 0) {
+                    showToast('error', '⚠️ لا يوجد مشاركون للتقسيم');
+                    return;
+                }
+
+                // خلط المشاركين عشوائياً
+                const shuffled = [...participants].sort(() => Math.random() - 0.5);
+                
+                // تقسيم إلى مجموعات
+                const groups = [];
+                const membersPerGroup = Math.ceil(shuffled.length / groupsCount);
+
+                for (let i = 0; i < groupsCount; i++) {
+                    const start = i * membersPerGroup;
+                    const end = start + membersPerGroup;
+                    const members = shuffled.slice(start, end);
+
+                    if (members.length > 0) {
+                        groups.push({
+                            id: `group-${i + 1}`,
+                            name: `المجموعة ${i + 1}`,
+                            topic: topics[i] || `موضوع ${i + 1}`,
+                            members: members,
+                            results: null
+                        });
+                    }
+                }
+
+                // حفظ المجموعات
+                await updateDoc(workshopRef, {
+                    groups: groups,
+                    currentPhase: 'phase-3-groups'
+                });
+
+                showToast('success', '✅ تم تقسيم المجموعات بنجاح!');
+                displayGroups(groups);
+
+            } catch (error) {
+                console.error('Error creating groups:', error);
+                showToast('error', '❌ حدث خطأ: ' + error.message);
+            }
+        };
+
+        // Apply Groups Settings
+        document.getElementById('applyGroupsBtn').onclick = () => {
+            showToast('success', '✅ تم تطبيق الإعدادات. اضغط "تقسيم تلقائي" للمتابعة.');
+        };
+
+        // Display Groups
+        function displayGroups(groups) {
+            document.getElementById('groupsDisplay').classList.remove('hidden');
+            const container = document.getElementById('groupsList');
+            container.innerHTML = '';
+
+            groups.forEach((group, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.marginBottom = '20px';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            ${group.name} (${group.members.length} أعضاء)
+                        </h3>
+                        <span class="badge badge-primary">${index + 1}</span>
+                    </div>
+                    <div style="background: var(--bg-dark); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                        <strong style="color: var(--text-primary); font-size: 16px;">📌 الموضوع:</strong>
+                        <p style="color: var(--text-secondary); margin-top: 8px; font-size: 15px;">
+                            ${group.topic}
+                        </p>
+                    </div>
+                    <div>
+                        <strong style="color: var(--text-primary); font-size: 14px; margin-bottom: 10px; display: block;">
+                            👥 الأعضاء:
+                        </strong>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            ${group.members.map(m => `
+                                <span style="padding: 6px 14px; background: var(--bg-dark); border: 1px solid var(--bg-dark-3); border-radius: 8px; color: var(--text-secondary); font-size: 13px;">
+                                    ${m.name}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Export All Data
+        document.getElementById('exportAllBtn').onclick = () => {
+            exportAllData();
+        };
+
+        // Update UI when workshop data changes
+        const originalUpdateUI = updateUI;
+        updateUI = function() {
+            originalUpdateUI();
+            
+            // Update survey stats if available
+            if (workshopData?.responses?.survey?.length > 0) {
+                document.getElementById('surveyStatsContainer').classList.remove('hidden');
+                updateSurveyStats();
+            }
+
+            // Display groups if available
+            if (workshopData?.groups?.length > 0) {
+                displayGroups(workshopData.groups);
+            }
+        };
 
         // Initialize
         console.log('Admin Dashboard loaded for session:', sessionId);
