@@ -1539,6 +1539,81 @@
             }
         };
 
+        // ════════════════════════════════════════════════════════
+        // Export Data Functions
+        // ════════════════════════════════════════════════════════
+
+        function exportAllData() {
+            if (!workshopData) {
+                showToast('error', '⚠️ لا توجد بيانات للتصدير');
+                return;
+            }
+
+            const exportData = {
+                sessionInfo: {
+                    sessionId: sessionId,
+                    createdAt: workshopData.createdAt,
+                    status: workshopData.status,
+                    currentPhase: workshopData.currentPhase
+                },
+                participants: workshopData.participants || [],
+                openingQuestion: {
+                    question: workshopData.openingQuestion?.text,
+                    responses: workshopData.responses?.openingQuestion || []
+                },
+                flipchart: workshopData.flipchart?.content || '',
+                survey: {
+                    responses: workshopData.responses?.survey || [],
+                    statistics: calculateSurveyStatistics()
+                },
+                groups: workshopData.groups || []
+            };
+
+            // Convert to JSON
+            const jsonString = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            // Create download link
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `workshop-${sessionId}-${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast('success', '✅ تم تصدير البيانات بنجاح!');
+        }
+
+        function calculateSurveyStatistics() {
+            const responses = workshopData.responses?.survey || [];
+            if (responses.length === 0) return null;
+
+            let executors = 0;
+            let middle = 0;
+            let adopters = 0;
+
+            responses.forEach(response => {
+                const score = response.totalScore;
+                if (score >= 5 && score <= 8) executors++;
+                else if (score >= 9 && score <= 12) middle++;
+                else if (score >= 13 && score <= 15) adopters++;
+            });
+
+            return {
+                total: responses.length,
+                executors: executors,
+                middle: middle,
+                adopters: adopters,
+                percentages: {
+                    executors: ((executors / responses.length) * 100).toFixed(1),
+                    middle: ((middle / responses.length) * 100).toFixed(1),
+                    adopters: ((adopters / responses.length) * 100).toFixed(1)
+                }
+            };
+        }
+
         // Initialize
         console.log('Admin Dashboard loaded for session:', sessionId);
     </script>
