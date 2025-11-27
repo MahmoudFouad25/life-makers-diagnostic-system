@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شاشة العرض - تخطيط عيش وملح</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-light: #7c8ff8;
+            --secondary: #f093fb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg-dark: #0a0a12;
+            --bg-dark-2: #12121f;
+            --bg-dark-3: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-muted: #64748b;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ═══ Status Bar ═══ */
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--bg-dark-2);
+            border-bottom: 2px solid var(--bg-dark-3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            z-index: 1000;
+        }
+
+        .status-bar .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-bar .logo-icon {
+            font-size: 28px;
+        }
+
+        .status-bar .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status-bar .stats {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--bg-dark-3);
+            border-radius: 12px;
+        }
+
+        .stat-item .stat-icon {
+            font-size: 20px;
+        }
+
+        .stat-item .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-light);
+        }
+
+        .stat-item .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* ═══ Main Content ═══ */
+        .main-content {
+            padding-top: 60px;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ═══ Screens ═══ */
+        .screen {
+            display: none;
+            width: 100%;
+            height: calc(100vh - 60px);
+            padding: 50px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* ═══ Waiting Screen ═══ */
+        #waitingScreen {
+            text-align: center;
+            background: radial-gradient(circle at center, var(--bg-dark-2) 0%, var(--bg-dark) 100%);
+        }
+
+        .waiting-icon {
+            font-size: 150px;
+            margin-bottom: 40px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .waiting-title {
+            font-size: 64px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .waiting-subtitle {
+            font-size: 28px;
+            color: var(--text-secondary);
+        }
+
+        /* ═══ Slide Screens ═══ */
+        .slide-screen {
+            text-align: center;
+            background: radial-gradient(circle at center, var(--bg-dark-2) 0%, var(--bg-dark) 100%);
+        }
+
+        .slide-content {
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        .slide-title {
+            font-size: 72px;
+            font-weight: 900;
+            margin-bottom: 50px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.3;
+        }
+
+        .slide-subtitle {
+            font-size: 36px;
+            color: var(--text-secondary);
+            margin-bottom: 60px;
+        }
+
+        /* ═══ Comparison Box ═══ */
+        .comparison-box {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 50px;
+        }
+
+        .comparison-item {
+            padding: 40px 60px;
+            background: var(--bg-dark-2);
+            border: 3px solid var(--bg-dark-3);
+            border-radius: 25px;
+            min-width: 400px;
+        }
+
+        .comparison-item.executor {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .comparison-item.adopter {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .comparison-label {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .comparison-item.executor .comparison-label {
+            color: var(--error);
+        }
+
+        .comparison-item.adopter .comparison-label {
+            color: var(--success);
+        }
+
+        .comparison-text {
+            font-size: 24px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* ═══ Distribution Chart ═══ */
+        .distribution-chart {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .distribution-item {
+            text-align: center;
+            padding: 40px;
+            background: var(--bg-dark-2);
+            border: 3px solid var(--bg-dark-3);
+            border-radius: 25px;
+            min-width: 280px;
+        }
+
+        .distribution-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .distribution-percent {
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+        }
+
+        .distribution-label {
+            font-size: 24px;
+            color: var(--text-secondary);
+        }
+
+        /* ═══ Timeline ═══ */
+        .timeline {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .timeline-item {
+            text-align: center;
+            padding: 30px 40px;
+            background: var(--bg-dark-2);
+            border: 3px solid var(--bg-dark-3);
+            border-radius: 20px;
+            min-width: 220px;
+            position: relative;
+        }
+
+        .timeline-item::after {
+            content: '→';
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 30px;
+            color: var(--text-muted);
+        }
+
+        .timeline-item:first-child::after {
+            display: none;
+        }
+
+        .timeline-month {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+        }
+
+        .timeline-percent {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .timeline-label {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+
+        /* ═══ Example Box ═══ */
+        .example-box {
+            background: var(--bg-dark-2);
+            border: 3px solid var(--primary);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .example-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary-light);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .example-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .example-section {
+            padding: 25px;
+            background: var(--bg-dark-3);
+            border-radius: 20px;
+        }
+
+        .example-section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .example-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--bg-dark-2);
+            font-size: 20px;
+        }
+
+        .example-row:last-child {
+            border-bottom: none;
+        }
+
+        .example-row .label {
+            color: var(--text-muted);
+        }
+
+        .example-row .value {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* ═══ Questions List ═══ */
+        .questions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            padding: 30px 40px;
+            background: var(--bg-dark-2);
+            border: 3px solid var(--bg-dark-3);
+            border-radius: 20px;
+            font-size: 32px;
+            color: var(--text-primary);
+        }
+
+        .question-icon {
+            font-size: 40px;
+            flex-shrink: 0;
+        }
+
+        /* ═══ Presentation Guide ═══ */
+        .presentation-box {
+            background: var(--bg-dark-2);
+            border: 3px solid var(--primary);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 800px;
+        }
+
+        .presentation-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .presentation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .presentation-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px 30px;
+            background: var(--bg-dark-3);
+            border-radius: 15px;
+            font-size: 28px;
+        }
+
+        .presentation-num {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+
+        /* ═══ Commitment Box ═══ */
+        .commitment-display-box {
+            background: var(--bg-dark-2);
+            border: 3px solid var(--success);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .commitment-display-title {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--success);
+            margin-bottom: 40px;
+        }
+
+        .commitment-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 30px;
+            background: var(--bg-dark-3);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .commitment-field .label {
+            color: var(--text-secondary);
+        }
+
+        .commitment-field .value {
+            font-weight: 700;
+            color: var(--text-primary);
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 5px;
+            min-width: 200px;
+        }
+
+        /* ═══ End Screen ═══ */
+        .end-box {
+            text-align: center;
+            max-width: 1000px;
+        }
+
+        .end-title {
+            font-size: 52px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+        }
+
+        .end-subtitle {
+            font-size: 36px;
+            color: var(--text-secondary);
+            margin-bottom: 50px;
+        }
+
+        .end-quote {
+            font-size: 72px;
+            font-weight: 900;
+            padding: 50px 80px;
+            background: var(--bg-dark-2);
+            border: 4px solid var(--primary);
+            border-radius: 30px;
+            margin-bottom: 50px;
+        }
+
+        .end-quote .highlight {
+            color: var(--success);
+        }
+
+        .end-quote .dim {
+            color: var(--error);
+        }
+
+        .end-cta {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--primary-light);
+        }
+
+        /* ═══ Governorate Display ═══ */
+        .gov-display {
+            width: 100%;
+            max-width: 1400px;
+            padding: 0 50px;
+        }
+
+        .gov-display-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .gov-display-name {
+            font-size: 72px;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .gov-display-target {
+            font-size: 36px;
+            color: var(--text-secondary);
+        }
+
+        .gov-display-target span {
+            color: var(--primary-light);
+            font-weight: 800;
+        }
+
+        .gov-display-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .gov-display-card {
+            background: var(--bg-dark-2);
+            border: 3px solid var(--bg-dark-3);
+            border-radius: 25px;
+            padding: 35px;
+            text-align: center;
+        }
+
+        .gov-display-card-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .gov-display-card-value {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+        }
+
+        .gov-display-card-label {
+            font-size: 20px;
+            color: var(--text-secondary);
+        }
+
+        .gov-display-commitment {
+            background: rgba(16, 185, 129, 0.1);
+            border: 3px solid var(--success);
+            border-radius: 25px;
+            padding: 40px;
+        }
+
+        .gov-commitment-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .gov-commitment-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .gov-commitment-step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px 30px;
+            background: var(--bg-dark-2);
+            border-radius: 15px;
+        }
+
+        .gov-step-num {
+            width: 45px;
+            height: 45px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+
+        .gov-step-text {
+            flex: 1;
+            font-size: 24px;
+            color: var(--text-primary);
+        }
+
+        .gov-step-who {
+            font-size: 18px;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            background: var(--bg-dark-3);
+            border-radius: 10px;
+        }
+
+        /* ═══ All Commitments Display ═══ */
+        .all-commitments {
+            width: 100%;
+            max-width: 1400px;
+            padding: 0 50px;
+        }
+
+        .all-commitments-title {
+            font-size: 56px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 50px;
+            background: var(--gradient-success);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .commitments-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .commitment-card-display {
+            background: var(--bg-dark-2);
+            border: 2px solid var(--bg-dark-3);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .commitment-card-display.submitted {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .commitment-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg-dark-3);
+        }
+
+        .commitment-card-name {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .commitment-card-target {
+            font-size: 18px;
+            color: var(--primary-light);
+            font-weight: 700;
+        }
+
+        .commitment-card-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .commitment-card-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .commitment-card-step-num {
+            width: 28px;
+            height: 28px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        /* ═══ Slide Number ═══ */
+        .slide-number {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            font-size: 20px;
+            color: var(--text-muted);
+            background: var(--bg-dark-2);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="logo">
+            <span class="logo-icon">🍞</span>
+            <span class="logo-text">تخطيط عيش وملح</span>
+        </div>
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-icon">🏛️</span>
+                <span class="stat-value" id="govCount">0</span>
+                <span class="stat-label">محافظة</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🍽️</span>
+                <span class="stat-value" id="totalMeals">0</span>
+                <span class="stat-label">وجبة</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- ═══ شاشة الانتظار ═══ -->
+        <div class="screen active" id="waitingScreen">
+            <div class="waiting-icon">📊</div>
+            <h1 class="waiting-title">جلسة التخطيط</h1>
+            <p class="waiting-subtitle">عيش وملح - من التنفيذ للتبني</p>
+        </div>
+
+        <!-- ═══ Slide 1: الافتتاح ═══ -->
+        <div class="screen slide-screen" id="slide1">
+            <div class="slide-content">
+                <h1 class="slide-title">المنفذ vs المتبني</h1>
+                
+                <div class="comparison-box">
+                    <div class="comparison-item executor">
+                        <div class="comparison-label">❌ المنفذ بيقول:</div>
+                        <div class="comparison-text">
+                            "المستهدف 100 ألف وجبة.<br>
+                            تمام. هنشوف."
+                        </div>
+                    </div>
+                    <div class="comparison-item adopter">
+                        <div class="comparison-label">✅ المتبني بيقول:</div>
+                        <div class="comparison-text">
+                            "المستهدف 100 ألف وجبة.<br>
+                            طيب: إزاي؟ من مين؟ لو محصلش؟"
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="slide-subtitle">النهارده هنخطط بعقلية المتبني 🎯</p>
+            </div>
+        </div>
+
+        <!-- ═══ Slide 2: توزيع المصادر ═══ -->
+        <div class="screen slide-screen" id="slide2">
+            <div class="slide-content">
+                <h1 class="slide-title">توزيع المصادر</h1>
+                
+                <div class="distribution-chart">
+                    <div class="distribution-item">
+                        <div class="distribution-icon">🤝</div>
+                        <div class="distribution-percent">20%</div>
+                        <div class="distribution-label">شراكات<br>(مطاعم - شاشات - رعاة)</div>
+                    </div>
+                    <div class="distribution-item">
+                        <div class="distribution-icon">👥</div>
+                        <div class="distribution-percent">30%</div>
+                        <div class="distribution-label">متطوعين<br>(تبرعات فردية)</div>
+                    </div>
+                    <div class="distribution-item">
+                        <div class="distribution-icon">🏢</div>
+                        <div class="distribution-percent">50%</div>
+                        <div class="distribution-label">جمعيات قاعدية<br>(جمعيات شريكة)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Slide 3: توزيع الوقت ═══ -->
+        <div class="screen slide-screen" id="slide3">
+            <div class="slide-content">
+                <h1 class="slide-title">توزيع الوقت</h1>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-month">📅 الشهر 1</div>
+                        <div class="timeline-percent">15%</div>
+                        <div class="timeline-label">البداية - بناء الأساس</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-month">📅 الشهر 2</div>
+                        <div class="timeline-percent">20%</div>
+                        <div class="timeline-label">بناء الزخم</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-month">📅 الشهر 3</div>
+                        <div class="timeline-percent">30%</div>
+                        <div class="timeline-label">الذروة</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-month">📅 الشهر 4</div>
+                        <div class="timeline-percent">35%</div>
+                        <div class="timeline-label">رمضان - السباق الأخير</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Slide 4: مثال ═══ -->
+        <div class="screen slide-screen" id="slide4">
+            <div class="slide-content">
+                <h1 class="slide-title">مثال: 100,000 وجبة</h1>
+                
+                <div class="example-box">
+                    <div class="example-grid">
+                        <div class="example-section">
+                            <div class="example-section-title">📊 من المصادر</div>
+                            <div class="example-row">
+                                <span class="label">🤝 شراكات (20%)</span>
+                                <span class="value">20,000 وجبة</span>
+                            </div>
+                            <div class="example-row">
+                                <span class="label">👥 متطوعين (30%)</span>
+                                <span class="value">30,000 وجبة</span>
+                            </div>
+                            <div class="example-row">
+                                <span class="label">🏢 جمعيات (50%)</span>
+                                <span class="value">50,000 وجبة</span>
+                            </div>
+                        </div>
+                        <div class="example-section">
+                            <div class="example-section-title">📅 على الوقت</div>
+                            <div class="example-row">
+                                <span class="label">شهر 1 (15%)</span>
+                                <span class="value">15,000 وجبة</span>
+                            </div>
+                            <div class="example-row">
+                                <span class="label">شهر 2 (20%)</span>
+                                <span class="value">20,000 وجبة</span>
+                            </div>
+                            <div class="example-row">
+                                <span class="label">شهر 3 (30%)</span>
+                                <span class="value">30,000 وجبة</span>
+                            </div>
+                            <div class="example-row">
+                                <span class="label">شهر 4 (35%)</span>
+                                <span class="value">35,000 وجبة</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Slide 5: الأسئلة الحقيقية ═══ -->
+        <div class="screen slide-screen" id="slide5">
+            <div class="slide-content">
+                <h1 class="slide-title">الأرقام مش خطة! 🚫</h1>
+                <p class="slide-subtitle">الخطة لما تجاوب على:</p>
+                
+                <div class="questions-list">
+                    <div class="question-item">
+                        <span class="question-icon">❓</span>
+                        <span>إزاي هنجيب الرقم ده؟</span>
+                    </div>
+                    <div class="question-item">
+                        <span class="question-icon">❓</span>
+                        <span>من مين بالظبط؟</span>
+                    </div>
+                    <div class="question-item">
+                        <span class="question-icon">❓</span>
+                        <span>مين المسؤول؟</span>
+                    </div>
+                    <div class="question-item">
+                        <span class="question-icon">❓</span>
+                        <span>لو محصلش... البديل إيه؟</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Slide 6: طريقة العرض ═══ -->
+        <div class="screen slide-screen" id="slide6">
+            <div class="slide-content">
+                <h1 class="slide-title">طريقة العرض</h1>
+                
+                <div class="presentation-box">
+                    <div class="presentation-title">كل محافظة تعرض:</div>
+                    <div class="presentation-list">
+                        <div class="presentation-item">
+                            <div class="presentation-num">1</div>
+                            <span>المستهدف الكلي</span>
+                        </div>
+                        <div class="presentation-item">
+                            <div class="presentation-num">2</div>
+                            <span>أهم 3 مصادر (بالأسماء)</span>
+                        </div>
+                        <div class="presentation-item">
+                            <div class="presentation-num">3</div>
+                            <span>أكبر خطر متوقع</span>
+                        </div>
+                        <div class="presentation-item">
+                            <div class="presentation-num">4</div>
+                            <span>أول خطوة هيعملوها</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Slide 7: الالتزام ═══ -->
+        <div class="screen slide-screen" id="slide7">
+            <div class="slide-content">
+                <h1 class="slide-title">كل محافظة تقول:</h1>
+                
+                <div class="commitment-display-box">
+                    <div class="commitment-field">
+                        <span class="label">1️⃣ المستهدف الكلي:</span>
+                        <span class="value">_______ وجبة</span>
+                    </div>
+                    <div class="commitment-field">
+                        <span class="label">2️⃣ أول خطوة هنعملها:</span>
+                        <span class="value">_____________</span>
+                    </div>
+                    <div class="commitment-field">
+                        <span class="label">👤 مين:</span>
+                        <span class="value">_______</span>
+                    </div>
+                    <div class="commitment-field">
+                        <span class="label">📅 امتى:</span>
+                        <span class="value">_______</span>
+                    </div>
+                    <div class="commitment-field">
+                        <span class="label">3️⃣ أول Check-in:</span>
+                        <span class="value">_______</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Slide 8: الختام ═══ -->
+        <div class="screen slide-screen" id="slide8">
+            <div class="slide-content">
+                <div class="end-box">
+                    <h1 class="end-title">الأرقام في الورق سهلة</h1>
+                    <p class="end-subtitle">الأرقام على الأرض صعبة</p>
+                    
+                    <div class="end-quote">
+                        الفرق؟ <span class="highlight">التنفيذ</span>.
+                    </div>
+                    
+                    <p class="end-cta">يلا نبدأ 🚀</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ عرض محافظة ═══ -->
+        <div class="screen" id="governorateScreen">
+            <div class="gov-display">
+                <div class="gov-display-header">
+                    <h1 class="gov-display-name" id="displayGovName">المحافظة</h1>
+                    <p class="gov-display-target">المستهدف: <span id="displayGovTarget">0</span> وجبة</p>
+                </div>
+                
+                <div class="gov-display-grid">
+                    <div class="gov-display-card">
+                        <div class="gov-display-card-icon">🤝</div>
+                        <div class="gov-display-card-value" id="displayPartnerships">0</div>
+                        <div class="gov-display-card-label">شراكات (20%)</div>
+                    </div>
+                    <div class="gov-display-card">
+                        <div class="gov-display-card-icon">👥</div>
+                        <div class="gov-display-card-value" id="displayVolunteers">0</div>
+                        <div class="gov-display-card-label">متطوعين (30%)</div>
+                    </div>
+                    <div class="gov-display-card">
+                        <div class="gov-display-card-icon">🏢</div>
+                        <div class="gov-display-card-value" id="displayNgos">0</div>
+                        <div class="gov-display-card-label">جمعيات (50%)</div>
+                    </div>
+                </div>
+                
+                <div class="gov-display-commitment" id="govCommitmentSection">
+                    <h3 class="gov-commitment-title">✅ الالتزامات</h3>
+                    <div class="gov-commitment-steps" id="govCommitmentSteps">
+                        <!-- Will be filled dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ عرض كل الالتزامات ═══ -->
+        <div class="screen" id="commitmentsScreen">
+            <div class="all-commitments">
+                <h1 class="all-commitments-title">✅ التزامات المحافظات</h1>
+                <div class="commitments-grid" id="commitmentsGrid">
+                    <!-- Will be filled dynamically -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Slide Number -->
+    <div class="slide-number" id="slideNumber" style="display: none;">
+        الشريحة <span id="currentSlideNum">1</span> / 8
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+            authDomain: "life-makers-diagnostic.firebaseapp.com",
+            projectId: "life-makers-diagnostic",
+            storageBucket: "life-makers-diagnostic.appspot.com",
+            messagingSenderId: "137599837774",
+            appId: "1:137599837774:web:e5f2f6a5c547c265fc0fba"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Get session ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session');
+
+        if (!sessionId) {
+            alert('⚠️ لم يتم تحديد معرّف الجلسة');
+        }
+
+        // Global State
+        let sessionData = null;
+
+        // ═══════════════════════════════════════════════════════════
+        // Listen to Session Updates
+        // ═══════════════════════════════════════════════════════════
+
+        db.collection('eish-wa-malh-planning').doc(sessionId).onSnapshot((doc) => {
+            if (doc.exists) {
+                sessionData = doc.data();
+                updateDisplay();
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════
+        // Update Display
+        // ═══════════════════════════════════════════════════════════
+
+        function updateDisplay() {
+            if (!sessionData) return;
+
+            // Update stats
+            const governorates = sessionData.governorates || {};
+            const govList = Object.values(governorates);
+            
+            document.getElementById('govCount').textContent = govList.length;
+            
+            const totalMeals = govList.reduce((sum, g) => sum + (g.totalTarget || 0), 0);
+            document.getElementById('totalMeals').textContent = totalMeals.toLocaleString();
+
+            // Handle display mode
+            const displayMode = sessionData.displayMode || 'waiting';
+            
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Hide slide number by default
+            document.getElementById('slideNumber').style.display = 'none';
+
+            switch (displayMode) {
+                case 'waiting':
+                    document.getElementById('waitingScreen').classList.add('active');
+                    break;
+                    
+                case 'slides':
+                    const slideNum = sessionData.currentSlide || 1;
+                    document.getElementById(`slide${slideNum}`).classList.add('active');
+                    document.getElementById('slideNumber').style.display = 'block';
+                    document.getElementById('currentSlideNum').textContent = slideNum;
+                    break;
+                    
+                case 'governorate':
+                    showGovernorate(sessionData.selectedGovernorate);
+                    break;
+                    
+                case 'commitments':
+                    showAllCommitments(govList);
+                    break;
+                    
+                default:
+                    document.getElementById('waitingScreen').classList.add('active');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // Show Governorate
+        // ═══════════════════════════════════════════════════════════
+
+        function showGovernorate(govName) {
+            if (!govName || !sessionData.governorates[govName]) {
+                document.getElementById('waitingScreen').classList.add('active');
+                return;
+            }
+
+            const gov = sessionData.governorates[govName];
+            
+            document.getElementById('displayGovName').textContent = gov.governorate;
+            document.getElementById('displayGovTarget').textContent = (gov.totalTarget || 0).toLocaleString();
+            document.getElementById('displayPartnerships').textContent = (gov.partnershipsTarget || 0).toLocaleString();
+            document.getElementById('displayVolunteers').textContent = (gov.volunteersTarget || 0).toLocaleString();
+            document.getElementById('displayNgos').textContent = (gov.ngosTarget || 0).toLocaleString();
+
+            // Commitment steps
+            const stepsContainer = document.getElementById('govCommitmentSteps');
+            
+            if (gov.commitment) {
+                let stepsHtml = '';
+                
+                if (gov.commitment.step1?.action) {
+                    stepsHtml += `
+                        <div class="gov-commitment-step">
+                            <div class="gov-step-num">1</div>
+                            <div class="gov-step-text">${gov.commitment.step1.action}</div>
+                            <div class="gov-step-who">${gov.commitment.step1.who || '-'}</div>
+                        </div>
+                    `;
+                }
+                
+                if (gov.commitment.step2?.action) {
+                    stepsHtml += `
+                        <div class="gov-commitment-step">
+                            <div class="gov-step-num">2</div>
+                            <div class="gov-step-text">${gov.commitment.step2.action}</div>
+                            <div class="gov-step-who">${gov.commitment.step2.who || '-'}</div>
+                        </div>
+                    `;
+                }
+                
+                if (gov.commitment.step3?.action) {
+                    stepsHtml += `
+                        <div class="gov-commitment-step">
+                            <div class="gov-step-num">3</div>
+                            <div class="gov-step-text">${gov.commitment.step3.action}</div>
+                            <div class="gov-step-who">${gov.commitment.step3.who || '-'}</div>
+                        </div>
+                    `;
+                }
+
+                if (gov.commitment.firstCheckin) {
+                    stepsHtml += `
+                        <div class="gov-commitment-step" style="background: rgba(102, 126, 234, 0.1);">
+                            <div class="gov-step-num" style="background: var(--primary);">📅</div>
+                            <div class="gov-step-text">أول Check-in: ${gov.commitment.firstCheckin}</div>
+                            <div class="gov-step-who"></div>
+                        </div>
+                    `;
+                }
+                
+                stepsContainer.innerHTML = stepsHtml || '<p style="text-align: center; color: var(--text-muted);">لا توجد التزامات بعد</p>';
+                document.getElementById('govCommitmentSection').style.display = 'block';
+            } else {
+                document.getElementById('govCommitmentSection').style.display = 'none';
+            }
+
+            document.getElementById('governorateScreen').classList.add('active');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // Show All Commitments
+        // ═══════════════════════════════════════════════════════════
+
+        function showAllCommitments(govList) {
+            const container = document.getElementById('commitmentsGrid');
+            
+            const submitted = govList.filter(g => g.status === 'submitted');
+            
+            if (submitted.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--text-muted);">
+                        <div style="font-size: 80px; margin-bottom: 20px;">📭</div>
+                        <div style="font-size: 24px;">لا توجد التزامات بعد</div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = submitted.map(gov => `
+                    <div class="commitment-card-display submitted">
+                        <div class="commitment-card-header">
+                            <span class="commitment-card-name">🏛️ ${gov.governorate}</span>
+                            <span class="commitment-card-target">${(gov.totalTarget || 0).toLocaleString()} وجبة</span>
+                        </div>
+                        <div class="commitment-card-steps">
+                            ${gov.commitment?.step1?.action ? `
+                                <div class="commitment-card-step">
+                                    <div class="commitment-card-step-num">1</div>
+                                    <span>${gov.commitment.step1.action}</span>
+                                </div>
+                            ` : ''}
+                            ${gov.commitment?.step2?.action ? `
+                                <div class="commitment-card-step">
+                                    <div class="commitment-card-step-num">2</div>
+                                    <span>${gov.commitment.step2.action}</span>
+                                </div>
+                            ` : ''}
+                            ${gov.commitment?.step3?.action ? `
+                                <div class="commitment-card-step">
+                                    <div class="commitment-card-step-num">3</div>
+                                    <span>${gov.commitment.step3.action}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        ${gov.commitment?.firstCheckin ? `
+                            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--bg-dark-3); font-size: 14px; color: var(--text-secondary);">
+                                📅 أول Check-in: ${gov.commitment.firstCheckin}
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('commitmentsScreen').classList.add('active');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // Initialize
+        // ═══════════════════════════════════════════════════════════
+
+        console.log('Planning Display loaded for session:', sessionId);
+    </script>
+</body>
+</html>
