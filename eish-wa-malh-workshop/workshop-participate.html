@@ -1126,63 +1126,92 @@
         }
 
         // ═══ Registration ═══
-        document.getElementById('registerBtn').onclick = async () => {
-            const name = document.getElementById('participantName').value.trim();
-            
-            if (!name || name.length < 3) {
-                showToast('error', '⚠️ اكتب اسمك الثلاثي');
-                return;
-            }
+        // ═══ Registration ═══
+document.getElementById('registerBtn').onclick = async () => {
+    const name = document.getElementById('participantName').value.trim();
+    
+    if (!name || name.length < 3) {
+        showToast('error', '⚠️ اكتب اسمك الثلاثي');
+        return;
+    }
 
-            const btn = document.getElementById('registerBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span> جاري التسجيل...';
+    const btn = document.getElementById('registerBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading"></span> جاري التسجيل...';
 
-            try {
-                participantData = {
-                    name: name,
-                    odaId: participantData?.odaId || null,
-                    joinedAt: new Date().toISOString(),
-                    odaRole: null
-                };
+    console.log('🔄 Starting registration for:', name);
 
-                // Add to Firebase
-                const docRef = db.collection('eish-wa-malh-workshops').doc(sessionId);
-                const doc = await docRef.get();
-                
-                if (doc.exists) {
-                    const participants = doc.data().participants || [];
-                    
-                    // Check if already registered
-                    const existing = participants.find(p => p.name === name);
-                    if (existing) {
-                        participantData = existing;
-                    } else {
-                        participants.push(participantData);
-                        await docRef.update({ participants: participants });
-                    }
-                }
-
-                // Save to localStorage
-                saveParticipantData();
-
-                // Update UI
-                document.getElementById('userName').textContent = name;
-                document.getElementById('userInfo').style.display = 'flex';
-                document.title = `${name} - ورشة عيش وملح`;
-
-                showToast('success', '✅ تم التسجيل بنجاح!');
-                
-                // Check workshop status and show appropriate screen
-                checkWorkshopStatus();
-
-            } catch (error) {
-                console.error('Registration error:', error);
-                showToast('error', '❌ حدث خطأ في التسجيل');
-                btn.disabled = false;
-                btn.innerHTML = '<span>دخول الورشة</span><span>🚀</span>';
-            }
+    try {
+        // Create participant data
+        participantData = {
+            name: name,
+            odaId: null,
+            joinedAt: new Date().toISOString(),
+            odaRole: null
         };
+
+        console.log('📝 Participant data:', participantData);
+
+        // Get document reference
+        const docRef = db.collection('eish-wa-malh-workshops').doc(sessionId);
+        
+        console.log('🔍 Checking session:', sessionId);
+        
+        const doc = await docRef.get();
+        
+        console.log('📄 Document exists:', doc.exists);
+        
+        if (doc.exists) {
+            const data = doc.data();
+            const participants = data.participants || [];
+            
+            console.log('👥 Current participants:', participants.length);
+            
+            // Check if already registered
+            const existing = participants.find(p => p.name === name);
+            if (existing) {
+                console.log('✅ Already registered');
+                participantData = existing;
+            } else {
+                console.log('➕ Adding new participant');
+                participants.push(participantData);
+                await docRef.update({ participants: participants });
+                console.log('✅ Participant added to Firebase');
+            }
+            
+            // Save to localStorage
+            saveParticipantData();
+            console.log('💾 Saved to localStorage');
+
+            // Update UI
+            document.getElementById('userName').textContent = name;
+            document.getElementById('userInfo').style.display = 'flex';
+            document.title = `${name} - ورشة عيش وملح`;
+
+            showToast('success', '✅ تم التسجيل بنجاح!');
+            
+            // Show waiting screen first, then check status
+            showScreen('waitingScreen');
+            
+            // Check workshop status after a short delay
+            setTimeout(() => {
+                checkWorkshopStatus();
+            }, 500);
+            
+        } else {
+            console.error('❌ Session not found:', sessionId);
+            showToast('error', '❌ الجلسة غير موجودة. تأكد من الرابط.');
+            btn.disabled = false;
+            btn.innerHTML = '<span>دخول الورشة</span><span>🚀</span>';
+        }
+
+    } catch (error) {
+        console.error('❌ Registration error:', error);
+        showToast('error', '❌ حدث خطأ: ' + error.message);
+        btn.disabled = false;
+        btn.innerHTML = '<span>دخول الورشة</span><span>🚀</span>';
+    }
+};
 
         // ═══ Check Workshop Status ═══
         function checkWorkshopStatus() {
