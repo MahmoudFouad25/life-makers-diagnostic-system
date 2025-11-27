@@ -841,6 +841,7 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
     </style>
 </head>
 <body>
@@ -1118,15 +1119,24 @@
         }
 
         // ═══ Screen Management ═══
-        // ═══ Screen Management ═══
+       // ═══ Screen Management ═══
 function showScreen(screenId) {
     console.log('🖥️ Showing screen:', screenId);
-    document.querySelectorAll('.screen').forEach(screen => {
+    
+    // Hide ALL screens first
+    const allScreens = document.querySelectorAll('.screen');
+    console.log('📋 Found screens:', allScreens.length);
+    
+    allScreens.forEach(screen => {
         screen.classList.remove('active');
+        screen.style.display = 'none';
     });
+    
+    // Show target screen
     const targetScreen = document.getElementById(screenId);
     if (targetScreen) {
         targetScreen.classList.add('active');
+        targetScreen.style.display = 'block';
         console.log('✅ Screen activated:', screenId);
     } else {
         console.error('❌ Screen not found:', screenId);
