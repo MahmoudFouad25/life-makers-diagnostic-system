@@ -1118,12 +1118,20 @@
         }
 
         // ═══ Screen Management ═══
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
+        // ═══ Screen Management ═══
+function showScreen(screenId) {
+    console.log('🖥️ Showing screen:', screenId);
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+    const targetScreen = document.getElementById(screenId);
+    if (targetScreen) {
+        targetScreen.classList.add('active');
+        console.log('✅ Screen activated:', screenId);
+    } else {
+        console.error('❌ Screen not found:', screenId);
+    }
+}
 
         // ═══ Registration ═══
         // ═══ Registration ═══
@@ -1180,23 +1188,32 @@ document.getElementById('registerBtn').onclick = async () => {
             }
             
             // Save to localStorage
-            saveParticipantData();
-            console.log('💾 Saved to localStorage');
+            // Save to localStorage
+saveParticipantData();
+console.log('💾 Saved to localStorage');
 
-            // Update UI
-            document.getElementById('userName').textContent = name;
-            document.getElementById('userInfo').style.display = 'flex';
-            document.title = `${name} - ورشة عيش وملح`;
+// Update UI
+console.log('🎨 Updating UI...');
+document.getElementById('userName').textContent = name;
+document.getElementById('userInfo').style.display = 'flex';
+document.title = `${name} - ورشة عيش وملح`;
 
-            showToast('success', '✅ تم التسجيل بنجاح!');
-            
-            // Show waiting screen first, then check status
-            showScreen('waitingScreen');
-            
-            // Check workshop status after a short delay
-            setTimeout(() => {
-                checkWorkshopStatus();
-            }, 500);
+// Reset button
+btn.disabled = false;
+btn.innerHTML = '<span>دخول الورشة</span><span>🚀</span>';
+
+console.log('📢 Showing toast...');
+showToast('success', '✅ تم التسجيل بنجاح!');
+
+// Show waiting screen
+console.log('📺 Switching to waiting screen...');
+showScreen('waitingScreen');
+
+// Check workshop status after a short delay
+setTimeout(() => {
+    console.log('🔄 Checking workshop status...');
+    checkWorkshopStatus();
+}, 500);
             
         } else {
             console.error('❌ Session not found:', sessionId);
