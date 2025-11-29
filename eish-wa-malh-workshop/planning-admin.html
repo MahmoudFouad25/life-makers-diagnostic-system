@@ -1082,13 +1082,13 @@
         let sessionId = urlParams.get('session');
 
         if (!sessionId) {
-            // Create new session
-            sessionId = 'planning-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 6);
-            window.history.replaceState({}, '', `?session=${sessionId}`);
-            
-            // Initialize session in Firebase
-            initializeSession();
-        }
+    // Create new session
+    sessionId = 'planning-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 6);
+    window.history.replaceState({}, '', `?session=${sessionId}`);
+}
+
+// Always check if session exists, create if not
+checkOrCreateSession();
 
         document.getElementById('sidebarSessionId').textContent = sessionId;
 
@@ -1105,22 +1105,30 @@
         // Initialize Session
         // ═══════════════════════════════════════════════════════════
 
-        async function initializeSession() {
-            try {
-                await db.collection('eish-wa-malh-planning').doc(sessionId).set({
-                    id: sessionId,
-                    createdAt: new Date(),
-                    governorates: {},
-                    displayMode: 'waiting',
-                    currentSlide: 1,
-                    selectedGovernorate: null
-                });
-                showToast('success', '✅ تم إنشاء الجلسة بنجاح!');
-            } catch (error) {
-                console.error('Error creating session:', error);
-                showToast('error', '❌ خطأ في إنشاء الجلسة');
-            }
+        async function checkOrCreateSession() {
+    try {
+        const docRef = db.collection('eish-wa-malh-planning').doc(sessionId);
+        const doc = await docRef.get();
+        
+        if (!doc.exists) {
+            // Create new session
+            await docRef.set({
+                id: sessionId,
+                createdAt: new Date(),
+                governorates: {},
+                displayMode: 'waiting',
+                currentSlide: 1,
+                selectedGovernorate: null
+            });
+            showToast('success', '✅ تم إنشاء الجلسة بنجاح!');
+        } else {
+            console.log('Session already exists');
         }
+    } catch (error) {
+        console.error('Error checking/creating session:', error);
+        showToast('error', '❌ خطأ في إنشاء الجلسة');
+    }
+}
 
         // ═══════════════════════════════════════════════════════════
         // Listen to Session Updates
