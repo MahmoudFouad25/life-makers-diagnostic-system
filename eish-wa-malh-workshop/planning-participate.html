@@ -1739,6 +1739,51 @@ function fillFormWithData(data) {
             addRiskWithData(item);
         });
     }
+
+            // === Restore Checkboxes ===
+    
+    // Sponsorship Types (نوع الرعاية)
+    if (data.partnerships?.sponsors?.types) {
+        data.partnerships.sponsors.types.forEach(type => {
+            const checkbox = document.querySelector(`#sponsorshipTypes input[value="${type}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+                checkbox.closest('.checkbox-item').classList.add('checked');
+            }
+        });
+    }
+    
+    // Volunteer Sources (مصادر المتطوعين)
+    if (data.volunteers?.collectors?.sources) {
+        data.volunteers.collectors.sources.forEach(source => {
+            const checkbox = document.querySelector(`#volunteerSources input[value="${source}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+                checkbox.closest('.checkbox-item').classList.add('checked');
+            }
+        });
+    }
+    
+    // Donor Channels (قنوات المتبرعين)
+    if (data.volunteers?.donors?.channels) {
+        data.volunteers.donors.channels.forEach(channel => {
+            const checkbox = document.querySelector(`#donorChannels input[value="${channel}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+                checkbox.closest('.checkbox-item').classList.add('checked');
+            }
+        });
+    }
+    // === Restore Radio Buttons ===
+    
+    // NGOs Experience (خبرة الجمعيات)
+    if (data.ngos?.experience) {
+        const radio = document.querySelector(`input[name="ngosExp"][value="${data.ngos.experience}"]`);
+        if (radio) {
+            radio.checked = true;
+            radio.closest('.checkbox-item').classList.add('checked');
+        }
+    }
 }
 
         // Global State
