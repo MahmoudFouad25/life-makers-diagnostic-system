@@ -1624,7 +1624,8 @@ await db.collection('eish-wa-malh-governorates').doc(govDocId).set({
                 updateProgress();
 
                 showToast('success', '✅ تم التسجيل بنجاح!');
-
+btn.disabled = false;
+btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
             } catch (error) {
                 console.error('Registration error:', error);
                 showToast('error', '❌ حدث خطأ: ' + error.message);
