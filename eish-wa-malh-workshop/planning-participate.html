@@ -1604,7 +1604,6 @@ const govDocId = `${sessionId}_${governorate}`;
 await db.collection('eish-wa-malh-governorates').doc(govDocId).set({
     ...governorateData,
     sessionId: sessionId,
-    visitorId: visitorId || '',
     registeredAt: new Date(),
     lastUpdated: new Date(),
     status: 'in-progress'
