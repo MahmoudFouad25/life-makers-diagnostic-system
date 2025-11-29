@@ -1696,6 +1696,49 @@ function fillFormWithData(data) {
         
         document.getElementById('firstCheckin').value = data.commitment.firstCheckin || '';
     }
+    // === Rebuild Dynamic Lists ===
+    
+    // Restaurants
+    if (data.partnerships?.restaurants?.list) {
+        data.partnerships.restaurants.list.forEach(item => {
+            addRestaurantWithData(item);
+        });
+    }
+    
+    // Screens
+    if (data.partnerships?.screens?.list) {
+        data.partnerships.screens.list.forEach(item => {
+            addScreenWithData(item);
+        });
+    }
+    
+    // Sponsors
+    if (data.partnerships?.sponsors?.list) {
+        data.partnerships.sponsors.list.forEach(item => {
+            addSponsorWithData(item);
+        });
+    }
+    
+    // NGOs
+    if (data.ngos?.list) {
+        data.ngos.list.forEach(item => {
+            addNgoWithData(item);
+        });
+    }
+    
+    // Supporters
+    if (data.supporters?.list) {
+        data.supporters.list.forEach(item => {
+            addSupporterWithData(item);
+        });
+    }
+    
+    // Risks
+    if (data.risks) {
+        data.risks.forEach(item => {
+            addRiskWithData(item);
+        });
+    }
 }
 
         // Global State
@@ -1879,6 +1922,25 @@ btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
             list.appendChild(item);
         }
 
+        function addRestaurantWithData(itemData) {
+    restaurantCounter++;
+    const list = document.getElementById('restaurantsList');
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.id = `restaurant-${restaurantCounter}`;
+    item.innerHTML = `
+        <div class="dynamic-item-header">
+            <span class="dynamic-item-number">مطعم ${restaurantCounter}</span>
+            <button class="dynamic-item-remove" onclick="removeItem('restaurant-${restaurantCounter}')">✕</button>
+        </div>
+        <div class="dynamic-item-row">
+            <input type="text" class="form-input" placeholder="اسم المطعم" data-field="name" value="${itemData.name || ''}">
+            <input type="number" class="form-input" placeholder="الوجبات المتوقعة" data-field="meals" value="${itemData.meals || ''}">
+        </div>
+    `;
+    list.appendChild(item);
+}
+
         function addScreen() {
             screenCounter++;
             const list = document.getElementById('screensList');
@@ -1901,6 +1963,28 @@ btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
             `;
             list.appendChild(item);
         }
+        function addScreenWithData(itemData) {
+    screenCounter++;
+    const list = document.getElementById('screensList');
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.id = `screen-${screenCounter}`;
+    item.innerHTML = `
+        <div class="dynamic-item-header">
+            <span class="dynamic-item-number">شاشة ${screenCounter}</span>
+            <button class="dynamic-item-remove" onclick="removeItem('screen-${screenCounter}')">✕</button>
+        </div>
+        <div class="dynamic-item-row">
+            <input type="text" class="form-input" placeholder="مكان الشاشة" data-field="location" value="${itemData.location || ''}">
+            <select class="form-select" data-field="cost">
+                <option value="">التكلفة</option>
+                <option value="مجاني" ${itemData.cost === 'مجاني' ? 'selected' : ''}>مجاني</option>
+                <option value="مدفوع" ${itemData.cost === 'مدفوع' ? 'selected' : ''}>مدفوع</option>
+            </select>
+        </div>
+    `;
+    list.appendChild(item);
+}
 
         function addSponsor() {
             sponsorCounter++;
@@ -1925,6 +2009,29 @@ btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
             `;
             list.appendChild(item);
         }
+        function addSponsorWithData(itemData) {
+    sponsorCounter++;
+    const list = document.getElementById('sponsorsList');
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.id = `sponsor-${sponsorCounter}`;
+    item.innerHTML = `
+        <div class="dynamic-item-header">
+            <span class="dynamic-item-number">راعي ${sponsorCounter}</span>
+            <button class="dynamic-item-remove" onclick="removeItem('sponsor-${sponsorCounter}')">✕</button>
+        </div>
+        <div class="dynamic-item-row">
+            <input type="text" class="form-input" placeholder="اسم الراعي" data-field="name" value="${itemData.name || ''}">
+            <select class="form-select" data-field="type">
+                <option value="">نوع الرعاية</option>
+                <option value="مالية" ${itemData.type === 'مالية' ? 'selected' : ''}>مالية</option>
+                <option value="عينية" ${itemData.type === 'عينية' ? 'selected' : ''}>عينية</option>
+                <option value="خدمات" ${itemData.type === 'خدمات' ? 'selected' : ''}>خدمات</option>
+            </select>
+        </div>
+    `;
+    list.appendChild(item);
+}
 
         function addNgo() {
             ngoCounter++;
@@ -1947,6 +2054,27 @@ btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
             `;
             list.appendChild(item);
         }
+        function addNgoWithData(itemData) {
+    ngoCounter++;
+    const list = document.getElementById('ngosList');
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.id = `ngo-${ngoCounter}`;
+    item.innerHTML = `
+        <div class="dynamic-item-header">
+            <span class="dynamic-item-number">جمعية ${ngoCounter}</span>
+            <button class="dynamic-item-remove" onclick="removeItem('ngo-${ngoCounter}')">✕</button>
+        </div>
+        <div class="dynamic-item-row">
+            <input type="text" class="form-input" placeholder="اسم الجمعية" data-field="name" value="${itemData.name || ''}">
+            <input type="number" class="form-input" placeholder="الوجبات المتوقعة" data-field="meals" value="${itemData.meals || ''}">
+        </div>
+        <div class="dynamic-item-row single" style="margin-top: 10px;">
+            <input type="text" class="form-input" placeholder="المسؤول عن التواصل" data-field="responsible" value="${itemData.responsible || ''}">
+        </div>
+    `;
+    list.appendChild(item);
+}
 
         function addSupporter() {
             supporterCounter++;
@@ -1993,6 +2121,54 @@ btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
             `;
             list.appendChild(item);
         }
+        function addSupporterWithData(itemData) {
+    supporterCounter++;
+    const list = document.getElementById('supportersList');
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.id = `supporter-${supporterCounter}`;
+    
+    const options = itemData.options || [];
+    
+    item.innerHTML = `
+        <div class="dynamic-item-header">
+            <span class="dynamic-item-number">داعم ${supporterCounter}</span>
+            <button class="dynamic-item-remove" onclick="removeItem('supporter-${supporterCounter}')">✕</button>
+        </div>
+        <div class="dynamic-item-row">
+            <select class="form-select" data-field="type">
+                <option value="">نوع الداعم</option>
+                <option value="شخصية مؤثرة" ${itemData.type === 'شخصية مؤثرة' ? 'selected' : ''}>شخصية مؤثرة</option>
+                <option value="رجل أعمال" ${itemData.type === 'رجل أعمال' ? 'selected' : ''}>رجل أعمال</option>
+                <option value="إعلامي" ${itemData.type === 'إعلامي' ? 'selected' : ''}>إعلامي</option>
+                <option value="إمام/داعية" ${itemData.type === 'إمام/داعية' ? 'selected' : ''}>إمام/داعية</option>
+                <option value="أستاذ جامعة" ${itemData.type === 'أستاذ جامعة' ? 'selected' : ''}>أستاذ جامعة</option>
+                <option value="أخرى" ${itemData.type === 'أخرى' ? 'selected' : ''}>أخرى</option>
+            </select>
+            <input type="text" class="form-input" placeholder="الاسم" data-field="name" value="${itemData.name || ''}">
+        </div>
+        <div class="dynamic-item-row single" style="margin-top: 10px;">
+            <div class="checkbox-group" style="flex-wrap: nowrap;">
+                <label class="checkbox-item ${options.includes('نشر') ? 'checked' : ''}" onclick="toggleCheckbox(this)" style="flex: 1;">
+                    <input type="checkbox" value="نشر" ${options.includes('نشر') ? 'checked' : ''}>
+                    <div class="checkbox-box"></div>
+                    <span class="checkbox-label">نشر</span>
+                </label>
+                <label class="checkbox-item ${options.includes('تبرع') ? 'checked' : ''}" onclick="toggleCheckbox(this)" style="flex: 1;">
+                    <input type="checkbox" value="تبرع" ${options.includes('تبرع') ? 'checked' : ''}>
+                    <div class="checkbox-box"></div>
+                    <span class="checkbox-label">تبرع</span>
+                </label>
+                <label class="checkbox-item ${options.includes('تواصل') ? 'checked' : ''}" onclick="toggleCheckbox(this)" style="flex: 1;">
+                    <input type="checkbox" value="تواصل" ${options.includes('تواصل') ? 'checked' : ''}>
+                    <div class="checkbox-box"></div>
+                    <span class="checkbox-label">تواصل</span>
+                </label>
+            </div>
+        </div>
+    `;
+    list.appendChild(item);
+}
 
         function addRisk() {
             riskCounter++;
@@ -2014,6 +2190,26 @@ btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
             `;
             list.appendChild(item);
         }
+        function addRiskWithData(itemData) {
+    riskCounter++;
+    const list = document.getElementById('risksList');
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.id = `risk-${riskCounter}`;
+    item.innerHTML = `
+        <div class="dynamic-item-header">
+            <span class="dynamic-item-number">خطر ${riskCounter}</span>
+            <button class="dynamic-item-remove" onclick="removeItem('risk-${riskCounter}')">✕</button>
+        </div>
+        <div class="dynamic-item-row single">
+            <input type="text" class="form-input" placeholder="وصف الخطر" data-field="description" value="${itemData.description || ''}">
+        </div>
+        <div class="dynamic-item-row single" style="margin-top: 10px;">
+            <textarea class="form-textarea" placeholder="خطة التعامل مع الخطر" data-field="plan" style="min-height: 80px;">${itemData.plan || ''}</textarea>
+        </div>
+    `;
+    list.appendChild(item);
+}
 
         function removeItem(itemId) {
             const item = document.getElementById(itemId);
