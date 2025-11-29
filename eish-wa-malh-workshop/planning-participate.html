@@ -1563,6 +1563,8 @@ const govParam = urlParams.get('gov');
 
 // Check if returning to existing governorate
 if (govParam && sessionId) {
+    // Hide registration screen immediately
+    document.getElementById('registrationScreen').style.display = 'none';
     loadExistingGovernorate(govParam);
 }
 
@@ -1599,6 +1601,10 @@ async function loadExistingGovernorate(govName) {
             showScreen('planningScreen');
             document.getElementById('navButtons').style.display = 'flex';
             updateProgress();
+
+            // Make sure first section is open
+            document.getElementById('section1').classList.add('open');
+            currentSection = 1;
             
             showToast('success', '✅ تم تحميل بياناتك المحفوظة');
         }
@@ -1608,6 +1614,10 @@ async function loadExistingGovernorate(govName) {
 }
 
 function fillFormWithData(data) {
+    // Basic info - also update the header
+    if (data.governorate) {
+        document.getElementById('govName').textContent = data.governorate;
+    }
     // Section 1: Partnerships
     if (data.partnerships) {
         document.getElementById('restaurantsCount').value = data.partnerships.restaurants?.count || '';
