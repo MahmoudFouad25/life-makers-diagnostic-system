@@ -775,7 +775,77 @@
 }
 
 .details-list {
-    margin-top: 12px;
+    margin-top: 15px;
+    background: var(--bg-dark-2);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.details-list-header {
+    display: none;
+}
+
+.details-list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-dark);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.details-list-item:last-child {
+    margin-bottom: 0;
+}
+
+.details-list-num {
+    width: 28px;
+    height: 28px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+
+.details-list-fields {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+}
+
+.details-list-field-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.details-list-field-label {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.details-list-field-value {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.details-empty {
+    color: var(--text-muted);
+    font-size: 14px;
+    font-style: italic;
+    padding: 20px;
+    text-align: center;
+    background: var(--bg-dark);
+    border-radius: 10px;
+    border: 2px dashed var(--bg-dark-3);
 }
 
 .details-list-item {
@@ -1765,7 +1835,7 @@ function updateSessionUI() {
                     <span class="details-label">المسؤول:</span>
                     <span class="details-value">${gov.partnerships?.restaurants?.responsible || '-'}</span>
                 </div>
-                ${renderDetailsList(gov.partnerships?.restaurants?.list, ['name', 'meals'], ['الاسم', 'الوجبات'])}
+                ${renderDetailsList(gov.partnerships?.restaurants?.list, ['name', 'meals'], ['اسم المطعم', 'الوجبات المتوقعة'])}
             </div>
             
             <div class="details-subsection">
@@ -1795,7 +1865,7 @@ function updateSessionUI() {
                     <span class="details-label">المسؤول:</span>
                     <span class="details-value">${gov.partnerships?.sponsors?.responsible || '-'}</span>
                 </div>
-                ${renderDetailsList(gov.partnerships?.sponsors?.list, ['name', 'type'], ['الاسم', 'النوع'])}
+                ${renderDetailsList(gov.partnerships?.sponsors?.list, ['name', 'type'], ['اسم الراعي', 'نوع الرعاية'])}
             </div>
         </div>
 
@@ -1873,7 +1943,7 @@ function updateSessionUI() {
                 <span class="details-label">المسؤول:</span>
                 <span class="details-value">${gov.ngos?.responsible || '-'}</span>
             </div>
-            ${renderDetailsList(gov.ngos?.list, ['name', 'meals', 'responsible'], ['الاسم', 'الوجبات', 'المسؤول'])}
+            ${renderDetailsList(gov.ngos?.list, ['name', 'meals', 'responsible'], ['اسم الجمعية', 'الوجبات', 'المسؤول'])}
         </div>
 
         <!-- التوزيع الشهري -->
@@ -1999,16 +2069,24 @@ function updateSessionUI() {
 
 // Helper Functions
 function renderDetailsList(list, fields, labels) {
-    if (!list || list.length === 0) return '';
+    if (!list || list.length === 0) return '<div class="details-empty">لا توجد بيانات</div>';
     
     return `
         <div class="details-list">
+            <div class="details-list-header">
+                ${labels.map(label => `<span class="details-list-header-item">${label}</span>`).join('')}
+            </div>
             ${list.map((item, i) => `
                 <div class="details-list-item">
                     <span class="details-list-num">${i + 1}</span>
-                    ${fields.map((field, fi) => `
-                        <span class="details-list-field ${fi === 0 ? 'primary' : ''}">${item[field] || '-'}</span>
-                    `).join('<span class="details-list-sep">|</span>')}
+                    <div class="details-list-fields">
+                        ${fields.map((field, fi) => `
+                            <div class="details-list-field-group">
+                                <span class="details-list-field-label">${labels[fi]}:</span>
+                                <span class="details-list-field-value">${item[field] || '-'}</span>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             `).join('')}
         </div>
