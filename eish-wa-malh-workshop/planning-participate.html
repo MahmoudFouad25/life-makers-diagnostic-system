@@ -1549,7 +1549,16 @@
 const govParam = urlParams.get('gov');
 
         if (!sessionId) {
-    alert('⚠️ رابط غير صحيح. تأكد من مسح QR Code بشكل صحيح.');
+    document.body.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 20px;">
+            <div style="font-size: 80px; margin-bottom: 20px;">⚠️</div>
+            <h1 style="font-size: 24px; color: #ef4444; margin-bottom: 15px;">رابط غير صحيح</h1>
+            <p style="font-size: 16px; color: #a0aec0; margin-bottom: 30px;">تأكد من مسح QR Code بشكل صحيح أو احصل على الرابط من المنسق.</p>
+            <button onclick="location.reload()" style="padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;">
+                🔄 إعادة المحاولة
+            </button>
+        </div>
+    `;
 }
 
 // Check if returning to existing governorate
@@ -1561,6 +1570,12 @@ async function loadExistingGovernorate(govName) {
     try {
         const govDocId = `${sessionId}_${govName}`;
         const doc = await db.collection('eish-wa-malh-governorates').doc(govDocId).get();
+        // Check if session exists
+        const sessionDoc = await db.collection('eish-wa-malh-sessions').doc(sessionId).get();
+        if (!sessionDoc.exists) {
+            showToast('error', '⚠️ الجلسة غير موجودة أو منتهية');
+            return;
+        }
         
         if (doc.exists) {
             const data = doc.data();
@@ -2618,6 +2633,129 @@ await db.collection('eish-wa-malh-governorates').doc(govDocId).set(data);
         }, 3000);
     }
 
+
+        // ═══════════════════════════════════════════════════════════
+    // الحفظ التلقائي
+    // ═══════════════════════════════════════════════════════════
+    
+    let autoSaveTimeout = null;
+    let hasUnsavedChanges = false;
+    
+    // Function to trigger auto-save
+    function triggerAutoSave() {
+        if (!governorateData.governorate) return; // Don't save if not registered yet
+        
+        hasUnsavedChanges = true;
+        
+        // Clear previous timeout
+        if (autoSaveTimeout) {
+            clearTimeout(autoSaveTimeout);
+        }
+        
+        // Set new timeout (save after 3 seconds of inactivity)
+        autoSaveTimeout = setTimeout(async () => {
+            if (hasUnsavedChanges) {
+                await autoSave();
+            }
+        }, 3000);
+    }
+    
+    // Auto-save function
+    async function autoSave() {
+        try {
+            const data = collectAllData();
+            data.status = 'in-progress';
+            data.sessionId = sessionId;
+            
+            const govDocId = `${sessionId}_${governorateData.governorate}`;
+            await db.collection('eish-wa-malh-governorates').doc(govDocId).update(data);
+            
+            hasUnsavedChanges = false;
+            console.log('Auto-saved at', new Date().toLocaleTimeString());
+            
+            // Show subtle indicator
+            showAutoSaveIndicator();
+        } catch (error) {
+            console.error('Auto-save error:', error);
+        }
+    }
+    
+    // Show auto-save indicator
+    function showAutoSaveIndicator() {
+        // Remove existing indicator if any
+        const existing = document.getElementById('autoSaveIndicator');
+        if (existing) existing.remove();
+        
+        const indicator = document.createElement('div');
+        indicator.id = 'autoSaveIndicator';
+        indicator.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 9999;
+            animation: fadeInOut 2s ease;
+        `;
+        indicator.textContent = '✓ تم الحفظ تلقائياً';
+        document.body.appendChild(indicator);
+        
+        setTimeout(() => indicator.remove(), 2000);
+    }
+    
+    // Add CSS animation for indicator
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Listen to all input changes
+    document.addEventListener('input', (e) => {
+        if (e.target.matches('input, textarea, select')) {
+            triggerAutoSave();
+        }
+    });
+    
+    // Listen to checkbox changes
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.checkbox-item')) {
+            setTimeout(triggerAutoSave, 100);
+        }
+    });
+    
+    // Save before leaving page
+    window.addEventListener('beforeunload', (e) => {
+        if (hasUnsavedChanges && governorateData.governorate) {
+            // Try to save synchronously (may not always work)
+            const data = collectAllData();
+            data.status = 'in-progress';
+            data.sessionId = sessionId;
+            
+            const govDocId = `${sessionId}_${governorateData.governorate}`;
+            
+            // Use sendBeacon for reliable save on page close
+            const blob = new Blob([JSON.stringify({
+                docPath: `eish-wa-malh-governorates/${govDocId}`,
+                data: data
+            })], { type: 'application/json' });
+            
+            // Show warning
+            e.preventDefault();
+            e.returnValue = 'لديك تغييرات غير محفوظة. هل تريد المغادرة؟';
+            return e.returnValue;
+        }
+    });
+        
     // ═══════════════════════════════════════════════════════════
     // Initialize
     // ═══════════════════════════════════════════════════════════
