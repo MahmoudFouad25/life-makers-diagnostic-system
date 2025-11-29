@@ -1105,12 +1105,31 @@
         // Listen to Session Updates
         // ═══════════════════════════════════════════════════════════
 
-        db.collection('eish-wa-malh-planning').doc(sessionId).onSnapshot((doc) => {
-            if (doc.exists) {
-                sessionData = doc.data();
-                updateDisplay();
-            }
+        // Listen to session data
+db.collection('eish-wa-malh-sessions').doc(sessionId).onSnapshot((doc) => {
+    if (doc.exists) {
+        sessionData = doc.data();
+        sessionData.governorates = sessionData.governorates || {};
+        updateDisplay();
+    }
+});
+
+// Listen to governorates for this session
+db.collection('eish-wa-malh-governorates')
+    .where('sessionId', '==', sessionId)
+    .onSnapshot((snapshot) => {
+        const governorates = {};
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            governorates[data.governorate] = data;
         });
+        if (sessionData) {
+            sessionData.governorates = governorates;
+        } else {
+            sessionData = { governorates: governorates };
+        }
+        updateDisplay();
+    });
 
         // ═══════════════════════════════════════════════════════════
         // Update Display
