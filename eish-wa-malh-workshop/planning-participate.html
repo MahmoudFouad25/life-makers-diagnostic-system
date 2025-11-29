@@ -2575,6 +2575,7 @@ btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
         try {
             const data = collectAllData();
             data.status = 'in-progress';
+            data.sessionId = sessionId;
 
             const govDocId = `${sessionId}_${governorateData.governorate}`;
 await db.collection('eish-wa-malh-governorates').doc(govDocId).update(data);
@@ -2599,6 +2600,7 @@ await db.collection('eish-wa-malh-governorates').doc(govDocId).update(data);
             const data = collectAllData();
             data.status = 'submitted';
             data.submittedAt = new Date();
+            data.sessionId = sessionId;
 
             const govDocId = `${sessionId}_${governorateData.governorate}`;
 await db.collection('eish-wa-malh-governorates').doc(govDocId).set(data);
