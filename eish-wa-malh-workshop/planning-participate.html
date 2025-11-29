@@ -1865,7 +1865,7 @@ function fillFormWithData(data) {
                 governorateData.ngosTarget = Math.round(totalTarget * 0.50);
 
                 // Save to Firebase - each governorate as separate document
-const govDocId = `${sessionId}_${governorate}`;
+const govDocId = `${sessionId}_${governorateData.governorate}`;
 await db.collection('eish-wa-malh-governorates').doc(govDocId).set({
     ...governorateData,
     sessionId: sessionId,
