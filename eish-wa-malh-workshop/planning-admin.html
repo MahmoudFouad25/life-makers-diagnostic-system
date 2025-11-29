@@ -1078,19 +1078,19 @@
         const db = firebase.firestore();
 
         // Get or create session ID
-        const urlParams = new URLSearchParams(window.location.search);
-        let sessionId = urlParams.get('session');
+const urlParams = new URLSearchParams(window.location.search);
+let sessionId = urlParams.get('session');
 
-        if (!sessionId) {
+if (!sessionId) {
     // Create new session
     sessionId = 'planning-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 6);
     window.history.replaceState({}, '', `?session=${sessionId}`);
 }
 
-// Always check if session exists, create if not
-checkOrCreateSession();
+document.getElementById('sidebarSessionId').textContent = sessionId;
 
-        document.getElementById('sidebarSessionId').textContent = sessionId;
+// Always check/create session
+checkOrCreateSession();
 
         // Global State
         let sessionData = null;
@@ -1107,26 +1107,25 @@ checkOrCreateSession();
 
         async function checkOrCreateSession() {
     try {
-        const docRef = db.collection('eish-wa-malh-planning').doc(sessionId);
+        const docRef = db.collection('eish-wa-malh-sessions').doc(sessionId);
         const doc = await docRef.get();
         
         if (!doc.exists) {
-            // Create new session
             await docRef.set({
                 id: sessionId,
                 createdAt: new Date(),
-                governorates: {},
                 displayMode: 'waiting',
                 currentSlide: 1,
                 selectedGovernorate: null
             });
+            console.log('Session created:', sessionId);
             showToast('success', '✅ تم إنشاء الجلسة بنجاح!');
         } else {
-            console.log('Session already exists');
+            console.log('Session exists:', sessionId);
         }
     } catch (error) {
         console.error('Error checking/creating session:', error);
-        showToast('error', '❌ خطأ في إنشاء الجلسة');
+        showToast('error', '❌ خطأ في الجلسة');
     }
 }
 
@@ -1134,12 +1133,38 @@ checkOrCreateSession();
         // Listen to Session Updates
         // ═══════════════════════════════════════════════════════════
 
-        db.collection('eish-wa-malh-planning').doc(sessionId).onSnapshot((doc) => {
-            if (doc.exists) {
-                sessionData = doc.data();
-                updateDashboard();
-            }
+        // Listen to session data
+db.collection('eish-wa-malh-sessions').doc(sessionId).onSnapshot((doc) => {
+    if (doc.exists) {
+        sessionData = doc.data();
+        sessionData.governorates = {}; // Will be filled from governorates collection
+        updateSessionUI();
+    }
+});
+
+// Listen to governorates for this session
+db.collection('eish-wa-malh-governorates')
+    .where('sessionId', '==', sessionId)
+    .onSnapshot((snapshot) => {
+        const governorates = {};
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            governorates[data.governorate] = data;
         });
+        if (sessionData) {
+            sessionData.governorates = governorates;
+        } else {
+            sessionData = { governorates: governorates };
+        }
+        updateDashboard();
+    });
+
+function updateSessionUI() {
+    if (sessionData && sessionData.currentSlide) {
+        currentSlide = sessionData.currentSlide;
+        document.getElementById('currentSlideNum').textContent = currentSlide;
+    }
+}
 
         // ═══════════════════════════════════════════════════════════
         // Update Dashboard
@@ -1466,7 +1491,7 @@ checkOrCreateSession();
 
         async function setDisplayMode(mode) {
             try {
-                await db.collection('eish-wa-malh-planning').doc(sessionId).update({
+                await db.collection('eish-wa-malh-sessions').doc(sessionId).update({
                     displayMode: mode
                 });
 
@@ -1489,7 +1514,7 @@ checkOrCreateSession();
 
         async function displayGovernorate(govName) {
             try {
-                await db.collection('eish-wa-malh-planning').doc(sessionId).update({
+                await db.collection('eish-wa-malh-sessions').doc(sessionId).update({
                     displayMode: 'governorate',
                     selectedGovernorate: govName
                 });
@@ -1509,7 +1534,7 @@ checkOrCreateSession();
             document.getElementById('currentSlideNum').textContent = currentSlide;
             
             try {
-                await db.collection('eish-wa-malh-planning').doc(sessionId).update({
+                await db.collection('eish-wa-malh-sessions').doc(sessionId).update({
                     currentSlide: currentSlide,
                     displayMode: 'slides'
                 });
