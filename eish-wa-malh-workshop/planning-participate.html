@@ -1545,10 +1545,158 @@
         // Get session ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session');
+        // Get governorate from URL if exists
+const govParam = urlParams.get('gov');
 
         if (!sessionId) {
-            alert('⚠️ رابط غير صحيح. تأكد من مسح QR Code بشكل صحيح.');
+    alert('⚠️ رابط غير صحيح. تأكد من مسح QR Code بشكل صحيح.');
+}
+
+// Check if returning to existing governorate
+if (govParam && sessionId) {
+    loadExistingGovernorate(govParam);
+}
+
+async function loadExistingGovernorate(govName) {
+    try {
+        const govDocId = `${sessionId}_${govName}`;
+        const doc = await db.collection('eish-wa-malh-governorates').doc(govDocId).get();
+        
+        if (doc.exists) {
+            const data = doc.data();
+            
+            // Fill governorateData
+            governorateData = data;
+            
+            // Update UI
+            document.getElementById('govName').textContent = govName;
+            document.getElementById('govInfo').style.display = 'flex';
+            document.getElementById('progressContainer').style.display = 'block';
+            
+            document.getElementById('partnershipsTarget').textContent = (data.partnershipsTarget || 0).toLocaleString();
+            document.getElementById('volunteersTarget').textContent = (data.volunteersTarget || 0).toLocaleString();
+            document.getElementById('ngosTarget').textContent = (data.ngosTarget || 0).toLocaleString();
+            
+            // Fill all form fields with saved data
+            fillFormWithData(data);
+            
+            // Show planning screen
+            showScreen('planningScreen');
+            document.getElementById('navButtons').style.display = 'flex';
+            updateProgress();
+            
+            showToast('success', '✅ تم تحميل بياناتك المحفوظة');
         }
+    } catch (error) {
+        console.error('Error loading governorate:', error);
+    }
+}
+
+function fillFormWithData(data) {
+    // Section 1: Partnerships
+    if (data.partnerships) {
+        document.getElementById('restaurantsCount').value = data.partnerships.restaurants?.count || '';
+        document.getElementById('avgMealsPerRestaurant').value = data.partnerships.restaurants?.avgMeals || '';
+        document.getElementById('restaurantsResponsible').value = data.partnerships.restaurants?.responsible || '';
+        
+        document.getElementById('screensCount').value = data.partnerships.screens?.count || '';
+        document.getElementById('screensResponsible').value = data.partnerships.screens?.responsible || '';
+        
+        document.getElementById('sponsorsCount').value = data.partnerships.sponsors?.count || '';
+        document.getElementById('sponsorsResponsible').value = data.partnerships.sponsors?.responsible || '';
+    }
+    
+    // Section 2: Volunteers
+    if (data.volunteers) {
+        document.getElementById('collectorsCount').value = data.volunteers.collectors?.count || '';
+        document.getElementById('avgPerCollector').value = data.volunteers.collectors?.avgPerCollector || '';
+        document.getElementById('volunteerSourcesDetails').value = data.volunteers.collectors?.sourcesDetails || '';
+        document.getElementById('collectorsResponsible').value = data.volunteers.collectors?.responsible || '';
+        
+        document.getElementById('donorsCount').value = data.volunteers.donors?.count || '';
+        document.getElementById('avgDonation').value = data.volunteers.donors?.avgDonation || '';
+        document.getElementById('donorChannelsDetails').value = data.volunteers.donors?.channelsDetails || '';
+        document.getElementById('donorsResponsible').value = data.volunteers.donors?.responsible || '';
+    }
+    
+    // Section 3: NGOs
+    if (data.ngos) {
+        document.getElementById('ngosCount').value = data.ngos.count || '';
+        document.getElementById('avgMealsPerNgo').value = data.ngos.avgMeals || '';
+        document.getElementById('ngosResponsible').value = data.ngos.responsible || '';
+    }
+    
+    // Section 4: Monthly Distribution
+    if (data.monthlyDistribution) {
+        document.getElementById('m1_partnerships').value = data.monthlyDistribution.month1?.partnerships || '';
+        document.getElementById('m1_volunteers').value = data.monthlyDistribution.month1?.volunteers || '';
+        document.getElementById('m1_ngos').value = data.monthlyDistribution.month1?.ngos || '';
+        
+        document.getElementById('m2_partnerships').value = data.monthlyDistribution.month2?.partnerships || '';
+        document.getElementById('m2_volunteers').value = data.monthlyDistribution.month2?.volunteers || '';
+        document.getElementById('m2_ngos').value = data.monthlyDistribution.month2?.ngos || '';
+        
+        document.getElementById('m3_partnerships').value = data.monthlyDistribution.month3?.partnerships || '';
+        document.getElementById('m3_volunteers').value = data.monthlyDistribution.month3?.volunteers || '';
+        document.getElementById('m3_ngos').value = data.monthlyDistribution.month3?.ngos || '';
+        
+        document.getElementById('m4_partnerships').value = data.monthlyDistribution.month4?.partnerships || '';
+        document.getElementById('m4_volunteers').value = data.monthlyDistribution.month4?.volunteers || '';
+        document.getElementById('m4_ngos').value = data.monthlyDistribution.month4?.ngos || '';
+        
+        calculateMonthlyTotals();
+    }
+    
+    // Section 5: HR
+    if (data.humanResources) {
+        document.getElementById('hr_collectors').value = data.humanResources.collectors?.count || '';
+        document.getElementById('hr_collectors_source').value = data.humanResources.collectors?.source || '';
+        document.getElementById('hr_collectors_resp').value = data.humanResources.collectors?.responsible || '';
+        
+        document.getElementById('hr_distributors').value = data.humanResources.distributors?.count || '';
+        document.getElementById('hr_distributors_source').value = data.humanResources.distributors?.source || '';
+        document.getElementById('hr_distributors_resp').value = data.humanResources.distributors?.responsible || '';
+        
+        document.getElementById('hr_communicators').value = data.humanResources.communicators?.count || '';
+        document.getElementById('hr_communicators_source').value = data.humanResources.communicators?.source || '';
+        document.getElementById('hr_communicators_resp').value = data.humanResources.communicators?.responsible || '';
+        
+        document.getElementById('hr_social').value = data.humanResources.social?.count || '';
+        document.getElementById('hr_social_source').value = data.humanResources.social?.source || '';
+        document.getElementById('hr_social_resp').value = data.humanResources.social?.responsible || '';
+        
+        document.getElementById('hr_logistics').value = data.humanResources.logistics?.count || '';
+        document.getElementById('hr_logistics_source').value = data.humanResources.logistics?.source || '';
+        document.getElementById('hr_logistics_resp').value = data.humanResources.logistics?.responsible || '';
+    }
+    
+    if (data.supporters) {
+        document.getElementById('supportersResponsible').value = data.supporters.responsible || '';
+    }
+    
+    // Section 6: Backup & Commitment
+    if (data.backupPlans) {
+        document.getElementById('backup_partnerships').value = data.backupPlans.partnerships || '';
+        document.getElementById('backup_ngos').value = data.backupPlans.ngos || '';
+        document.getElementById('backup_volunteers').value = data.backupPlans.volunteers || '';
+    }
+    
+    if (data.commitment) {
+        document.getElementById('step1_action').value = data.commitment.step1?.action || '';
+        document.getElementById('step1_who').value = data.commitment.step1?.who || '';
+        document.getElementById('step1_when').value = data.commitment.step1?.when || '';
+        
+        document.getElementById('step2_action').value = data.commitment.step2?.action || '';
+        document.getElementById('step2_who').value = data.commitment.step2?.who || '';
+        document.getElementById('step2_when').value = data.commitment.step2?.when || '';
+        
+        document.getElementById('step3_action').value = data.commitment.step3?.action || '';
+        document.getElementById('step3_who').value = data.commitment.step3?.who || '';
+        document.getElementById('step3_when').value = data.commitment.step3?.when || '';
+        
+        document.getElementById('firstCheckin').value = data.commitment.firstCheckin || '';
+    }
+}
 
         // Global State
         let governorateData = {
@@ -1624,6 +1772,11 @@ await db.collection('eish-wa-malh-governorates').doc(govDocId).set({
                 updateProgress();
 
                 showToast('success', '✅ تم التسجيل بنجاح!');
+
+// Update URL with governorate
+const newUrl = `${window.location.pathname}?session=${sessionId}&gov=${encodeURIComponent(governorate)}`;
+window.history.replaceState({}, '', newUrl);
+
 btn.disabled = false;
 btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
             } catch (error) {
