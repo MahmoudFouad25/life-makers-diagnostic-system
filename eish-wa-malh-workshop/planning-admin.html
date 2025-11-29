@@ -1387,103 +1387,421 @@ function updateSessionUI() {
         // ═══════════════════════════════════════════════════════════
 
         function selectGovernorate(govName) {
-            selectedGovernorate = govName;
+    selectedGovernorate = govName;
+    
+    const gov = sessionData.governorates[govName];
+    if (!gov) return;
+
+    document.getElementById('selectedGovName').textContent = govName;
+    document.getElementById('govDetailsPanel').style.display = 'block';
+
+    // Build comprehensive details
+    const content = document.getElementById('govDetailsContent');
+    
+    let html = `
+        <!-- الأرقام الأساسية -->
+        <div class="details-section">
+            <div class="details-section-title">📊 الأرقام الأساسية</div>
+            <div class="details-row">
+                <span class="details-label">المستهدف الكلي:</span>
+                <span class="details-value">${(gov.totalTarget || 0).toLocaleString()} وجبة</span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">المنسق:</span>
+                <span class="details-value">${gov.coordinator || '-'}</span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">الحالة:</span>
+                <span class="details-value" style="color: ${gov.status === 'submitted' ? 'var(--success)' : 'var(--warning)'}">
+                    ${gov.status === 'submitted' ? '✅ مكتملة ومُرسلة' : '⏳ قيد التخطيط'}
+                </span>
+            </div>
+        </div>
+
+        <!-- ملف الشراكات -->
+        <div class="details-section">
+            <div class="details-section-title">🤝 ملف الشراكات (${(gov.partnershipsTarget || 0).toLocaleString()} وجبة - 20%)</div>
             
-            const gov = sessionData.governorates[govName];
-            if (!gov) return;
-
-            document.getElementById('selectedGovName').textContent = govName;
-            document.getElementById('govDetailsPanel').style.display = 'block';
-
-            // Render details
-            const content = document.getElementById('govDetailsContent');
-            content.innerHTML = `
-                <div class="details-section">
-                    <div class="details-section-title">📊 الأرقام الأساسية</div>
-                    <div class="details-row">
-                        <span class="details-label">المستهدف الكلي:</span>
-                        <span class="details-value">${(gov.totalTarget || 0).toLocaleString()} وجبة</span>
-                    </div>
-                    <div class="details-row">
-                        <span class="details-label">المنسق:</span>
-                        <span class="details-value">${gov.coordinator || '-'}</span>
-                    </div>
+            <!-- المطاعم -->
+            <div style="background: var(--bg-dark); padding: 15px; border-radius: 10px; margin-bottom: 12px;">
+                <div style="font-weight: 700; color: var(--primary-light); margin-bottom: 10px;">🍽️ المطاعم</div>
+                <div class="details-row">
+                    <span class="details-label">العدد المستهدف:</span>
+                    <span class="details-value">${gov.partnerships?.restaurants?.count || '-'}</span>
                 </div>
-
-                <div class="details-section">
-                    <div class="details-section-title">🤝 الشراكات (${(gov.partnershipsTarget || 0).toLocaleString()} وجبة)</div>
-                    <div class="details-row">
-                        <span class="details-label">عدد المطاعم:</span>
-                        <span class="details-value">${gov.partnerships?.restaurants?.count || '-'}</span>
-                    </div>
-                    <div class="details-row">
-                        <span class="details-label">عدد الشاشات:</span>
-                        <span class="details-value">${gov.partnerships?.screens?.count || '-'}</span>
-                    </div>
-                    <div class="details-row">
-                        <span class="details-label">عدد الرعاة:</span>
-                        <span class="details-value">${gov.partnerships?.sponsors?.count || '-'}</span>
-                    </div>
+                <div class="details-row">
+                    <span class="details-label">متوسط الوجبات/مطعم:</span>
+                    <span class="details-value">${gov.partnerships?.restaurants?.avgMeals || '-'}</span>
                 </div>
-
-                <div class="details-section">
-                    <div class="details-section-title">👥 المتطوعين (${(gov.volunteersTarget || 0).toLocaleString()} وجبة)</div>
-                    <div class="details-row">
-                        <span class="details-label">عدد الجامعين:</span>
-                        <span class="details-value">${gov.volunteers?.collectors?.count || '-'}</span>
-                    </div>
-                    <div class="details-row">
-                        <span class="details-label">عدد المتبرعين:</span>
-                        <span class="details-value">${gov.volunteers?.donors?.count || '-'}</span>
-                    </div>
+                <div class="details-row">
+                    <span class="details-label">المسؤول:</span>
+                    <span class="details-value">${gov.partnerships?.restaurants?.responsible || '-'}</span>
                 </div>
-
-                <div class="details-section">
-                    <div class="details-section-title">🏢 الجمعيات (${(gov.ngosTarget || 0).toLocaleString()} وجبة)</div>
-                    <div class="details-row">
-                        <span class="details-label">عدد الجمعيات:</span>
-                        <span class="details-value">${gov.ngos?.count || '-'}</span>
-                    </div>
-                    <div class="details-row">
-                        <span class="details-label">متوسط الوجبات:</span>
-                        <span class="details-value">${gov.ngos?.avgMeals || '-'}</span>
-                    </div>
+                ${renderList(gov.partnerships?.restaurants?.list, 'المطاعم المحددة', ['name', 'meals'], ['الاسم', 'الوجبات'])}
+            </div>
+            
+            <!-- الشاشات -->
+            <div style="background: var(--bg-dark); padding: 15px; border-radius: 10px; margin-bottom: 12px;">
+                <div style="font-weight: 700; color: var(--primary-light); margin-bottom: 10px;">📺 الشاشات</div>
+                <div class="details-row">
+                    <span class="details-label">العدد المستهدف:</span>
+                    <span class="details-value">${gov.partnerships?.screens?.count || '-'}</span>
                 </div>
+                <div class="details-row">
+                    <span class="details-label">المسؤول:</span>
+                    <span class="details-value">${gov.partnerships?.screens?.responsible || '-'}</span>
+                </div>
+                ${renderList(gov.partnerships?.screens?.list, 'مواقع الشاشات', ['location', 'cost'], ['الموقع', 'التكلفة'])}
+            </div>
+            
+            <!-- الرعاة -->
+            <div style="background: var(--bg-dark); padding: 15px; border-radius: 10px;">
+                <div style="font-weight: 700; color: var(--primary-light); margin-bottom: 10px;">💼 الرعاة</div>
+                <div class="details-row">
+                    <span class="details-label">العدد المستهدف:</span>
+                    <span class="details-value">${gov.partnerships?.sponsors?.count || '-'}</span>
+                </div>
+                <div class="details-row">
+                    <span class="details-label">أنواع الرعاية:</span>
+                    <span class="details-value">${(gov.partnerships?.sponsors?.types || []).join('، ') || '-'}</span>
+                </div>
+                <div class="details-row">
+                    <span class="details-label">المسؤول:</span>
+                    <span class="details-value">${gov.partnerships?.sponsors?.responsible || '-'}</span>
+                </div>
+                ${renderList(gov.partnerships?.sponsors?.list, 'الرعاة المحددين', ['name', 'type'], ['الاسم', 'النوع'])}
+            </div>
+        </div>
 
-                ${gov.commitment ? `
-                    <div class="details-section" style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success);">
-                        <div class="details-section-title" style="color: var(--success);">✅ الالتزامات</div>
-                        ${gov.commitment.step1?.action ? `
-                            <div class="details-row">
-                                <span class="details-label">الخطوة 1:</span>
-                                <span class="details-value">${gov.commitment.step1.action}</span>
-                            </div>
-                        ` : ''}
-                        ${gov.commitment.step2?.action ? `
-                            <div class="details-row">
-                                <span class="details-label">الخطوة 2:</span>
-                                <span class="details-value">${gov.commitment.step2.action}</span>
-                            </div>
-                        ` : ''}
-                        ${gov.commitment.step3?.action ? `
-                            <div class="details-row">
-                                <span class="details-label">الخطوة 3:</span>
-                                <span class="details-value">${gov.commitment.step3.action}</span>
-                            </div>
-                        ` : ''}
-                        ${gov.commitment.firstCheckin ? `
-                            <div class="details-row">
-                                <span class="details-label">أول Check-in:</span>
-                                <span class="details-value">${gov.commitment.firstCheckin}</span>
-                            </div>
-                        ` : ''}
+        <!-- ملف المتطوعين -->
+        <div class="details-section">
+            <div class="details-section-title">👥 ملف المتطوعين (${(gov.volunteersTarget || 0).toLocaleString()} وجبة - 30%)</div>
+            
+            <!-- الجامعين -->
+            <div style="background: var(--bg-dark); padding: 15px; border-radius: 10px; margin-bottom: 12px;">
+                <div style="font-weight: 700; color: var(--primary-light); margin-bottom: 10px;">🙋 المتطوعين كجامعين</div>
+                <div class="details-row">
+                    <span class="details-label">العدد المستهدف:</span>
+                    <span class="details-value">${gov.volunteers?.collectors?.count || '-'}</span>
+                </div>
+                <div class="details-row">
+                    <span class="details-label">متوسط التبرعات/متطوع:</span>
+                    <span class="details-value">${gov.volunteers?.collectors?.avgPerCollector || '-'}</span>
+                </div>
+                <div class="details-row">
+                    <span class="details-label">مصادر التجنيد:</span>
+                    <span class="details-value">${(gov.volunteers?.collectors?.sources || []).join('، ') || '-'}</span>
+                </div>
+                <div class="details-row">
+                    <span class="details-label">المسؤول:</span>
+                    <span class="details-value">${gov.volunteers?.collectors?.responsible || '-'}</span>
+                </div>
+                ${gov.volunteers?.collectors?.sourcesDetails ? `
+                    <div style="margin-top: 10px; padding: 10px; background: var(--bg-dark-2); border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+                        <strong>التفاصيل:</strong> ${gov.volunteers?.collectors?.sourcesDetails}
                     </div>
                 ` : ''}
-            `;
+            </div>
+            
+            <!-- المتبرعين -->
+            <div style="background: var(--bg-dark); padding: 15px; border-radius: 10px;">
+                <div style="font-weight: 700; color: var(--primary-light); margin-bottom: 10px;">💳 المتبرعين الأفراد</div>
+                <div class="details-row">
+                    <span class="details-label">العدد المستهدف:</span>
+                    <span class="details-value">${gov.volunteers?.donors?.count || '-'}</span>
+                </div>
+                <div class="details-row">
+                    <span class="details-label">متوسط التبرع:</span>
+                    <span class="details-value">${gov.volunteers?.donors?.avgDonation || '-'} جنيه</span>
+                </div>
+                <div class="details-row">
+                    <span class="details-label">قنوات الوصول:</span>
+                    <span class="details-value">${(gov.volunteers?.donors?.channels || []).join('، ') || '-'}</span>
+                </div>
+                <div class="details-row">
+                    <span class="details-label">المسؤول:</span>
+                    <span class="details-value">${gov.volunteers?.donors?.responsible || '-'}</span>
+                </div>
+                ${gov.volunteers?.donors?.channelsDetails ? `
+                    <div style="margin-top: 10px; padding: 10px; background: var(--bg-dark-2); border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+                        <strong>التفاصيل:</strong> ${gov.volunteers?.donors?.channelsDetails}
+                    </div>
+                ` : ''}
+            </div>
+        </div>
 
-            // Update list selection
-            renderGovernoratesList(Object.values(sessionData.governorates));
-        }
+        <!-- ملف الجمعيات -->
+        <div class="details-section">
+            <div class="details-section-title">🏢 ملف الجمعيات القاعدية (${(gov.ngosTarget || 0).toLocaleString()} وجبة - 50%)</div>
+            <div class="details-row">
+                <span class="details-label">العدد المستهدف:</span>
+                <span class="details-value">${gov.ngos?.count || '-'}</span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">متوسط الوجبات/جمعية:</span>
+                <span class="details-value">${gov.ngos?.avgMeals || '-'}</span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">خبرة سابقة:</span>
+                <span class="details-value">${gov.ngos?.experience || '-'}</span>
+            </div>
+            <div class="details-row">
+                <span class="details-label">المسؤول:</span>
+                <span class="details-value">${gov.ngos?.responsible || '-'}</span>
+            </div>
+            ${renderList(gov.ngos?.list, 'الجمعيات المحددة', ['name', 'meals', 'responsible'], ['الاسم', 'الوجبات', 'المسؤول'])}
+        </div>
+
+        <!-- التوزيع الشهري -->
+        <div class="details-section">
+            <div class="details-section-title">📅 التوزيع الشهري</div>
+            ${renderMonthlyTable(gov.monthlyDistribution)}
+        </div>
+
+        <!-- الموارد البشرية -->
+        <div class="details-section">
+            <div class="details-section-title">👷 الموارد البشرية</div>
+            ${renderHRTable(gov.humanResources)}
+        </div>
+
+        <!-- الداعمين -->
+        ${gov.supporters?.list?.length > 0 ? `
+            <div class="details-section">
+                <div class="details-section-title">⭐ الداعمين</div>
+                <div class="details-row">
+                    <span class="details-label">المسؤول:</span>
+                    <span class="details-value">${gov.supporters?.responsible || '-'}</span>
+                </div>
+                ${renderSupportersList(gov.supporters?.list)}
+            </div>
+        ` : ''}
+
+        <!-- خطط البدائل -->
+        ${(gov.backupPlans?.partnerships || gov.backupPlans?.ngos || gov.backupPlans?.volunteers) ? `
+            <div class="details-section" style="border: 2px solid var(--warning);">
+                <div class="details-section-title" style="color: var(--warning);">🛡️ خطط البدائل (عقلية المتبني)</div>
+                ${gov.backupPlans?.partnerships ? `
+                    <div style="background: var(--bg-dark); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px;">لو الشراكات محققتش:</div>
+                        <div style="font-size: 14px; color: var(--text-primary);">${gov.backupPlans.partnerships}</div>
+                    </div>
+                ` : ''}
+                ${gov.backupPlans?.ngos ? `
+                    <div style="background: var(--bg-dark); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px;">لو الجمعيات اعتذرت:</div>
+                        <div style="font-size: 14px; color: var(--text-primary);">${gov.backupPlans.ngos}</div>
+                    </div>
+                ` : ''}
+                ${gov.backupPlans?.volunteers ? `
+                    <div style="background: var(--bg-dark); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px;">لو المتطوعين مجمعوش:</div>
+                        <div style="font-size: 14px; color: var(--text-primary);">${gov.backupPlans.volunteers}</div>
+                    </div>
+                ` : ''}
+            </div>
+        ` : ''}
+
+        <!-- المخاطر -->
+        ${gov.risks?.length > 0 ? `
+            <div class="details-section" style="border: 2px solid var(--error);">
+                <div class="details-section-title" style="color: var(--error);">⚠️ المخاطر وخطة التعامل</div>
+                ${gov.risks.map((risk, i) => `
+                    <div style="background: var(--bg-dark); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+                            ${i + 1}. ${risk.description || '-'}
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">
+                            <strong>الخطة:</strong> ${risk.plan || '-'}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        ` : ''}
+
+        <!-- الالتزامات -->
+        ${gov.commitment ? `
+            <div class="details-section" style="background: rgba(16, 185, 129, 0.1); border: 2px solid var(--success);">
+                <div class="details-section-title" style="color: var(--success);">✅ الالتزامات النهائية</div>
+                ${gov.commitment.step1?.action ? `
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-dark-2); border-radius: 10px; margin-bottom: 10px;">
+                        <div style="width: 32px; height: 32px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">1</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 15px; color: var(--text-primary);">${gov.commitment.step1.action}</div>
+                            <div style="font-size: 13px; color: var(--text-muted);">
+                                👤 ${gov.commitment.step1.who || '-'} | 📅 ${gov.commitment.step1.when || '-'}
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+                ${gov.commitment.step2?.action ? `
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-dark-2); border-radius: 10px; margin-bottom: 10px;">
+                        <div style="width: 32px; height: 32px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">2</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 15px; color: var(--text-primary);">${gov.commitment.step2.action}</div>
+                            <div style="font-size: 13px; color: var(--text-muted);">
+                                👤 ${gov.commitment.step2.who || '-'} | 📅 ${gov.commitment.step2.when || '-'}
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+                ${gov.commitment.step3?.action ? `
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-dark-2); border-radius: 10px; margin-bottom: 10px;">
+                        <div style="width: 32px; height: 32px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">3</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 15px; color: var(--text-primary);">${gov.commitment.step3.action}</div>
+                            <div style="font-size: 13px; color: var(--text-muted);">
+                                👤 ${gov.commitment.step3.who || '-'} | 📅 ${gov.commitment.step3.when || '-'}
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+                ${gov.commitment.firstCheckin ? `
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(102, 126, 234, 0.2); border-radius: 10px; border: 2px solid var(--primary);">
+                        <div style="font-size: 24px;">📅</div>
+                        <div>
+                            <div style="font-size: 13px; color: var(--text-muted);">أول Check-in مع القيادة</div>
+                            <div style="font-size: 16px; font-weight: 700; color: var(--primary-light);">${gov.commitment.firstCheckin}</div>
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        ` : ''}
+    `;
+
+    content.innerHTML = html;
+
+    // Update list selection visual
+    renderGovernoratesList(Object.values(sessionData.governorates));
+    
+    // Scroll to details
+    document.getElementById('govDetailsPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Helper function to render lists
+function renderList(list, title, fields, labels) {
+    if (!list || list.length === 0) return '';
+    
+    return `
+        <div style="margin-top: 12px;">
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">${title}:</div>
+            ${list.map((item, i) => `
+                <div style="display: flex; gap: 10px; padding: 8px 12px; background: var(--bg-dark-2); border-radius: 8px; margin-bottom: 6px; font-size: 13px;">
+                    <span style="color: var(--primary-light); font-weight: 700;">${i + 1}.</span>
+                    ${fields.map((field, fi) => `
+                        <span style="color: ${fi === 0 ? 'var(--text-primary)' : 'var(--text-secondary)'};">
+                            ${item[field] || '-'}${fi < fields.length - 1 ? ' |' : ''}
+                        </span>
+                    `).join('')}
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Helper function to render monthly table
+function renderMonthlyTable(data) {
+    if (!data) return '<div style="color: var(--text-muted); font-size: 14px;">لم يتم إدخال التوزيع الشهري</div>';
+    
+    return `
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead>
+                    <tr style="background: var(--bg-dark);">
+                        <th style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center;">الشهر</th>
+                        <th style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center;">شراكات</th>
+                        <th style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center;">متطوعين</th>
+                        <th style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center;">جمعيات</th>
+                        <th style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center;">الإجمالي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${[1, 2, 3, 4].map(m => {
+                        const monthData = data[`month${m}`] || {};
+                        const p = parseInt(monthData.partnerships) || 0;
+                        const v = parseInt(monthData.volunteers) || 0;
+                        const n = parseInt(monthData.ngos) || 0;
+                        return `
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center; font-weight: 700;">شهر ${m}</td>
+                                <td style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center;">${p.toLocaleString()}</td>
+                                <td style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center;">${v.toLocaleString()}</td>
+                                <td style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center;">${n.toLocaleString()}</td>
+                                <td style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center; font-weight: 700; color: var(--primary-light);">${(p + v + n).toLocaleString()}</td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+// Helper function to render HR table
+function renderHRTable(data) {
+    if (!data) return '<div style="color: var(--text-muted); font-size: 14px;">لم يتم إدخال الموارد البشرية</div>';
+    
+    const roles = [
+        { key: 'collectors', label: 'متطوعين للجمع' },
+        { key: 'distributors', label: 'متطوعين للتوزيع' },
+        { key: 'communicators', label: 'متطوعين للتواصل' },
+        { key: 'social', label: 'متطوعين للسوشيال' },
+        { key: 'logistics', label: 'متطوعين للوجستيات' }
+    ];
+    
+    return `
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead>
+                    <tr style="background: var(--bg-dark);">
+                        <th style="padding: 10px; border: 1px solid var(--bg-dark-3);">الدور</th>
+                        <th style="padding: 10px; border: 1px solid var(--bg-dark-3);">العدد</th>
+                        <th style="padding: 10px; border: 1px solid var(--bg-dark-3);">المصدر</th>
+                        <th style="padding: 10px; border: 1px solid var(--bg-dark-3);">المسؤول</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${roles.map(role => {
+                        const roleData = data[role.key] || {};
+                        return `
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid var(--bg-dark-3);">${role.label}</td>
+                                <td style="padding: 10px; border: 1px solid var(--bg-dark-3); text-align: center;">${roleData.count || '-'}</td>
+                                <td style="padding: 10px; border: 1px solid var(--bg-dark-3);">${roleData.source || '-'}</td>
+                                <td style="padding: 10px; border: 1px solid var(--bg-dark-3);">${roleData.responsible || '-'}</td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+// Helper function to render supporters list
+function renderSupportersList(list) {
+    if (!list || list.length === 0) return '';
+    
+    return `
+        <div style="margin-top: 12px;">
+            ${list.map((item, i) => `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-dark); border-radius: 10px; margin-bottom: 8px;">
+                    <div style="font-size: 24px;">⭐</div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">${item.name || '-'}</div>
+                        <div style="font-size: 13px; color: var(--text-muted);">${item.type || '-'}</div>
+                    </div>
+                    ${item.options?.length > 0 ? `
+                        <div style="display: flex; gap: 6px;">
+                            ${item.options.map(opt => `
+                                <span style="padding: 4px 10px; background: rgba(102, 126, 234, 0.2); border-radius: 6px; font-size: 12px; color: var(--primary-light);">${opt}</span>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
 
         // ═══════════════════════════════════════════════════════════
         // Display Control
