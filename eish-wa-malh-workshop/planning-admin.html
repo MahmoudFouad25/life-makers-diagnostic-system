@@ -1133,28 +1133,42 @@ checkOrCreateSession();
         // Listen to Session Updates
         // ═══════════════════════════════════════════════════════════
 
-        // Listen to session data
+        // Listen to session data AND old-style governorates
 db.collection('eish-wa-malh-sessions').doc(sessionId).onSnapshot((doc) => {
     if (doc.exists) {
         sessionData = doc.data();
-        sessionData.governorates = {}; // Will be filled from governorates collection
+        
+        // Check for old-style governorates stored inside session document
+        if (sessionData.governorates && Object.keys(sessionData.governorates).length > 0) {
+            console.log('Found old-style governorates:', Object.keys(sessionData.governorates));
+            updateDashboard();
+        } else {
+            sessionData.governorates = {};
+        }
         updateSessionUI();
     }
 });
 
-// Listen to governorates for this session
+// Listen to NEW-style governorates (separate collection)
 db.collection('eish-wa-malh-governorates')
     .where('sessionId', '==', sessionId)
     .onSnapshot((snapshot) => {
-        const governorates = {};
+        const newStyleGovernorates = {};
         snapshot.forEach((doc) => {
             const data = doc.data();
-            governorates[data.governorate] = data;
+            newStyleGovernorates[data.governorate] = data;
         });
+        
+        console.log('Found new-style governorates:', Object.keys(newStyleGovernorates));
+        
         if (sessionData) {
-            sessionData.governorates = governorates;
+            // Merge: new-style overwrites old-style if same governorate exists
+            sessionData.governorates = {
+                ...(sessionData.governorates || {}),
+                ...newStyleGovernorates
+            };
         } else {
-            sessionData = { governorates: governorates };
+            sessionData = { governorates: newStyleGovernorates };
         }
         updateDashboard();
     });
