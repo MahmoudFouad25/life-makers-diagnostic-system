@@ -1599,23 +1599,16 @@
                 governorateData.volunteersTarget = Math.round(totalTarget * 0.30);
                 governorateData.ngosTarget = Math.round(totalTarget * 0.50);
 
-                // Save to Firebase
-                const docRef = db.collection('eish-wa-malh-planning').doc(sessionId);
-                const doc = await docRef.get();
-
-                if (doc.exists) {
-                    const data = doc.data();
-                    const governorates = data.governorates || {};
-                    
-                    governorates[governorate] = {
-                        ...governorateData,
-                        registeredAt: new Date(),
-                        lastUpdated: new Date(),
-                        status: 'in-progress'
-                    };
-
-                    await docRef.update({ governorates: governorates });
-                }
+                // Save to Firebase - each governorate as separate document
+const govDocId = `${sessionId}_${governorate}`;
+await db.collection('eish-wa-malh-governorates').doc(govDocId).set({
+    ...governorateData,
+    sessionId: sessionId,
+    visitorId: visitorId || '',
+    registeredAt: new Date(),
+    lastUpdated: new Date(),
+    status: 'in-progress'
+});
 
                 // Update UI
                 document.getElementById('govName').textContent = governorate;
@@ -2139,15 +2132,8 @@
             const data = collectAllData();
             data.status = 'in-progress';
 
-            const docRef = db.collection('eish-wa-malh-planning').doc(sessionId);
-            const doc = await docRef.get();
-
-            if (doc.exists) {
-                const sessionData = doc.data();
-                const governorates = sessionData.governorates || {};
-                governorates[governorateData.governorate] = data;
-                await docRef.update({ governorates: governorates });
-            }
+            const govDocId = `${sessionId}_${governorateData.governorate}`;
+await db.collection('eish-wa-malh-governorates').doc(govDocId).update(data);
 
             showToast('success', '💾 تم الحفظ بنجاح!');
 
@@ -2170,15 +2156,8 @@
             data.status = 'submitted';
             data.submittedAt = new Date();
 
-            const docRef = db.collection('eish-wa-malh-planning').doc(sessionId);
-            const doc = await docRef.get();
-
-            if (doc.exists) {
-                const sessionData = doc.data();
-                const governorates = sessionData.governorates || {};
-                governorates[governorateData.governorate] = data;
-                await docRef.update({ governorates: governorates });
-            }
+            const govDocId = `${sessionId}_${governorateData.governorate}`;
+await db.collection('eish-wa-malh-governorates').doc(govDocId).set(data);
 
             // Show summary
             showSummary(data);
