@@ -1602,9 +1602,13 @@ async function loadExistingGovernorate(govName) {
             document.getElementById('navButtons').style.display = 'flex';
             updateProgress();
 
-            // Make sure first section is open
+            // Close all sections first, then open first one
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById(`section${i}`).classList.remove('open');
+            }
             document.getElementById('section1').classList.add('open');
             currentSection = 1;
+            updateProgress();
             
             showToast('success', '✅ تم تحميل بياناتك المحفوظة');
         }
@@ -1917,51 +1921,71 @@ btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
         }
 
         function updateProgress() {
-            const percent = Math.round((currentSection / totalSections) * 100);
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressLabel').textContent = `القسم ${currentSection} من ${totalSections}`;
-            document.getElementById('progressPercent').textContent = percent + '%';
+    const percent = Math.round((currentSection / totalSections) * 100);
+    document.getElementById('progressFill').style.width = percent + '%';
+    document.getElementById('progressLabel').textContent = `القسم ${currentSection} من ${totalSections}`;
+    document.getElementById('progressPercent').textContent = percent + '%';
 
-            // Update nav buttons
-            document.getElementById('prevBtn').style.visibility = currentSection > 1 ? 'visible' : 'hidden';
-            
-            if (currentSection === totalSections) {
-                document.getElementById('nextBtn').innerHTML = '<span>إرسال الخطة</span><span>📤</span>';
-            } else {
-                document.getElementById('nextBtn').innerHTML = '<span>التالي</span><span>←</span>';
-            }
-        }
+    // Update prev button - hide only on first section, but keep space
+    const prevBtn = document.getElementById('prevBtn');
+    if (currentSection === 1) {
+        prevBtn.style.opacity = '0.3';
+        prevBtn.style.pointerEvents = 'none';
+    } else {
+        prevBtn.style.opacity = '1';
+        prevBtn.style.pointerEvents = 'auto';
+    }
+    
+    // Update next button text
+    if (currentSection === totalSections) {
+        document.getElementById('nextBtn').innerHTML = '<span>إرسال الخطة</span><span>📤</span>';
+    } else {
+        document.getElementById('nextBtn').innerHTML = '<span>التالي</span><span>←</span>';
+    }
+}
 
         function nextSection() {
-            if (currentSection < totalSections) {
-                // Close current section
-                document.getElementById(`section${currentSection}`).classList.remove('open');
-                
-                currentSection++;
-                
-                // Open next section
-                document.getElementById(`section${currentSection}`).classList.add('open');
-                
-                // Scroll to top
-                window.scrollTo({ top: 150, behavior: 'smooth' });
-                
-                updateProgress();
-            } else {
-                // Submit plan
-                submitPlan();
-            }
-        }
+    if (currentSection < totalSections) {
+        // Close current section
+        document.getElementById(`section${currentSection}`).classList.remove('open');
+        
+        // Move to next
+        currentSection++;
+        
+        // Open next section
+        document.getElementById(`section${currentSection}`).classList.add('open');
+        
+        // Scroll to the section
+        setTimeout(() => {
+            document.getElementById(`section${currentSection}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+        
+        updateProgress();
+    } else {
+        // Submit plan
+        submitPlan();
+    }
+}
 
         function previousSection() {
-            if (currentSection > 1) {
-                document.getElementById(`section${currentSection}`).classList.remove('open');
-                currentSection--;
-                document.getElementById(`section${currentSection}`).classList.add('open');
-                window.scrollTo({ top: 150, behavior: 'smooth' });
-                updateProgress();
-            }
-        }
-
+    if (currentSection > 1) {
+        // Close current section
+        document.getElementById(`section${currentSection}`).classList.remove('open');
+        
+        // Move to previous
+        currentSection--;
+        
+        // Open previous section
+        document.getElementById(`section${currentSection}`).classList.add('open');
+        
+        // Scroll to the section
+        setTimeout(() => {
+            document.getElementById(`section${currentSection}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+        
+        updateProgress();
+    }
+}
         // ═══════════════════════════════════════════════════════════
         // القوائم الديناميكية
         // ═══════════════════════════════════════════════════════════
@@ -2623,10 +2647,30 @@ await db.collection('eish-wa-malh-governorates').doc(govDocId).set(data);
     }
 
     function editPlan() {
-        document.getElementById('navButtons').style.display = 'flex';
-        document.getElementById('progressContainer').style.display = 'block';
-        showScreen('planningScreen');
+    // Show nav buttons and progress
+    document.getElementById('navButtons').style.display = 'flex';
+    document.getElementById('progressContainer').style.display = 'block';
+    
+    // Reset to first section
+    currentSection = 1;
+    
+    // Close all sections first
+    for (let i = 1; i <= totalSections; i++) {
+        document.getElementById(`section${i}`).classList.remove('open');
     }
+    
+    // Open first section
+    document.getElementById('section1').classList.add('open');
+    
+    // Update progress
+    updateProgress();
+    
+    // Show planning screen
+    showScreen('planningScreen');
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
     // ═══════════════════════════════════════════════════════════
     // Toast
