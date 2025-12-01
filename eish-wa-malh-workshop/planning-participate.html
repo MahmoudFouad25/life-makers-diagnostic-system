@@ -714,6 +714,114 @@
             color: var(--text-primary);
         }
 
+        /* ═══ Validation & Warning Styles ═══ */
+.required-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--error);
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+.form-input.required, .form-select.required, .form-textarea.required {
+    border-right: 4px solid var(--error);
+}
+
+.form-input.filled, .form-select.filled, .form-textarea.filled {
+    border-right: 4px solid var(--success);
+}
+
+.validation-message {
+    display: none;
+    background: rgba(239, 68, 68, 0.15);
+    border: 2px solid var(--error);
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-top: 15px;
+    color: var(--error);
+    font-size: 14px;
+    font-weight: 600;
+    animation: shake 0.5s ease;
+}
+
+.validation-message.warning {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: var(--warning);
+    color: #f59e0b;
+}
+
+.validation-message.warning strong {
+    color: var(--warning);
+}
+
+.validation-message.show {
+    display: block;
+}
+
+.validation-message ul {
+    margin: 10px 0 0 0;
+    padding-right: 20px;
+}
+
+.validation-message li {
+    margin-bottom: 6px;
+    line-height: 1.6;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.section-card.incomplete .section-status {
+    animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.optional-badge {
+    display: inline-block;
+    background: rgba(102, 126, 234, 0.2);
+    color: var(--primary-light);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+.completion-bar {
+    height: 4px;
+    background: var(--bg-dark-3);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.completion-fill {
+    height: 100%;
+    background: var(--gradient-success);
+    transition: width 0.5s ease;
+    border-radius: 2px;
+}
+
+.toast.warning {
+    border-color: var(--warning);
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning);
+}
+        
         /* ═══ Responsive ═══ */
         @media (max-width: 600px) {
             .dynamic-item-row {
@@ -761,6 +869,16 @@
             <span id="progressLabel">القسم 1 من 6</span>
             <span id="progressPercent">0%</span>
         </div>
+        <div id="sectionsProgress" style="
+    text-align: center;
+    margin-top: 10px;
+    padding: 8px;
+    background: var(--bg-dark-3);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: none;
+"></div>
     </div>
 
     <!-- Main Content -->
@@ -887,6 +1005,7 @@
                         <div class="sub-section-title">
                             <span>📺</span>
                             <span>الشاشات والإعلانات</span>
+<span class="optional-badge">اختياري</span>
                         </div>
                         
                         <div class="form-group">
@@ -916,6 +1035,7 @@
                         <div class="sub-section-title">
                             <span>💼</span>
                             <span>رعاة آخرين</span>
+<span class="optional-badge">اختياري</span>
                         </div>
                         
                         <div class="form-group">
@@ -1263,6 +1383,7 @@
                         <div class="sub-section-title">
                             <span>👥</span>
                             <span>الموارد البشرية</span>
+<span class="optional-badge">اختياري</span>
                         </div>
                         
                         <div style="overflow-x: auto;">
@@ -1942,9 +2063,29 @@ btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
     } else {
         document.getElementById('nextBtn').innerHTML = '<span>التالي</span><span>←</span>';
     }
+            // تحديث مؤشر الأقسام المكتملة
+    updateSectionsProgressIndicator();
 }
 
         function nextSection() {
+    // التحقق من القسم الحالي (بدون منع الانتقال)
+    const errors = validateSection(currentSection);
+    
+    if (errors.length > 0) {
+        // عرض تنبيه خفيف بالناقص (بدون منع الانتقال)
+        showValidationWarning(currentSection, errors);
+        updateSectionStatus(currentSection);
+        showToast('warning', `⚠️ القسم ${currentSection} به ${errors.length} بيانات ناقصة`);
+    } else {
+        // إزالة رسائل التحذير إذا كانت موجودة
+        const oldMessages = document.querySelectorAll('.validation-message');
+        oldMessages.forEach(msg => msg.remove());
+        
+        // تحديث حالة القسم
+        updateSectionStatus(currentSection);
+        showToast('success', '✅ القسم مكتمل!');
+    }
+    
     if (currentSection < totalSections) {
         // Close current section
         document.getElementById(`section${currentSection}`).classList.remove('open');
@@ -1962,7 +2103,7 @@ btn.innerHTML = '<span>بدء التخطيط</span><span>🚀</span>';
         
         updateProgress();
     } else {
-        // Submit plan
+        // Submit plan (هنا بس نمنع)
         submitPlan();
     }
 }
@@ -2592,6 +2733,32 @@ await db.collection('eish-wa-malh-governorates').doc(govDocId).update(data);
     }
 
     async function submitPlan() {
+
+        // التحقق من جميع الأقسام
+    const validation = validateAllSections();
+    
+    if (validation.hasErrors) {
+        // إنشاء ملخص تفصيلي بالأقسام الناقصة
+        showCompletionSummary(validation.allErrors);
+        
+        showToast('error', '⚠️ يرجى إكمال جميع البيانات المطلوبة قبل الإرسال');
+        
+        return; // منع الإرسال
+    }
+    
+    // عرض شاشة تأكيد
+    const confirmSubmit = confirm(
+        `هل أنت متأكد من إرسال خطة محافظة ${governorateData.governorate}؟\n\n` +
+        `المستهدف الكلي: ${governorateData.totalTarget.toLocaleString()} وجبة\n` +
+        `الشراكات: ${governorateData.partnershipsTarget.toLocaleString()} وجبة\n` +
+        `المتطوعين: ${governorateData.volunteersTarget.toLocaleString()} وجبة\n` +
+        `الجمعيات: ${governorateData.ngosTarget.toLocaleString()} وجبة\n\n` +
+        `بعد الإرسال، يمكنك التعديل في أي وقت.`
+    );
+    
+    if (!confirmSubmit) {
+        return; // المستخدم ألغى الإرسال
+    }
         const btn = document.getElementById('nextBtn');
         btn.disabled = true;
         btn.innerHTML = '<span class="loading"></span> جاري الإرسال...';
@@ -2812,6 +2979,525 @@ await db.collection('eish-wa-malh-governorates').doc(govDocId).set(data);
             return e.returnValue;
         }
     });
+
+
+        // ═══════════════════════════════════════════════════════════
+// نظام التحقق من البيانات المطلوبة
+// ═══════════════════════════════════════════════════════════
+
+function validateSection(sectionNum) {
+    const errors = [];
+    
+    if (sectionNum === 1) {
+        // ═══ القسم 1: ملف الشراكات ═══
+        
+        // المطاعم (إجباري)
+        if (!document.getElementById('restaurantsCount').value) {
+            errors.push('عدد المطاعم المستهدفة');
+        }
+        if (!document.getElementById('avgMealsPerRestaurant').value) {
+            errors.push('متوسط الوجبات من كل مطعم');
+        }
+        if (document.getElementById('restaurantsList').children.length === 0) {
+            errors.push('يجب إضافة مطعم واحد على الأقل');
+        }
+        if (!document.getElementById('restaurantsResponsible').value.trim()) {
+            errors.push('المسؤول عن التواصل مع المطاعم');
+        }
+        
+        // الشاشات (اختياري - لا نفحصه)
+        // رعاة آخرين (اختياري - لا نفحصه)
+        
+    } else if (sectionNum === 2) {
+        // ═══ القسم 2: ملف المتطوعين (كله إجباري) ═══
+        
+        // المتطوعين كجامعين تبرعات
+        if (!document.getElementById('collectorsCount').value) {
+            errors.push('عدد المتطوعين المستهدف');
+        }
+        if (!document.getElementById('avgPerCollector').value) {
+            errors.push('متوسط التبرعات لكل متطوع');
+        }
+        
+        const volunteerSources = collectCheckboxes('volunteerSources');
+        if (volunteerSources.length === 0) {
+            errors.push('يجب اختيار مصدر واحد على الأقل لجذب المتطوعين');
+        }
+        
+        if (!document.getElementById('volunteerSourcesDetails').value.trim()) {
+            errors.push('تفاصيل مصادر المتطوعين');
+        }
+        if (!document.getElementById('collectorsResponsible').value.trim()) {
+            errors.push('المسؤول عن تجنيد المتطوعين');
+        }
+        
+        // المتبرعين الأفراد
+        if (!document.getElementById('donorsCount').value) {
+            errors.push('عدد المتبرعين المستهدف');
+        }
+        if (!document.getElementById('avgDonation').value) {
+            errors.push('متوسط التبرع');
+        }
+        
+        const donorChannels = collectCheckboxes('donorChannels');
+        if (donorChannels.length === 0) {
+            errors.push('يجب اختيار قناة واحدة على الأقل للوصول للمتبرعين');
+        }
+        
+        if (!document.getElementById('donorChannelsDetails').value.trim()) {
+            errors.push('تفاصيل قنوات المتبرعين');
+        }
+        if (!document.getElementById('donorsResponsible').value.trim()) {
+            errors.push('المسؤول عن التواصل مع المتبرعين');
+        }
+        
+    } else if (sectionNum === 3) {
+        // ═══ القسم 3: ملف الجمعيات (كله إجباري) ═══
+        
+        if (!document.getElementById('ngosCount').value) {
+            errors.push('عدد الجمعيات المستهدفة');
+        }
+        if (!document.getElementById('avgMealsPerNgo').value) {
+            errors.push('متوسط الوجبات من كل جمعية');
+        }
+        if (document.getElementById('ngosList').children.length === 0) {
+            errors.push('يجب إضافة جمعية واحدة على الأقل');
+        }
+        
+        const ngosExp = collectRadio('ngosExp');
+        if (!ngosExp) {
+            errors.push('يجب تحديد خبرتك مع الجمعيات');
+        }
+        
+        if (!document.getElementById('ngosResponsible').value.trim()) {
+            errors.push('المسؤول الرئيسي عن ملف الجمعيات');
+        }
+        
+    } else if (sectionNum === 4) {
+        // ═══ القسم 4: التوزيع الشهري (كله إجباري) ═══
+        
+        let hasEmptyCell = false;
+        for (let m = 1; m <= 4; m++) {
+            if (!document.getElementById(`m${m}_partnerships`).value ||
+                !document.getElementById(`m${m}_volunteers`).value ||
+                !document.getElementById(`m${m}_ngos`).value) {
+                hasEmptyCell = true;
+                break;
+            }
+        }
+        
+        if (hasEmptyCell) {
+            errors.push('يجب ملء جميع خانات التوزيع الشهري (أو استخدم الملء التلقائي)');
+        }
+        
+        // التحقق من أن المجموع يطابق المستهدف (مع هامش تسامح)
+        const totalP = parseInt(document.getElementById('total_partnerships').textContent.replace(/,/g, '')) || 0;
+        const totalV = parseInt(document.getElementById('total_volunteers').textContent.replace(/,/g, '')) || 0;
+        const totalN = parseInt(document.getElementById('total_ngos').textContent.replace(/,/g, '')) || 0;
+        
+        const expectedP = governorateData.partnershipsTarget;
+        const expectedV = governorateData.volunteersTarget;
+        const expectedN = governorateData.ngosTarget;
+        
+        const tolerance = 100; // نسمح بفرق 100 وجبة
+        
+        if (Math.abs(totalP - expectedP) > tolerance) {
+            errors.push(`مجموع الشراكات (${totalP.toLocaleString()}) لا يطابق المستهدف (${expectedP.toLocaleString()})`);
+        }
+        if (Math.abs(totalV - expectedV) > tolerance) {
+            errors.push(`مجموع المتطوعين (${totalV.toLocaleString()}) لا يطابق المستهدف (${expectedV.toLocaleString()})`);
+        }
+        if (Math.abs(totalN - expectedN) > tolerance) {
+            errors.push(`مجموع الجمعيات (${totalN.toLocaleString()}) لا يطابق المستهدف (${expectedN.toLocaleString()})`);
+        }
+        
+    } else if (sectionNum === 5) {
+        // ═══ القسم 5: الموارد البشرية والداعمين ═══
+        
+        // الموارد البشرية (اختياري - لا نفحصه)
+        
+        // الداعمين (إجباري)
+        if (document.getElementById('supportersList').children.length === 0) {
+            errors.push('يجب إضافة داعم واحد على الأقل');
+        }
+        if (!document.getElementById('supportersResponsible').value.trim()) {
+            errors.push('المسؤول عن ملف الداعمين');
+        }
+        
+    } else if (sectionNum === 6) {
+        // ═══ القسم 6: خطة المتبني والالتزام (كله إجباري) ═══
+        
+        // خطة المتبني
+        if (!document.getElementById('backup_partnerships').value.trim()) {
+            errors.push('خطة البديل للشراكات');
+        }
+        if (!document.getElementById('backup_ngos').value.trim()) {
+            errors.push('خطة البديل للجمعيات');
+        }
+        if (!document.getElementById('backup_volunteers').value.trim()) {
+            errors.push('خطة البديل للمتطوعين');
+        }
+        
+        // المخاطر
+        if (document.getElementById('risksList').children.length === 0) {
+            errors.push('يجب إضافة خطر واحد على الأقل');
+        }
+        
+        // الالتزام
+        if (!document.getElementById('step1_action').value.trim()) {
+            errors.push('الخطوة الأولى - الإجراء');
+        }
+        if (!document.getElementById('step1_who').value.trim()) {
+            errors.push('الخطوة الأولى - المسؤول');
+        }
+        if (!document.getElementById('step1_when').value) {
+            errors.push('الخطوة الأولى - التاريخ');
+        }
+        
+        if (!document.getElementById('step2_action').value.trim()) {
+            errors.push('الخطوة الثانية - الإجراء');
+        }
+        if (!document.getElementById('step2_who').value.trim()) {
+            errors.push('الخطوة الثانية - المسؤول');
+        }
+        if (!document.getElementById('step2_when').value) {
+            errors.push('الخطوة الثانية - التاريخ');
+        }
+        
+        if (!document.getElementById('step3_action').value.trim()) {
+            errors.push('الخطوة الثالثة - الإجراء');
+        }
+        if (!document.getElementById('step3_who').value.trim()) {
+            errors.push('الخطوة الثالثة - المسؤول');
+        }
+        if (!document.getElementById('step3_when').value) {
+            errors.push('الخطوة الثالثة - التاريخ');
+        }
+        
+        if (!document.getElementById('firstCheckin').value) {
+            errors.push('تاريخ أول Check-in');
+        }
+    }
+    
+    return errors;
+}
+
+function showValidationWarning(sectionNum, errors) {
+    // إزالة أي رسائل قديمة
+    const oldMessages = document.querySelectorAll('.validation-message');
+    oldMessages.forEach(msg => msg.remove());
+    
+    if (errors.length === 0) return;
+    
+    // إنشاء رسالة التحذير (أصفر/برتقالي)
+    const message = document.createElement('div');
+    message.className = 'validation-message warning show';
+    
+    let errorsList = '<ul>';
+    errors.forEach(error => {
+        errorsList += `<li>⚠️ ${error}</li>`;
+    });
+    errorsList += '</ul>';
+    
+    message.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <span style="font-size: 24px;">📋</span>
+            <strong>هذا القسم يحتاج إكمال البيانات التالية:</strong>
+        </div>
+        ${errorsList}
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid rgba(245, 158, 11, 0.3); font-size: 13px; color: var(--text-secondary);">
+            💡 يمكنك الاستمرار في الأقسام الأخرى والعودة لاحقاً لإكمال هذه البيانات
+        </div>
+    `;
+    
+    // إضافة الرسالة في بداية القسم
+    const section = document.getElementById(`section${sectionNum}`);
+    const sectionBody = section.querySelector('.section-body');
+    sectionBody.insertBefore(message, sectionBody.firstChild);
+}
+
+function getTotalFieldsCount(sectionNum) {
+    // عدد تقريبي للحقول المطلوبة في كل قسم
+    const counts = {
+        1: 4,  // المطاعم فقط (الشاشات والرعاة اختياريين)
+        2: 10, // كل حقول المتطوعين
+        3: 5,  // كل حقول الجمعيات
+        4: 1,  // التوزيع الشهري
+        5: 2,  // الداعمين فقط (الموارد البشرية اختيارية)
+        6: 13  // كل حقول الخطة والالتزام
+    };
+    return counts[sectionNum] || 0;
+}
+
+function updateSectionStatus(sectionNum) {
+    const errors = validateSection(sectionNum);
+    const statusElement = document.getElementById(`section${sectionNum}Status`);
+    const sectionCard = document.getElementById(`section${sectionNum}`);
+    const section = document.getElementById(`section${sectionNum}`);
+    
+    if (errors.length === 0) {
+        statusElement.textContent = 'مكتمل';
+        statusElement.className = 'section-status completed';
+        sectionCard.classList.remove('incomplete');
+    } else {
+        statusElement.textContent = 'لم يكتمل';
+        statusElement.className = 'section-status pending';
+        sectionCard.classList.add('incomplete');
+    }
+    
+    // إضافة شريط الاكتمال إذا لم يكن موجوداً
+    let completionBar = section.querySelector('.completion-bar');
+    if (!completionBar) {
+        completionBar = document.createElement('div');
+        completionBar.className = 'completion-bar';
+        completionBar.innerHTML = '<div class="completion-fill"></div>';
+        section.querySelector('.section-subtitle').appendChild(completionBar);
+    }
+    
+    // حساب نسبة الاكتمال
+    const totalFields = getTotalFieldsCount(sectionNum);
+    const filledFields = totalFields - errors.length;
+    const completionPercent = totalFields > 0 ? (filledFields / totalFields) * 100 : 0;
+    
+    const completionFill = completionBar.querySelector('.completion-fill');
+    completionFill.style.width = completionPercent + '%';
+}
+
+function updateSectionsProgressIndicator() {
+    if (!governorateData.governorate) return; // لو لسه مسجلش
+    
+    let completedCount = 0;
+    for (let i = 1; i <= 6; i++) {
+        const errors = validateSection(i);
+        if (errors.length === 0) {
+            completedCount++;
+        }
+    }
+    
+    const indicator = document.getElementById('sectionsProgress');
+    if (indicator) {
+        indicator.style.display = 'block';
+        const percentage = Math.round((completedCount / 6) * 100);
+        indicator.innerHTML = `
+            <span style="font-weight: 700; color: ${completedCount === 6 ? 'var(--success)' : 'var(--warning)'};">
+                ${completedCount} من 6 أقسام مكتملة
+            </span>
+            <span style="margin: 0 10px; color: var(--text-muted);">|</span>
+            <span>${percentage}% من الخطة جاهزة</span>
+        `;
+    }
+}
+
+function validateAllSections() {
+    const allErrors = {};
+    let hasErrors = false;
+    
+    for (let i = 1; i <= 6; i++) {
+        const errors = validateSection(i);
+        if (errors.length > 0) {
+            allErrors[i] = errors;
+            hasErrors = true;
+        }
+        updateSectionStatus(i);
+    }
+    
+    return { hasErrors, allErrors };
+}
+
+function showCompletionSummary(allErrors) {
+    // إنشاء overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 15, 26, 0.95);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        animation: fadeIn 0.3s ease;
+    `;
+    
+    // إنشاء محتوى الملخص
+    const summary = document.createElement('div');
+    summary.style.cssText = `
+        background: var(--bg-dark-2);
+        border: 3px solid var(--error);
+        border-radius: 25px;
+        padding: 35px;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.4s ease;
+    `;
+    
+    const sectionsNames = {
+        1: 'ملف الشراكات',
+        2: 'ملف المتطوعين',
+        3: 'ملف الجمعيات القاعدية',
+        4: 'التوزيع الشهري',
+        5: 'الموارد البشرية والداعمين',
+        6: 'خطة المتبني والالتزام'
+    };
+    
+    let summaryHTML = `
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 80px; margin-bottom: 15px;">⚠️</div>
+            <h2 style="font-size: 28px; font-weight: 900; color: var(--error); margin-bottom: 10px;">
+                لا يمكن إرسال الخطة بعد
+            </h2>
+            <p style="font-size: 16px; color: var(--text-secondary);">
+                يوجد ${Object.keys(allErrors).length} أقسام تحتاج إكمال البيانات
+            </p>
+        </div>
+    `;
+    
+    // عرض كل قسم ناقص
+    for (const [section, errors] of Object.entries(allErrors)) {
+        summaryHTML += `
+            <div style="
+                background: var(--bg-dark);
+                border: 2px solid var(--bg-dark-3);
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 15px;
+            ">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 700; color: var(--primary-light); margin-bottom: 5px;">
+                            القسم ${section}: ${sectionsNames[section]}
+                        </h3>
+                        <p style="font-size: 14px; color: var(--text-muted);">
+                            ${errors.length} بيانات ناقصة
+                        </p>
+                    </div>
+                    <button 
+                        onclick="goToSection(${section})"
+                        style="
+                            padding: 10px 20px;
+                            background: var(--gradient-primary);
+                            border: none;
+                            border-radius: 10px;
+                            color: white;
+                            font-size: 14px;
+                            font-weight: 700;
+                            cursor: pointer;
+                            font-family: 'Tajawal', sans-serif;
+                        "
+                    >
+                        انتقل للقسم →
+                    </button>
+                </div>
+                <ul style="margin: 0; padding-right: 20px; color: var(--text-secondary); font-size: 14px; line-height: 2;">
+                    ${errors.map(error => `<li>⚠️ ${error}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+    
+    // زر الإغلاق
+    summaryHTML += `
+        <div style="text-align: center; margin-top: 25px;">
+            <button 
+                onclick="this.closest('[style*=fixed]').remove()"
+                style="
+                    padding: 15px 40px;
+                    background: var(--bg-dark-3);
+                    border: 2px solid var(--text-muted);
+                    border-radius: 12px;
+                    color: var(--text-primary);
+                    font-size: 16px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    font-family: 'Tajawal', sans-serif;
+                    transition: all 0.3s ease;
+                "
+                onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='scale(1.05)'"
+                onmouseout="this.style.borderColor='var(--text-muted)'; this.style.transform='scale(1)'"
+            >
+                فهمت، سأكمل البيانات
+            </button>
+        </div>
+    `;
+    
+    summary.innerHTML = summaryHTML;
+    overlay.appendChild(summary);
+    document.body.appendChild(overlay);
+    
+    // إضافة أنيميشن CSS
+    if (!document.getElementById('summaryAnimations')) {
+        const style = document.createElement('style');
+        style.id = 'summaryAnimations';
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { opacity: 0; transform: translateY(30px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+function goToSection(sectionNum) {
+    // إغلاق الملخص
+    const overlay = document.querySelector('[style*="position: fixed"][style*="z-index: 10000"]');
+    if (overlay) overlay.remove();
+    
+    // غلق القسم الحالي
+    document.getElementById(`section${currentSection}`).classList.remove('open');
+    
+    // الذهاب للقسم المطلوب
+    currentSection = sectionNum;
+    document.getElementById(`section${currentSection}`).classList.add('open');
+    
+    // عرض الأخطاء في القسم
+    const errors = validateSection(currentSection);
+    showValidationWarning(currentSection, errors);
+    
+    // تحديث التقدم
+    updateProgress();
+    
+    // Scroll للقسم
+    setTimeout(() => {
+        document.getElementById(`section${currentSection}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+}
+
+// ═══════════════════════════════════════════════════════════
+// مؤشرات بصرية للحقول
+// ═══════════════════════════════════════════════════════════
+
+function updateFieldVisuals() {
+    // تحديث جميع الحقول النصية
+    document.querySelectorAll('.form-input, .form-select, .form-textarea').forEach(field => {
+        if (field.value && field.value.trim() !== '') {
+            field.classList.remove('required');
+            field.classList.add('filled');
+        } else {
+            field.classList.remove('filled');
+        }
+    });
+    
+    // تحديث حالة القسم الحالي
+    if (governorateData.governorate) {
+        updateSectionStatus(currentSection);
+        updateSectionsProgressIndicator();
+    }
+}
+
+// تشغيل عند الكتابة
+document.addEventListener('input', updateFieldVisuals);
+document.addEventListener('change', updateFieldVisuals);
+        
         
     // ═══════════════════════════════════════════════════════════
     // Initialize
