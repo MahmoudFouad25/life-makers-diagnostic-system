@@ -1121,49 +1121,45 @@
         }
 
         async function resumeSession() {
-            try {
-                const docId = organizationName.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_');
-                const docRef = doc(db, 'responses', docId);
-                const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    sessionId = data.sessionId || sessionId;
-                    allAnswers = data.answers || {};
-                    
-                    answeredQuestionsCount = 0;
-                    let lastAnsweredIndex = -1;
-                    
-                    allQuestionsList.forEach((item, idx) => {
-                        const answer = getAnswer(item.axisId, item.sectionId, item.question.id);
-                        if (answer) {
-                            answeredQuestionsCount++;
-                            lastAnsweredIndex = idx;
-                        }
-                    });
-                    
-                    if (lastAnsweredIndex >= 0 && lastAnsweredIndex < allQuestionsList.length - 1) {
-                        currentAbsoluteIndex = lastAnsweredIndex + 1;
-                    } else if (lastAnsweredIndex === allQuestionsList.length - 1) {
-                        currentAbsoluteIndex = 0;
-                    } else {
-                        currentAbsoluteIndex = 0;
-                    }
-                    
-                    updateProgress();
-                    loadQuestionByIndex(currentAbsoluteIndex);
-                    console.log('Session resumed successfully');
-                    return;
-                }
-                
-                await initializeSession();
-                loadQuestionByIndex(0);
-                
-            } catch (error) {
-                console.error('Error resuming session:', error);
-                loadQuestionByIndex(0);
-            }
+  try {
+    const docRef = db.collection('responses').doc(organizationName);
+    const docSnap = await docRef.get();
+    
+    if (docSnap.exists) {
+      const data = docSnap.data();
+      allAnswers = data.answers || {};
+      
+      console.log('✅ تم تحميل', Object.keys(allAnswers).length, 'محاور من Firebase');
+      
+      // حساب آخر سؤال تم الإجابة عليه
+      let lastAnsweredIndex = -1;
+      for (let i = 0; i < allQuestionsList.length; i++) {
+        const q = allQuestionsList[i];
+        if (allAnswers[q.axisId]?.[q.sectionId]?.[q.questionId]) {
+          lastAnsweredIndex = i;
         }
+      }
+      
+      currentAbsoluteIndex = lastAnsweredIndex + 1;
+      
+      if (currentAbsoluteIndex >= allQuestionsList.length) {
+        currentAbsoluteIndex = allQuestionsList.length - 1;
+      }
+      
+      console.log('📍 السؤال الحالي:', currentAbsoluteIndex + 1);
+      
+      loadQuestionByIndex(currentAbsoluteIndex);
+      updateProgress();
+    } else {
+      console.log('📝 جلسة جديدة');
+      await initializeSession();
+    }
+  } catch (error) {
+    console.error('❌ خطأ في resumeSession:', error);
+    await initializeSession();
+  }
+}
+
 
         async function initializeSession() {
             try {
