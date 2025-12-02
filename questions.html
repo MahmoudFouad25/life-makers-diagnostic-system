@@ -1,9 +1,13 @@
+/* ╔══════════════════════════════════════════════════════════╗
+   ║   🎯 بداية الجزء 1 من 8 - HTML + Styles (البداية)    ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الأسئلة التفاعلية - نظام التشخيص</title>
+    <title>الأسئلة التفاعلية - نظام التشخيص المتقدم</title>
     <style>
         * {
             margin: 0;
@@ -45,7 +49,7 @@
             padding: 8px 16px;
             border-radius: 20px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .participant-name {
@@ -176,6 +180,32 @@
             }
         }
 
+        .axis-section-info {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-right: 4px solid #667eea;
+        }
+
+        .axis-name {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-name {
+            font-size: 16px;
+            color: #2d3748;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .previous-answer-notice {
             background: #e0f2fe;
             border: 2px solid #0284c7;
@@ -190,38 +220,10 @@
             font-weight: 600;
         }
 
-        .topic-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .question-type {
-            font-size: 12px;
-            color: #718096;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .question-text {
-            font-size: 22px;
-            color: #2d3748;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
-
         .question-number {
             position: absolute;
             top: 20px;
-            right: 20px;
+            left: 20px;
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -234,6 +236,22 @@
             font-size: 18px;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
+
+        .question-text {
+            font-size: 22px;
+            color: #2d3748;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║   ✅ نهاية الجزء 1 من 8                               ║
+   ║   👇 الصق الجزء 2 مباشرة هنا (بدون مسافات)          ║
+   ╚══════════════════════════════════════════════════════════╝ */
+        /* ╔══════════════════════════════════════════════════════════╗
+   ║   🎯 بداية الجزء 2 من 8 - Styles (تكملة)             ║
+   ╚══════════════════════════════════════════════════════════╝ */
 
         .input-group {
             margin-bottom: 25px;
@@ -266,6 +284,42 @@
             color: white;
             border-color: #667eea;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-option:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .checkbox-option.selected {
+            background: #ede9fe;
+            border-color: #8b5cf6;
+        }
+
+        .checkbox-option input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-left: 12px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a5568;
         }
 
         .text-input, .textarea-input, .number-input {
@@ -357,6 +411,31 @@
             margin-bottom: 15px;
         }
 
+        .real-example-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .real-example-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #92400e;
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .real-example-text {
+            color: #78350f;
+            font-size: 15px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
         .action-buttons {
             display: flex;
             gap: 15px;
@@ -423,6 +502,14 @@
             border-color: #cbd5e0;
         }
 
+/* ╔══════════════════════════════════════════════════════════╗
+   ║   ✅ نهاية الجزء 2 من 8                               ║
+   ║   👇 الصق الجزء 3 مباشرة هنا (بدون مسافات)          ║
+   ╚══════════════════════════════════════════════════════════╝ */
+        /* ╔══════════════════════════════════════════════════════════╗
+   ║   🎯 بداية الجزء 3 من 8 - Styles (النهاية)           ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
         .completion-card {
             text-align: center;
             padding: 60px 40px;
@@ -451,42 +538,6 @@
             color: #718096;
             margin-bottom: 30px;
             line-height: 1.6;
-        }
-
-        .skipped-questions-section {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 30px 0;
-            text-align: right;
-        }
-
-        .skipped-title {
-            font-size: 20px;
-            color: #92400e;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .skipped-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .skipped-item {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #4a5568;
-        }
-
-        .skipped-item:hover {
-            background: #fef3c7;
-            transform: translateX(-5px);
         }
 
         .completion-stats {
@@ -560,7 +611,6 @@
             font-weight: 600;
         }
 
-        /* Review Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -630,14 +680,14 @@
             border-radius: 10px;
         }
 
-        .review-topic {
+        .review-section-group {
             margin-bottom: 20px;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 20px;
         }
 
-        .review-topic-title {
+        .review-section-title {
             font-size: 16px;
             font-weight: 700;
             color: #4a5568;
@@ -647,7 +697,17 @@
             gap: 8px;
         }
 
-        
+        .review-question-item {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
 
         .review-question-item:hover {
             background: #edf2f7;
@@ -657,6 +717,28 @@
         .review-question-item.unanswered {
             background: #fef3c7;
             border: 2px solid #f59e0b;
+        }
+
+        .review-q-number {
+            min-width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .review-question-item.unanswered .review-q-number {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .review-q-content {
+            flex: 1;
         }
 
         .review-q-text {
@@ -678,41 +760,6 @@
             font-weight: 600;
         }
 
-        @media (max-width: 768px) {
-            .question-card {
-                padding: 30px 20px;
-            }
-            
-            .question-text {
-                font-size: 18px;
-            }
-
-            .scale-container {
-                flex-wrap: wrap;
-            }
-
-            .scale-button {
-                min-width: 60px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .modal-content {
-                padding: 20px;
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Custom Confirmation Modal */
         .confirm-modal {
             position: fixed;
             top: 0;
@@ -803,98 +850,55 @@
             background: #edf2f7;
         }
 
-        .review-question-item {
-            background: #f7fafc;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
+        @media (max-width: 768px) {
+            .question-card {
+                padding: 30px 20px;
+            }
+            
+            .question-text {
+                font-size: 18px;
+            }
+
+            .scale-container {
+                flex-wrap: wrap;
+            }
+
+            .scale-button {
+                min-width: 60px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
         }
 
-        .review-question-item:hover {
-            background: #edf2f7;
-            transform: translateX(-5px);
+        .hidden {
+            display: none !important;
         }
-
-        .review-question-item.unanswered {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-        }
-
-        .review-q-number {
-            min-width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .review-question-item.unanswered .review-q-number {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        }
-
-        .review-q-content {
-            flex: 1;
-        }
-
-        .review-q-text {
-            font-size: 14px;
-            color: #4a5568;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .review-answer {
-            font-size: 14px;
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .review-unanswered {
-            font-size: 14px;
-            color: #f59e0b;
-            font-weight: 600;
-        }
-
-        .review-followup {
-            margin-top: 10px;
-            padding: 10px;
-            background: #fffbeb;
-            border: 1px solid #fbbf24;
-            border-radius: 8px;
-        }
-
-        .followup-label {
-            display: block;
-            font-size: 12px;
-            color: #92400e;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .followup-answer {
-            font-size: 14px;
-            color: #78350f;
-            font-weight: 500;
-        }
-        
     </style>
 </head>
 <body>
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║   ✅ نهاية الجزء 3 من 8                               ║
+   ║   👇 الصق الجزء 4 مباشرة هنا (بدون مسافات)          ║
+   ╚══════════════════════════════════════════════════════════╝ */
+    /* ╔══════════════════════════════════════════════════════════╗
+   ║   🎯 بداية الجزء 4 من 8 - HTML Structure (الأول)     ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
     <!-- شريط المعلومات العلوي -->
     <div class="top-bar">
         <div class="session-info">
-            <div class="session-id" id="sessionId" style="font-size: 16px;">...</div>
+            <div class="session-id" id="sessionId">...</div>
             <div class="participant-name">
                 <span id="participantName">مشارك</span>
             </div>
@@ -912,7 +916,7 @@
         <div class="progress-header">
             <div class="progress-title">التقدم في التشخيص</div>
             <div class="progress-stats">
-                <span id="progressText">0 من 0 سؤال</span>
+                <span id="progressText">0 من 158 سؤال</span>
             </div>
         </div>
         <div class="progress-bar-bg">
@@ -926,17 +930,21 @@
         <div class="question-card" id="questionCard">
             <div class="question-number" id="questionNumber">1</div>
             
+            <!-- معلومات المحور والقسم -->
+            <div class="axis-section-info">
+                <div class="axis-name" id="axisName">المحور الأول</div>
+                <div class="section-name">
+                    <span id="sectionIcon">🏢</span>
+                    <span id="sectionName">القسم</span>
+                </div>
+            </div>
+
+            <!-- إشعار الإجابة السابقة -->
             <div id="previousAnswerNotice" class="previous-answer-notice hidden">
                 💡 أنت جاوبت على هذا السؤال من قبل - يمكنك تعديل الإجابة
             </div>
 
-            <div class="topic-badge" id="topicBadge">
-                <span id="topicIcon">🏢</span>
-                <span id="topicTitle">الهيكل التنظيمي</span>
-            </div>
-
-            <div class="question-type" id="questionType">سؤال افتتاحي</div>
-            
+            <!-- نص السؤال -->
             <div class="question-text" id="questionText">
                 جاري التحميل...
             </div>
@@ -944,8 +952,14 @@
             <!-- منطقة الإجابة -->
             <div id="answerArea"></div>
 
-            <!-- بطاقة السؤال التكميلي -->
+            <!-- بطاقة السؤال التكميلي الأول -->
             <div id="followUpContainer" class="hidden"></div>
+
+            <!-- بطاقة السؤال التكميلي الثاني -->
+            <div id="followUp2Container" class="hidden"></div>
+
+            <!-- المثال الواقعي -->
+            <div id="realExampleBox" class="hidden"></div>
 
             <!-- رسالة خطأ -->
             <div id="errorMessage" class="hidden error-message"></div>
@@ -986,33 +1000,33 @@
         </div>
     </div>
 
-    <!-- Firebase و Logic -->
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmModal" class="confirm-modal hidden">
+        <div class="confirm-box">
+            <div class="confirm-icon" id="confirmIcon">⚠️</div>
+            <div class="confirm-title" id="confirmTitle">تأكيد</div>
+            <div class="confirm-message" id="confirmMessage"></div>
+            <div class="confirm-buttons">
+                <button class="confirm-btn confirm-btn-no" id="confirmNo">لا</button>
+                <button class="confirm-btn confirm-btn-yes" id="confirmYes">نعم</button>
+            </div>
+        </div>
+    </div>
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║   ✅ نهاية الجزء 4 من 8                               ║
+   ║   👇 الصق الجزء 5 مباشرة هنا (بدون مسافات)          ║
+   ╚══════════════════════════════════════════════════════════╝ */
+    /* ╔══════════════════════════════════════════════════════════╗
+   ║   🎯 بداية الجزء 5 من 8 - JavaScript (البداية)       ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+    <!-- Firebase و JavaScript -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, collection, doc, setDoc, query, where, getDocs, updateDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         import { questionsData } from './questions-data.js';
-// Custom Confirmation Dialog
-        function showConfirm(icon, title, message) {
-            return new Promise((resolve) => {
-                const modal = document.getElementById('confirmModal');
-                document.getElementById('confirmIcon').textContent = icon;
-                document.getElementById('confirmTitle').textContent = title;
-                document.getElementById('confirmMessage').textContent = message;
-                
-                modal.classList.remove('hidden');
-                
-                document.getElementById('confirmYes').onclick = () => {
-                    modal.classList.add('hidden');
-                    resolve(true);
-                };
-                
-                document.getElementById('confirmNo').onclick = () => {
-                    modal.classList.add('hidden');
-                    resolve(false);
-                };
-            });
-        }
-        
+
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
@@ -1031,9 +1045,6 @@
         let organizationName = getOrganizationName();
         let sessionId = getOrCreateSessionId();
         let participantName = getParticipantName();
-        let currentAxis = 'system';
-        let currentTopicIndex = 0;
-        let currentQuestionIndex = 0;
         let allAnswers = {};
         let totalQuestionsCount = 0;
         let answeredQuestionsCount = 0;
@@ -1045,16 +1056,12 @@
             document.getElementById('sessionId').textContent = organizationName;
             document.getElementById('participantName').textContent = participantName;
 
-            // تأكد من وجود org في URL
             if (!window.location.search.includes('org=')) {
                 const newUrl = window.location.pathname + '?org=' + encodeURIComponent(organizationName);
                 window.history.replaceState({}, '', newUrl);
             }
 
-            // Build questions list and calculate total
             buildQuestionsList();
-            
-            // Try to resume session
             resumeSession();
         }
 
@@ -1080,9 +1087,6 @@
 
         function getOrCreateSessionId() {
             if (!organizationName) return null;
-            
-            // Session ID = Organization Name (ثابت لكل جمعية)
-            // هذا يضمن أن كل من يفتح الرابط يرى نفس البيانات
             return 'ORG-' + organizationName.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_');
         }
 
@@ -1095,18 +1099,18 @@
             allQuestionsList = [];
             let index = 0;
             
-            Object.keys(questionsData).forEach(axisKey => {
-                const axisData = questionsData[axisKey];
-                Object.keys(axisData.topics).forEach(topicKey => {
-                    const topicData = axisData.topics[topicKey];
-                    topicData.questions.forEach(question => {
+            questionsData.axes.forEach(axis => {
+                axis.sections.forEach(section => {
+                    section.questions.forEach(question => {
                         allQuestionsList.push({
                             index: index++,
-                            axisKey: axisKey,
-                            topicKey: topicKey,
-                            question: question,
-                            axisData: axisData,
-                            topicData: topicData
+                            axisId: axis.id,
+                            axisName: axis.name,
+                            axisColor: axis.color,
+                            sectionId: section.id,
+                            sectionName: section.name,
+                            sectionIcon: section.icon,
+                            question: question
                         });
                     });
                 });
@@ -1118,7 +1122,6 @@
 
         async function resumeSession() {
             try {
-                // Document ID = Organization Name
                 const docId = organizationName.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_');
                 const docRef = doc(db, 'responses', docId);
                 const docSnap = await getDoc(docRef);
@@ -1128,19 +1131,17 @@
                     sessionId = data.sessionId || sessionId;
                     allAnswers = data.answers || {};
                     
-                    // Count answered questions
                     answeredQuestionsCount = 0;
                     let lastAnsweredIndex = -1;
                     
                     allQuestionsList.forEach((item, idx) => {
-                        const answer = getAnswer(item.axisKey, item.topicKey, item.question.id);
+                        const answer = getAnswer(item.axisId, item.sectionId, item.question.id);
                         if (answer) {
                             answeredQuestionsCount++;
                             lastAnsweredIndex = idx;
                         }
                     });
                     
-                    // Resume from last answered + 1
                     if (lastAnsweredIndex >= 0 && lastAnsweredIndex < allQuestionsList.length - 1) {
                         currentAbsoluteIndex = lastAnsweredIndex + 1;
                     } else if (lastAnsweredIndex === allQuestionsList.length - 1) {
@@ -1155,7 +1156,6 @@
                     return;
                 }
                 
-                // No existing session - create new one
                 await initializeSession();
                 loadQuestionByIndex(0);
                 
@@ -1167,11 +1167,9 @@
 
         async function initializeSession() {
             try {
-                // Document ID = Organization Name (readable)
                 const docId = organizationName.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_');
                 const docRef = doc(db, 'responses', docId);
                 
-                // Check if document exists
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists()) {
@@ -1179,7 +1177,6 @@
                     return;
                 }
                 
-                // Create new document with organization name as ID
                 await setDoc(docRef, {
                     organizationName: organizationName,
                     sessionId: sessionId,
@@ -1201,6 +1198,13 @@
             }
         }
 
+        function getAnswer(axisId, sectionId, questionId) {
+            if (allAnswers[axisId] && allAnswers[axisId][sectionId] && allAnswers[axisId][sectionId][questionId]) {
+                return allAnswers[axisId][sectionId][questionId].answer;
+            }
+            return null;
+        }
+
         function loadQuestionByIndex(index) {
             if (index < 0 || index >= allQuestionsList.length) {
                 showCompletion();
@@ -1210,33 +1214,32 @@
             currentAbsoluteIndex = index;
             const item = allQuestionsList[index];
             
-            currentAxis = item.axisKey;
-            const topicKeys = Object.keys(item.axisData.topics);
-            currentTopicIndex = topicKeys.indexOf(item.topicKey);
-            currentQuestionIndex = item.topicData.questions.indexOf(item.question);
-            
             renderQuestion(item);
             updateNavigationButtons();
         }
 
-       function renderQuestion(item) {
-            const { question, axisData, topicData } = item;
+/* ╔══════════════════════════════════════════════════════════╗
+   ║   ✅ نهاية الجزء 5 من 8                               ║
+   ║   👇 الصق الجزء 6 مباشرة هنا (بدون مسافات)          ║
+   ╚══════════════════════════════════════════════════════════╝ */
+        /* ╔══════════════════════════════════════════════════════════╗
+   ║   🎯 بداية الجزء 6 من 8 - JavaScript (تكملة)         ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+        function renderQuestion(item) {
+            const { question } = item;
             
             // Update UI
             document.getElementById('questionNumber').textContent = currentAbsoluteIndex + 1;
-            
-            const badge = document.getElementById('topicBadge');
-            badge.style.backgroundColor = axisData.color + '20';
-            badge.style.color = axisData.color;
-            document.getElementById('topicIcon').textContent = topicData.icon;
-            document.getElementById('topicTitle').textContent = topicData.title;
-            
-            document.getElementById('questionType').textContent = getQuestionTypeLabel(question.type);
+            document.getElementById('axisName').textContent = item.axisName;
+            document.getElementById('sectionIcon').textContent = item.sectionIcon;
+            document.getElementById('sectionName').textContent = item.sectionName;
             document.getElementById('questionText').textContent = question.text;
             
             // Check if previously answered
-            const previousAnswer = getAnswer(item.axisKey, item.topicKey, question.id);
-            const previousFollowUp = getAnswer(item.axisKey, item.topicKey, question.id + '_followup');
+            const previousAnswer = getAnswer(item.axisId, item.sectionId, question.id);
+            const previousFollowUp = getAnswer(item.axisId, item.sectionId, question.id + '_followup');
+            const previousFollowUp2 = getAnswer(item.axisId, item.sectionId, question.id + '_followup2');
             
             if (previousAnswer) {
                 document.getElementById('previousAnswerNotice').classList.remove('hidden');
@@ -1244,152 +1247,123 @@
                 document.getElementById('previousAnswerNotice').classList.add('hidden');
             }
             
-            // CRITICAL: Hide follow-up initially for every question
+            // Hide follow-ups initially
             document.getElementById('followUpContainer').classList.add('hidden');
             document.getElementById('followUpContainer').innerHTML = '';
+            document.getElementById('followUp2Container').classList.add('hidden');
+            document.getElementById('followUp2Container').innerHTML = '';
             
-            // Render answer input with previous answer if exists
-            renderAnswerInput(question, item, previousAnswer, previousFollowUp);
+            // Render answer input
+            renderAnswerInput(question, item, previousAnswer, previousFollowUp, previousFollowUp2);
+            
+            // Show real example if exists
+            if (question.realExample) {
+                const exampleBox = document.getElementById('realExampleBox');
+                exampleBox.innerHTML = `
+                    <div class="real-example-header">
+                        💡 مثال واقعي:
+                    </div>
+                    <div class="real-example-text">
+                        ${question.realExample}
+                    </div>
+                `;
+                exampleBox.classList.remove('hidden');
+            } else {
+                document.getElementById('realExampleBox').classList.add('hidden');
+            }
             
             // Update progress
             updateProgress();
             
             // Reset error
             document.getElementById('errorMessage').classList.add('hidden');
-        }
-
-        function getAnswer(axisKey, topicKey, questionId) {
-            if (allAnswers[axisKey] && allAnswers[axisKey][topicKey] && allAnswers[axisKey][topicKey][questionId]) {
-                return allAnswers[axisKey][topicKey][questionId].answer;
-            }
-            return null;
-        }
-
-        function updateNavigationButtons() {
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
             
-            // Previous button
-            prevBtn.disabled = currentAbsoluteIndex === 0;
-            
-            // Next button text
-            if (currentAbsoluteIndex === allQuestionsList.length - 1) {
-                nextBtn.innerHTML = 'إنهاء 🎉';
-            } else {
-                nextBtn.innerHTML = 'التالي ➡️';
-            }
-        }
-
-        function getQuestionTypeLabel(type) {
-            const labels = {
-                'opening': '🚀 سؤال افتتاحي',
-                'reality_check': '🔍 فحص الواقع',
-                'provocative': '⚡ سؤال استفزازي',
-                'killer': '🎯 السؤال القاتل',
-                'closing': '🏁 سؤال ختامي',
-                'embarrassing': '😳 سؤال محرج',
-                'fundamental': '🧭 سؤال جذري',
-                'comparative': '⚖️ سؤال مقارن',
-                'simple_deceptive': '🎭 بسيط خادع',
-                'harsh': '💥 سؤال قاسي',
-                'confrontational': '🔥 سؤال مواجهة',
-                'shocking': '⚡ سؤال صادم',
-                'resource': '💰 سؤال الموارد',
-                'reality_vs_ideal': '🔀 الواقع vs المثالي',
-                'hard_closing': '🎯 ختامي قوي',
-                'powerful': '💪 سؤال قوي',
-                'classification': '📂 تصنيف',
-                'immunity': '🛡️ الحصانة',
-                'direct': '➡️ مباشر',
-                'difficult': '🔴 صعب',
-                'source': '🔍 المصدر',
-                'resignation_reason': '🚪 سبب الاستقالة',
-                'diagnostic': '🩺 تشخيصي',
-                'complaints': '📢 الشكاوى',
-                'meeting_mood': '🎪 مزاج الاجتماع',
-                'quantitative': '🔢 كمي',
-                'revealing': '💡 كاشف',
-                'honest': '🤝 صادق',
-                'pattern': '🔄 النمط',
-                'exit_interview': '👋 مقابلة خروج',
-                'simple_test': '✅ اختبار بسيط',
-                'bureaucracy': '📜 البيروقراطية',
-                'bottleneck': '🚧 عنق الزجاجة',
-                'fear_test': '😰 اختبار الخوف',
-                'unity': '🤝 الوحدة',
-                'crisis_test': '🚨 اختبار الأزمة',
-                'influence': '👑 التأثير',
-                'conflicts': '⚔️ الصراعات',
-                'reset': '🔄 إعادة تعيين',
-                'last_eval': '📅 آخر تقييم',
-                'process': '⚙️ العملية',
-                'clarity': '🔎 الوضوح',
-                'ideal': '⭐ المثالي',
-                'rating': '⭐ التقييم',
-                'gap': '📏 الفجوة',
-                'obstacle': '🚧 العائق',
-                'professional': '💼 احترافي',
-                'awareness': '🧠 الوعي',
-                'realistic': '🎯 واقعي',
-                'alignment': '🎯 التوافق',
-                'real_vs_stated': '🔀 المعلن vs الحقيقي',
-                'priority': '🥇 الأولوية',
-                'achievement': '🏆 الإنجاز',
-                'indicator': '📊 المؤشر',
-                'stakeholder': '🤝 أصحاب المصلحة',
-                'satisfaction': '😊 الرضا'
-            };
-            return labels[type] || '❓ سؤال';
-        }
-
-        function renderAnswerInput(question, item, previousAnswer = null, previousFollowUp = null) {
-            const answerArea = document.getElementById('answerArea');
-            answerArea.innerHTML = '';
-            
-            // Store original answer for confirmation
+            // Store original answers
             window.originalAnswer = previousAnswer;
             window.originalFollowUp = previousFollowUp;
+            window.originalFollowUp2 = previousFollowUp2;
             window.hasChanged = false;
+        }
 
-            if (question.inputType === 'choice') {
-                question.choices.forEach(choice => {
+        function renderAnswerInput(question, item, previousAnswer = null, previousFollowUp = null, previousFollowUp2 = null) {
+            const answerArea = document.getElementById('answerArea');
+            answerArea.innerHTML = '';
+
+            if (question.type === 'choice') {
+                question.options.forEach(option => {
                     const btn = document.createElement('button');
                     btn.className = 'choice-button';
-                    btn.textContent = choice;
-                    if (previousAnswer === choice) {
+                    btn.textContent = option;
+                    if (previousAnswer === option) {
                         btn.classList.add('selected');
                     }
-                    btn.onclick = () => selectChoice(btn, choice, question);
+                    btn.onclick = () => selectChoice(btn, option, question, item);
                     answerArea.appendChild(btn);
                 });
-            } else if (question.inputType === 'scale') {
+            } else if (question.type === 'multiple') {
+                question.options.forEach(option => {
+                    const div = document.createElement('div');
+                    div.className = 'checkbox-option';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = option;
+                    checkbox.id = 'opt_' + Math.random().toString(36).substr(2, 9);
+                    
+                    if (previousAnswer && Array.isArray(previousAnswer) && previousAnswer.includes(option)) {
+                        checkbox.checked = true;
+                        div.classList.add('selected');
+                    }
+                    
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-label';
+                    label.textContent = option;
+                    label.htmlFor = checkbox.id;
+                    
+                    checkbox.onchange = () => handleMultipleChoice(question, item);
+                    
+                    div.appendChild(label);
+                    div.appendChild(checkbox);
+                    div.onclick = (e) => {
+                        if (e.target !== checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                            checkbox.dispatchEvent(new Event('change'));
+                        }
+                    };
+                    
+                    answerArea.appendChild(div);
+                });
+            } else if (question.type === 'scale') {
                 const container = document.createElement('div');
                 container.className = 'scale-container';
                 
-                for (let i = question.scale.min; i <= question.scale.max; i++) {
+                const min = question.min || 1;
+                const max = question.max || 10;
+                
+                for (let i = min; i <= max; i++) {
                     const btn = document.createElement('button');
                     btn.className = 'scale-button';
                     btn.textContent = i;
                     if (previousAnswer == i) {
                         btn.classList.add('selected');
                     }
-                    btn.onclick = () => selectScale(container, i, question);
+                    btn.onclick = () => selectScale(container, i, question, item, min);
                     container.appendChild(btn);
                 }
                 
                 answerArea.appendChild(container);
                 
-                if (question.scale.labels) {
+                if (question.labels && question.labels.length > 0) {
                     const labels = document.createElement('div');
                     labels.className = 'scale-labels';
-                    question.scale.labels.forEach(label => {
+                    question.labels.forEach(label => {
                         const span = document.createElement('span');
                         span.textContent = label;
                         labels.appendChild(span);
                     });
                     answerArea.appendChild(labels);
                 }
-            } else if (question.inputType === 'text') {
+            } else if (question.type === 'text') {
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.className = 'text-input';
@@ -1397,37 +1371,38 @@
                 if (previousAnswer) {
                     input.value = previousAnswer;
                 }
-                input.oninput = () => checkTextInput(input, question);
+                input.oninput = () => checkTextInput(input, question, item);
                 answerArea.appendChild(input);
-            } else if (question.inputType === 'textarea') {
+            } else if (question.type === 'textarea') {
                 const textarea = document.createElement('textarea');
                 textarea.className = 'textarea-input';
                 textarea.placeholder = question.placeholder || 'اكتب إجابتك بالتفصيل...';
                 if (previousAnswer) {
                     textarea.value = previousAnswer;
                 }
-                textarea.oninput = () => checkTextInput(textarea, question);
+                textarea.oninput = () => checkTextInput(textarea, question, item);
                 answerArea.appendChild(textarea);
-            } else if (question.inputType === 'number') {
+            } else if (question.type === 'number') {
                 const input = document.createElement('input');
                 input.type = 'number';
                 input.className = 'number-input';
                 input.placeholder = question.placeholder || 'أدخل رقم...';
+                if (question.min !== undefined) input.min = question.min;
+                if (question.max !== undefined) input.max = question.max;
                 if (previousAnswer) {
                     input.value = previousAnswer;
                 }
-                input.oninput = () => checkTextInput(input, question);
+                input.oninput = () => checkTextInput(input, question, item);
                 answerArea.appendChild(input);
             }
             
-            // CRITICAL: Load follow-up if previous answer exists
+            // Load follow-ups if previous answer exists
             if (previousAnswer) {
-                checkFollowUp(question, previousAnswer, previousFollowUp);
+                checkFollowUp(question, previousAnswer, item, previousFollowUp, previousFollowUp2);
             }
         }
 
-        async function selectChoice(btn, choice, question) {
-            // Check if changing from previous answer
+        async function selectChoice(btn, choice, question, item) {
             if (window.originalAnswer && window.originalAnswer !== choice) {
                 const confirmed = await showConfirm(
                     '⚠️',
@@ -1442,11 +1417,31 @@
             
             document.querySelectorAll('.choice-button').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
-            storeAnswer(question.id, choice);
-            checkFollowUp(question, choice);
+            storeAnswer(item, question.id, choice);
+            checkFollowUp(question, choice, item);
         }
 
-        async function selectScale(container, value, question) {
+        function handleMultipleChoice(question, item) {
+            const checkboxes = document.querySelectorAll('#answerArea input[type="checkbox"]');
+            const selected = [];
+            
+            checkboxes.forEach(cb => {
+                const parent = cb.parentElement;
+                if (cb.checked) {
+                    selected.push(cb.value);
+                    parent.classList.add('selected');
+                } else {
+                    parent.classList.remove('selected');
+                }
+            });
+            
+            if (selected.length > 0) {
+                storeAnswer(item, question.id, selected);
+                checkFollowUp(question, selected, item);
+            }
+        }
+
+        async function selectScale(container, value, question, item, min) {
             if (window.originalAnswer && window.originalAnswer != value) {
                 const confirmed = await showConfirm(
                     '⚠️',
@@ -1460,68 +1455,125 @@
             }
             
             container.querySelectorAll('.scale-button').forEach(b => b.classList.remove('selected'));
-            container.children[value - question.scale.min].classList.add('selected');
-            storeAnswer(question.id, value);
-            checkFollowUp(question, value);
+            container.children[value - min].classList.add('selected');
+            storeAnswer(item, question.id, value);
+            checkFollowUp(question, value, item);
         }
 
-        function checkTextInput(input, question) {
+        function checkTextInput(input, question, item) {
             const value = input.value.trim();
             if (value.length > 0) {
-                // Mark as changed if different from original
                 if (window.originalAnswer && window.originalAnswer !== value) {
                     window.hasChanged = true;
                 }
-                storeAnswer(question.id, value);
-                checkFollowUp(question, value);
+                storeAnswer(item, question.id, value);
+                checkFollowUp(question, value, item);
             } else {
                 document.getElementById('followUpContainer').classList.add('hidden');
+                document.getElementById('followUp2Container').classList.add('hidden');
             }
         }
 
-        function storeAnswer(questionId, answer) {
-            if (!allAnswers[currentAxis]) allAnswers[currentAxis] = {};
-            const item = allQuestionsList[currentAbsoluteIndex];
-            if (!allAnswers[currentAxis][item.topicKey]) allAnswers[currentAxis][item.topicKey] = {};
-            allAnswers[currentAxis][item.topicKey][questionId] = {
+        function storeAnswer(item, questionId, answer) {
+            if (!allAnswers[item.axisId]) allAnswers[item.axisId] = {};
+            if (!allAnswers[item.axisId][item.sectionId]) allAnswers[item.axisId][item.sectionId] = {};
+            allAnswers[item.axisId][item.sectionId][questionId] = {
                 answer: answer,
                 timestamp: new Date().toISOString()
             };
         }
 
-        function checkFollowUp(question, answer, existingFollowUp = null) {
-            // If question doesn't have follow-up, hide it
-            if (!question.followUp) {
-                document.getElementById('followUpContainer').classList.add('hidden');
-                document.getElementById('followUpContainer').innerHTML = '';
-                return;
-            }
+/* ╔══════════════════════════════════════════════════════════╗
+   ║   ✅ نهاية الجزء 6 من 8                               ║
+   ║   👇 الصق الجزء 7 مباشرة هنا (بدون مسافات)          ║
+   ╚══════════════════════════════════════════════════════════╝ */
+        /* ╔══════════════════════════════════════════════════════════╗
+   ║   🎯 بداية الجزء 7 من 8 - JavaScript (تكملة 2)       ║
+   ╚══════════════════════════════════════════════════════════╝ */
 
-            let shouldShow = false;
-            
-            if (question.followUp.condition === 'any') {
-                shouldShow = true;
-            } else if (question.followUp.condition.includes('|')) {
-                const conditions = question.followUp.condition.split('|');
-                shouldShow = conditions.some(cond => String(answer).includes(cond.trim()));
-            } else if (question.followUp.condition.startsWith('>=')) {
-                const threshold = parseInt(question.followUp.condition.substring(2));
-                shouldShow = parseInt(answer) >= threshold;
-            } else if (question.followUp.condition.startsWith('<=')) {
-                const threshold = parseInt(question.followUp.condition.substring(2));
-                shouldShow = parseInt(answer) <= threshold;
-            }
-
-            if (shouldShow) {
-                showFollowUp(question.followUp.question, existingFollowUp);
+        function checkFollowUp(question, answer, item, existingFollowUp = null, existingFollowUp2 = null) {
+            // Check first follow-up
+            if (question.followUp) {
+                const shouldShow = evaluateCondition(question.followUp.condition, answer);
+                
+                if (shouldShow) {
+                    showFollowUp(question.followUp.question, item, question.id, existingFollowUp);
+                    
+                    // Check second follow-up if exists
+                    if (question.followUp2 && existingFollowUp) {
+                        const shouldShow2 = evaluateCondition(question.followUp2.condition, existingFollowUp);
+                        if (shouldShow2) {
+                            showFollowUp2(question.followUp2.question, item, question.id, existingFollowUp2);
+                        } else {
+                            document.getElementById('followUp2Container').classList.add('hidden');
+                        }
+                    }
+                } else {
+                    document.getElementById('followUpContainer').classList.add('hidden');
+                    document.getElementById('followUp2Container').classList.add('hidden');
+                }
             } else {
                 document.getElementById('followUpContainer').classList.add('hidden');
-                document.getElementById('followUpContainer').innerHTML = '';
+                document.getElementById('followUp2Container').classList.add('hidden');
             }
         }
 
+        function evaluateCondition(condition, answer) {
+            if (condition === 'true' || condition === true) {
+                return true;
+            }
+            
+            const answerStr = Array.isArray(answer) ? answer.join(' ') : String(answer);
+            
+            try {
+                // Handle includes
+                if (condition.includes('answer.includes(')) {
+                    const match = condition.match(/answer\.includes\(['"](.+?)['"]\)/);
+                    if (match) {
+                        return answerStr.includes(match[1]);
+                    }
+                }
+                
+                // Handle ===
+                if (condition.includes('answer ===')) {
+                    const match = condition.match(/answer === ['"](.+?)['"]/);
+                    if (match) {
+                        return answerStr === match[1];
+                    }
+                }
+                
+                // Handle !==
+                if (condition.includes('answer !==')) {
+                    const match = condition.match(/answer !== ['"](.+?)['"]/);
+                    if (match) {
+                        return answerStr !== match[1];
+                    }
+                }
+                
+                // Handle >= 
+                if (condition.includes('answer >=')) {
+                    const match = condition.match(/answer >= (\d+)/);
+                    if (match) {
+                        return Number(answer) >= Number(match[1]);
+                    }
+                }
+                
+                // Handle <=
+                if (condition.includes('answer <=')) {
+                    const match = condition.match(/answer <= (\d+)/);
+                    if (match) {
+                        return Number(answer) <= Number(match[1]);
+                    }
+                }
+                
+                return false;
+            } catch (e) {
+                console.error('Error evaluating condition:', e);
+                return false;
+            }
+        }
 
-       function showFollowUp(followUpQuestion, existingAnswer = null) {
+        function showFollowUp(followUpQuestion, item, mainQuestionId, existingAnswer = null) {
             const container = document.getElementById('followUpContainer');
             const currentValue = existingAnswer || '';
             
@@ -1530,34 +1582,132 @@
                     <span>💭</span>
                     <span>سؤال تكميلي</span>
                 </div>
-                <div class="follow-up-text">${followUpQuestion}</div>
-                <textarea class="textarea-input" id="followUpAnswer" placeholder="اكتب إجابتك...">${currentValue}</textarea>
+                <div class="follow-up-text">${followUpQuestion.text || followUpQuestion}</div>
             `;
+            
+            // Render follow-up input based on type
+            if (typeof followUpQuestion === 'object' && followUpQuestion.type) {
+                if (followUpQuestion.type === 'choice') {
+                    followUpQuestion.options.forEach(option => {
+                        const btn = document.createElement('button');
+                        btn.className = 'choice-button';
+                        btn.textContent = option;
+                        if (currentValue === option) {
+                            btn.classList.add('selected');
+                        }
+                        btn.onclick = () => {
+                            container.querySelectorAll('.choice-button').forEach(b => b.classList.remove('selected'));
+                            btn.classList.add('selected');
+                            storeAnswer(item, mainQuestionId + '_followup', option);
+                            
+                            // Check for followUp2
+                            const mainQuestion = item.question;
+                            if (mainQuestion.followUp2) {
+                                const shouldShow2 = evaluateCondition(mainQuestion.followUp2.condition, option);
+                                if (shouldShow2) {
+                                    showFollowUp2(mainQuestion.followUp2.question, item, mainQuestionId);
+                                } else {
+                                    document.getElementById('followUp2Container').classList.add('hidden');
+                                }
+                            }
+                        };
+                        container.appendChild(btn);
+                    });
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.className = 'textarea-input';
+                    textarea.placeholder = followUpQuestion.placeholder || 'اكتب إجابتك...';
+                    textarea.value = currentValue;
+                    textarea.oninput = (e) => {
+                        const newValue = e.target.value.trim();
+                        if (newValue.length > 0) {
+                            storeAnswer(item, mainQuestionId + '_followup', newValue);
+                        }
+                    };
+                    container.appendChild(textarea);
+                }
+            } else {
+                // Simple text question
+                const textarea = document.createElement('textarea');
+                textarea.className = 'textarea-input';
+                textarea.placeholder = 'اكتب إجابتك...';
+                textarea.value = currentValue;
+                textarea.oninput = (e) => {
+                    const newValue = e.target.value.trim();
+                    if (newValue.length > 0) {
+                        storeAnswer(item, mainQuestionId + '_followup', newValue);
+                    }
+                };
+                container.appendChild(textarea);
+            }
+            
             container.classList.remove('hidden');
+        }
+
+        function showFollowUp2(followUp2Question, item, mainQuestionId, existingAnswer = null) {
+            const container = document.getElementById('followUp2Container');
+            const currentValue = existingAnswer || '';
             
-            // Store original follow-up answer
-            window.originalFollowUp = existingAnswer;
+            container.innerHTML = `
+                <div class="follow-up-label">
+                    <span>💭💭</span>
+                    <span>سؤال تكميلي إضافي</span>
+                </div>
+                <div class="follow-up-text">${followUp2Question.text || followUp2Question}</div>
+            `;
             
-            document.getElementById('followUpAnswer').oninput = (e) => {
-                const item = allQuestionsList[currentAbsoluteIndex];
-                const newValue = e.target.value.trim();
-                
-                // Mark as changed if different from original
-                if (window.originalFollowUp && window.originalFollowUp !== newValue) {
-                    window.hasChanged = true;
+            // Render follow-up2 input
+            if (typeof followUp2Question === 'object' && followUp2Question.type) {
+                if (followUp2Question.type === 'choice') {
+                    followUp2Question.options.forEach(option => {
+                        const btn = document.createElement('button');
+                        btn.className = 'choice-button';
+                        btn.textContent = option;
+                        if (currentValue === option) {
+                            btn.classList.add('selected');
+                        }
+                        btn.onclick = () => {
+                            container.querySelectorAll('.choice-button').forEach(b => b.classList.remove('selected'));
+                            btn.classList.add('selected');
+                            storeAnswer(item, mainQuestionId + '_followup2', option);
+                        };
+                        container.appendChild(btn);
+                    });
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.className = 'textarea-input';
+                    textarea.placeholder = followUp2Question.placeholder || 'اكتب إجابتك...';
+                    textarea.value = currentValue;
+                    textarea.oninput = (e) => {
+                        const newValue = e.target.value.trim();
+                        if (newValue.length > 0) {
+                            storeAnswer(item, mainQuestionId + '_followup2', newValue);
+                        }
+                    };
+                    container.appendChild(textarea);
                 }
-                
-                if (newValue.length > 0) {
-                    storeAnswer(item.question.id + '_followup', newValue);
-                }
-            };
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.className = 'textarea-input';
+                textarea.placeholder = 'اكتب إجابتك...';
+                textarea.value = currentValue;
+                textarea.oninput = (e) => {
+                    const newValue = e.target.value.trim();
+                    if (newValue.length > 0) {
+                        storeAnswer(item, mainQuestionId + '_followup2', newValue);
+                    }
+                };
+                container.appendChild(textarea);
+            }
+            
+            container.classList.remove('hidden');
+            container.style.marginTop = '15px';
         }
 
         function updateProgress() {
-            // Recount answered questions
             answeredQuestionsCount = 0;
             allQuestionsList.forEach(item => {
-                const answer = getAnswer(item.axisKey, item.topicKey, item.question.id);
+                const answer = getAnswer(item.axisId, item.sectionId, item.question.id);
                 if (answer) {
                     answeredQuestionsCount++;
                 }
@@ -1569,8 +1719,51 @@
                 `${answeredQuestionsCount} من ${totalQuestionsCount} سؤال`;
         }
 
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentAbsoluteIndex === 0;
+            
+            if (currentAbsoluteIndex === allQuestionsList.length - 1) {
+                nextBtn.innerHTML = 'إنهاء 🎉';
+            } else {
+                nextBtn.innerHTML = 'التالي ➡️';
+            }
+        }
+
+        function showConfirm(icon, title, message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmModal');
+                document.getElementById('confirmIcon').textContent = icon;
+                document.getElementById('confirmTitle').textContent = title;
+                document.getElementById('confirmMessage').textContent = message;
+                
+                modal.classList.remove('hidden');
+                
+                document.getElementById('confirmYes').onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(true);
+                };
+                
+                document.getElementById('confirmNo').onclick = () => {
+                    modal.classList.add('hidden');
+                    resolve(false);
+                };
+            });
+        }
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║   ✅ نهاية الجزء 7 من 8                               ║
+   ║   👇 الصق الجزء 8 (الأخير) مباشرة هنا                ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
+        /* ╔══════════════════════════════════════════════════════════╗
+   ║   🎯 بداية الجزء 8 من 8 - JavaScript (النهاية)       ║
+   ╚══════════════════════════════════════════════════════════╝ */
+
         // Navigation handlers
-       document.getElementById('prevBtn').onclick = async () => {
+        document.getElementById('prevBtn').onclick = async () => {
             if (window.hasChanged && window.originalAnswer) {
                 const confirmed = await showConfirm(
                     '⚠️',
@@ -1585,11 +1778,10 @@
             window.hasChanged = false;
             window.originalAnswer = null;
             window.originalFollowUp = null;
+            window.originalFollowUp2 = null;
             
             loadQuestionByIndex(currentAbsoluteIndex - 1);
         };
-
-
 
         document.getElementById('nextBtn').onclick = async () => {
             if (window.hasChanged && window.originalAnswer) {
@@ -1608,6 +1800,7 @@
             window.hasChanged = false;
             window.originalAnswer = null;
             window.originalFollowUp = null;
+            window.originalFollowUp2 = null;
             
             if (currentAbsoluteIndex >= allQuestionsList.length - 1) {
                 showCompletion();
@@ -1617,7 +1810,6 @@
         };
 
         document.getElementById('skipBtn').onclick = () => {
-            // Just move to next without saving answer
             if (currentAbsoluteIndex >= allQuestionsList.length - 1) {
                 showCompletion();
             } else {
@@ -1629,7 +1821,6 @@
             try {
                 document.getElementById('loadingOverlay').classList.remove('hidden');
                 
-                // Document ID = Organization Name
                 const docId = organizationName.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_');
                 const docRef = doc(db, 'responses', docId);
                 
@@ -1647,7 +1838,6 @@
                     lastUpdated: serverTimestamp()
                 };
                 
-                // Check if document exists
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists()) {
@@ -1665,13 +1855,10 @@
             }
         }
 
-
-
         async function showCompletion() {
-            // Check for skipped questions
             const skippedQuestions = [];
             allQuestionsList.forEach(item => {
-                const answer = getAnswer(item.axisKey, item.topicKey, item.question.id);
+                const answer = getAnswer(item.axisId, item.sectionId, item.question.id);
                 if (!answer) {
                     skippedQuestions.push(item);
                 }
@@ -1680,12 +1867,11 @@
             const card = document.getElementById('questionCard');
             
             if (skippedQuestions.length > 0) {
-                // Show skipped questions
-                let skippedHTML = '<ul class="skipped-list">';
+                let skippedHTML = '<ul class="skipped-list" style="list-style: none; padding: 0;">';
                 skippedQuestions.forEach(item => {
                     skippedHTML += `
-                        <li class="skipped-item" onclick="goToQuestion(${item.index})">
-                            ${item.topicData.icon} ${item.question.text.substring(0, 60)}...
+                        <li class="skipped-item" onclick="goToQuestion(${item.index})" style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.3s;">
+                            ${item.sectionIcon} ${item.question.text.substring(0, 60)}...
                         </li>
                     `;
                 });
@@ -1700,8 +1886,8 @@
                             هل تريد إكمالها أم إنهاء التشخيص؟
                         </p>
                         
-                        <div class="skipped-questions-section">
-                            <div class="skipped-title">📝 الأسئلة المتخطاة (اضغط للإجابة):</div>
+                        <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 15px; padding: 25px; margin: 30px 0; text-align: right;">
+                            <div style="font-size: 20px; color: #92400e; font-weight: 700; margin-bottom: 15px;">📝 الأسئلة المتخطاة (اضغط للإجابة):</div>
                             ${skippedHTML}
                         </div>
                         
@@ -1713,7 +1899,6 @@
                     </div>
                 `;
             } else {
-                // All answered - finish
                 await saveToFirebase(true);
                 
                 card.innerHTML = `
@@ -1730,8 +1915,8 @@
                                 <div class="stat-label">سؤال تم الإجابة عليه</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number">${Object.keys(allAnswers).length}</div>
-                                <div class="stat-label">محور مكتمل</div>
+                                <div class="stat-number">4</div>
+                                <div class="stat-label">محاور مكتملة</div>
                             </div>
                         </div>
                         <div style="margin-top: 40px;">
@@ -1774,7 +1959,6 @@
             `;
         };
 
-        // Review Modal
         window.openReviewModal = function() {
             const modal = document.getElementById('reviewModal');
             const content = document.getElementById('reviewContent');
@@ -1782,42 +1966,45 @@
             let html = '';
             let questionNumber = 0;
             
-            Object.keys(questionsData).forEach(axisKey => {
-                const axisData = questionsData[axisKey];
+            questionsData.axes.forEach(axis => {
                 html += `<div class="review-section">`;
-                html += `<div class="review-axis-title">${axisData.title}</div>`;
+                html += `<div class="review-axis-title">${axis.name}</div>`;
                 
-                Object.keys(axisData.topics).forEach(topicKey => {
-                    const topicData = axisData.topics[topicKey];
-                    html += `<div class="review-topic">`;
-                    html += `<div class="review-topic-title">${topicData.icon} ${topicData.title}</div>`;
+                axis.sections.forEach(section => {
+                    html += `<div class="review-section-group">`;
+                    html += `<div class="review-section-title">${section.icon} ${section.name}</div>`;
                     
-                    topicData.questions.forEach(question => {
+                    section.questions.forEach(question => {
                         questionNumber++;
-                        const answer = getAnswer(axisKey, topicKey, question.id);
-                        const followUpAnswer = getAnswer(axisKey, topicKey, question.id + '_followup');
+                        const answer = getAnswer(axis.id, section.id, question.id);
+                        const followUpAnswer = getAnswer(axis.id, section.id, question.id + '_followup');
+                        const followUp2Answer = getAnswer(axis.id, section.id, question.id + '_followup2');
                         
                         const questionItem = allQuestionsList.find(item => 
-                            item.axisKey === axisKey && 
-                            item.topicKey === topicKey && 
+                            item.axisId === axis.id && 
+                            item.sectionId === section.id && 
                             item.question.id === question.id
                         );
                         
                         const className = answer ? 'review-question-item' : 'review-question-item unanswered';
                         
-                        // Build answer display
                         let answerDisplay = '';
                         if (answer) {
-                            answerDisplay = `<div class="review-answer">✅ ${answer}</div>`;
+                            const displayAnswer = Array.isArray(answer) ? answer.join(', ') : answer;
+                            answerDisplay = `<div class="review-answer">✅ ${displayAnswer}</div>`;
                             
-                            // Show follow-up answer if exists
                             if (followUpAnswer) {
-                                answerDisplay += `
-                                    <div class="review-followup">
-                                        <span class="followup-label">💭 السؤال التكميلي:</span>
-                                        <span class="followup-answer">${followUpAnswer}</span>
-                                    </div>
-                                `;
+                                answerDisplay += `<div style="margin-top: 10px; padding: 10px; background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px;">`;
+                                answerDisplay += `<span style="display: block; font-size: 12px; color: #92400e; font-weight: 600; margin-bottom: 5px;">💭 السؤال التكميلي:</span>`;
+                                answerDisplay += `<span style="font-size: 14px; color: #78350f; font-weight: 500;">${followUpAnswer}</span>`;
+                                answerDisplay += `</div>`;
+                            }
+                            
+                            if (followUp2Answer) {
+                                answerDisplay += `<div style="margin-top: 10px; padding: 10px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;">`;
+                                answerDisplay += `<span style="display: block; font-size: 12px; color: #92400e; font-weight: 600; margin-bottom: 5px;">💭💭 السؤال التكميلي الإضافي:</span>`;
+                                answerDisplay += `<span style="font-size: 14px; color: #78350f; font-weight: 500;">${followUp2Answer}</span>`;
+                                answerDisplay += `</div>`;
                             }
                         } else {
                             answerDisplay = `<div class="review-unanswered">⚠️ لم يتم الإجابة</div>`;
@@ -1845,9 +2032,7 @@
         };
 
         window.goToQuestionAndClose = function(index) {
-            // Close modal first
             document.getElementById('reviewModal').classList.add('hidden');
-            // Then go to question
             loadQuestionByIndex(index);
         };
 
@@ -1856,19 +2041,11 @@
         };
     </script>
 
-    <!-- Custom Confirmation Modal -->
-    <div id="confirmModal" class="confirm-modal hidden">
-        <div class="confirm-box">
-            <div class="confirm-icon" id="confirmIcon">⚠️</div>
-            <div class="confirm-title" id="confirmTitle">تأكيد</div>
-            <div class="confirm-message" id="confirmMessage"></div>
-            <div class="confirm-buttons">
-                <button class="confirm-btn confirm-btn-no" id="confirmNo">لا</button>
-                <button class="confirm-btn confirm-btn-yes" id="confirmYes">نعم</button>
-            </div>
-        </div>
-    </div>
-
 </body>
 </html>
-</html>
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║   ✅✅✅ نهاية الجزء 8 من 8 - الملف مكتمل! ✅✅✅      ║
+   ║                                                          ║
+   ║   🎉 تم! الآن احفظ الملف واختبره                      ║
+   ╚══════════════════════════════════════════════════════════╝ */
