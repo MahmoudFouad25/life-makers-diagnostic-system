@@ -1124,16 +1124,16 @@ window.serverTimestamp = serverTimestamp;
 
         async function resumeSession() {
   try {
-    const docRef = db.collection('responses').doc(organizationName);
-    const docSnap = await docRef.get();
+    const docRef = doc(db, 'responses', organizationName);
+    const docSnap = await getDoc(docRef);
     
-    if (docSnap.exists) {
+    if (docSnap.exists()) {
       const data = docSnap.data();
       allAnswers = data.answers || {};
       
-      console.log('✅ تم تحميل', Object.keys(allAnswers).length, 'محاور من Firebase');
+      console.log('✅ تم تحميل الإجابات من Firebase');
       
-      // حساب آخر سؤال تم الإجابة عليه
+      // حساب آخر سؤال
       let lastAnsweredIndex = -1;
       for (let i = 0; i < allQuestionsList.length; i++) {
         const q = allQuestionsList[i];
@@ -1143,12 +1143,9 @@ window.serverTimestamp = serverTimestamp;
       }
       
       currentAbsoluteIndex = lastAnsweredIndex + 1;
-      
       if (currentAbsoluteIndex >= allQuestionsList.length) {
         currentAbsoluteIndex = allQuestionsList.length - 1;
       }
-      
-      console.log('📍 السؤال الحالي:', currentAbsoluteIndex + 1);
       
       loadQuestionByIndex(currentAbsoluteIndex);
       updateProgress();
@@ -1816,42 +1813,38 @@ window.serverTimestamp = serverTimestamp;
         };
 
         async function saveToFirebase(isFinal = false) {
-            try {
-                document.getElementById('loadingOverlay').classList.remove('hidden');
-                
-                const docId = organizationName.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_');
-                const docRef = doc(db, 'responses', docId);
-                
-                const sessionDoc = {
-                    organizationName: organizationName,
-                    sessionId: sessionId,
-                    participantName: participantName,
-                    answers: allAnswers,
-                    progress: {
-                        answered: answeredQuestionsCount,
-                        total: totalQuestionsCount,
-                        percentage: (answeredQuestionsCount / totalQuestionsCount) * 100
-                    },
-                    isFinal: isFinal,
-                    lastUpdated: serverTimestamp()
-                };
-                
-                const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    await updateDoc(docRef, sessionDoc);
-                } else {
-                    sessionDoc.timestamp = serverTimestamp();
-                    await setDoc(docRef, sessionDoc);
-                }
-                
-                document.getElementById('loadingOverlay').classList.add('hidden');
-                console.log('Saved to document:', docId);
-            } catch (error) {
-                console.error('Error saving to Firebase:', error);
-                document.getElementById('loadingOverlay').classList.add('hidden');
-            }
-        }
+  try {
+    answeredQuestionsCount = 0;
+    Object.values(allAnswers).forEach(axis => {
+      Object.values(axis).forEach(section => {
+        answeredQuestionsCount += Object.keys(section).length;
+      });
+    });
+
+    const percentage = Math.round((answeredQuestionsCount / totalQuestionsCount) * 100);
+
+    const dataToSave = {
+      organizationName: organizationName,
+      sessionId: sessionId,
+      participantName: participantName,
+      answers: allAnswers,
+      progress: {
+        answered: answeredQuestionsCount,
+        total: totalQuestionsCount,
+        percentage: percentage
+      },
+      isFinal: isFinal,
+      lastUpdated: serverTimestamp()
+    };
+
+    const docRef = doc(db, 'responses', organizationName);
+    await setDoc(docRef, dataToSave, { merge: true });
+    
+    console.log('✅ تم الحفظ في Firebase');
+  } catch (error) {
+    console.error('❌ خطأ في الحفظ:', error);
+  }
+}
 
         async function showCompletion() {
             const skippedQuestions = [];
