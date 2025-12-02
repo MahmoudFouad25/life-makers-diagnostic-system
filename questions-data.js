@@ -3102,8 +3102,6 @@ export const questionsData = {
                 }
             ]
         } // نهاية المحور الرابع - لاحظ: مفيش فاصلة هنا لأنه آخر عنصر!
-            ]
-        }
     ]
 };
 export default questionsData;
