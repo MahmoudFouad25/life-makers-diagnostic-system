@@ -1800,6 +1800,9 @@ window.serverTimestamp = serverTimestamp;
 
         async function saveToFirebase(isFinal = false) {
   try {
+    console.log('💾 حفظ البيانات...');
+    
+    // حساب عدد الإجابات
     answeredQuestionsCount = 0;
     Object.values(allAnswers).forEach(axis => {
       Object.values(axis).forEach(section => {
@@ -1813,7 +1816,7 @@ window.serverTimestamp = serverTimestamp;
       organizationName: organizationName,
       sessionId: sessionId,
       participantName: participantName,
-      answers: allAnswers,
+      answers: allAnswers,  // ✅ بيحفظ الإجابات الحالية (المعدّلة)
       progress: {
         answered: answeredQuestionsCount,
         total: totalQuestionsCount,
@@ -1826,7 +1829,9 @@ window.serverTimestamp = serverTimestamp;
     const docRef = doc(db, 'responses', organizationName);
     await setDoc(docRef, dataToSave, { merge: true });
     
-    console.log('✅ تم الحفظ في Firebase');
+    console.log('✅ تم الحفظ بنجاح');
+    console.log('   الإجابات المحفوظة:', answeredQuestionsCount);
+    
   } catch (error) {
     console.error('❌ خطأ في الحفظ:', error);
   }
