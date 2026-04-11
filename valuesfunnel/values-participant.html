@@ -454,15 +454,31 @@ appId:"1:819336926740:web:d338b3299e6d18e3b67901"
 };
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
-window._db=db;window._doc=doc;window._setDoc=setDoc;window._getDoc=getDoc;window._serverTimestamp=serverTimestamp;
-</script>
 
-<script>
+// Firebase functions available globally
+const fbDoc=doc, fbSetDoc=setDoc, fbGetDoc=getDoc, fbTimestamp=serverTimestamp;
+console.log('✅ Firebase initialized successfully');
+
+// Quick test: verify we can write to Firestore
+async function testFirebaseConnection(){
+try{
+const testRef=fbDoc(db,'values_sessions','_connection_test');
+await fbSetDoc(testRef,{test:true,timestamp:fbTimestamp()});
+console.log('✅ Firebase write test passed!');
+return true;
+}catch(e){
+console.error('❌ Firebase write test FAILED:',e);
+console.log('💡 تأكد إن Firestore Rules تسمح بالكتابة في collection "values_sessions"');
+return false;
+}
+}
+window.testFirebase=testFirebaseConnection;
+
 // ═══════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════
 const STATE={
-participant:'',org:'',currentPhase:0,
+participant:'',org:'',currentPhase:0,maxPhaseReached:0,
 tags:{p1_traits:[],p2_traits:[],p3_traits:[],hard_principles:[],regret_principles:[],peak_values:[],violated_values:[],portable_values:[],retirement_values:[]},
 fields:{},
 groups:[],
@@ -534,11 +550,12 @@ loadFromFirebase();
 };
 
 window.goToPhase=function(n){
-// Validate before advancing
-if(n>STATE.currentPhase+1&&STATE.currentPhase>0){
+// Allow going back freely, only block jumping forward beyond max+1
+if(n>STATE.maxPhaseReached+1){
 showToast('أكمل المرحلة الحالية الأول');return;
 }
 STATE.currentPhase=n;
+if(n>STATE.maxPhaseReached)STATE.maxPhaseReached=n;
 for(let i=1;i<=5;i++)document.getElementById('phase'+i).classList.add('hidden');
 document.getElementById('phase'+n).classList.remove('hidden');
 // Update nav dots
@@ -554,6 +571,13 @@ l.classList.toggle('done',p<n);
 });
 document.getElementById('progressInfo').textContent=`المرحلة ${n} من 5`;
 document.getElementById('prevPhaseBtn').disabled=n<=1;
+
+// Make phase dots clickable
+document.querySelectorAll('.phase-dot').forEach(d=>{
+const p=+d.dataset.phase;
+d.style.cursor=p<=STATE.maxPhaseReached?'pointer':'default';
+d.onclick=()=>{if(p<=STATE.maxPhaseReached||p===STATE.maxPhaseReached+1)goToPhase(p)};
+});
 
 if(n===2)buildPhase2();
 if(n===3)buildPhase3();
@@ -861,8 +885,11 @@ return`<div class="final-value-badge">
 // FIREBASE
 // ═══════════════════════════════════════════════════
 window.saveProgress=async function(){
+showToast('💾 جاري الحفظ...');
+try{
 await saveToFirebase(false);
-showToast('✅ تم الحفظ');
+showToast('✅ تم الحفظ بنجاح في Firebase');
+}catch(e){showToast('❌ فشل الحفظ: '+e.message)}
 };
 
 async function saveToFirebase(isFinal){
@@ -881,16 +908,17 @@ selectedFinal:STATE.selectedFinal,
 articulation:STATE.articulation,
 plan:collectPlanFields(),
 isFinal,
-lastUpdated:window._serverTimestamp()
+lastUpdated:fbTimestamp()
 };
-await window._setDoc(window._doc(window._db,'values_sessions',docId),data,{merge:true});
-}catch(e){console.error('Save error:',e)}
+await fbSetDoc(fbDoc(db,'values_sessions',docId),data,{merge:true});
+console.log('✅ تم الحفظ في Firebase بنجاح! DocID:',docId);
+}catch(e){console.error('❌ Save error:',e);showToast('❌ خطأ في الحفظ: '+e.message)}
 }
 
 async function loadFromFirebase(){
 try{
 const docId=`VF_${STATE.org.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g,'_')}_${STATE.participant.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g,'_')}`;
-const snap=await window._getDoc(window._doc(window._db,'values_sessions',docId));
+const snap=await fbGetDoc(fbDoc(db,'values_sessions',docId));
 if(snap.exists()){
 const d=snap.data();
 if(d.tags)Object.assign(STATE.tags,d.tags);
