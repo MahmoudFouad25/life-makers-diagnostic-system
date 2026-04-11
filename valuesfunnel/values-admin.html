@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم الميسّر — فانل القيم الجوهرية</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--surface:#111827;--surface2:#1e293b;--surface3:#334155;--primary:#6366f1;--primary-glow:rgba(99,102,241,.25);--accent:#f59e0b;--accent2:#10b981;--accent3:#ef4444;--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;--yellow:#fbbf24;--green:#34d399;--blue:#60a5fa;--pink:#f472b6;--radius:16px;--radius-sm:10px}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px}
+.header{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--surface3);border-radius:var(--radius);padding:28px 32px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.header-title{display:flex;align-items:center;gap:14px}
+.header-icon{width:56px;height:56px;background:linear-gradient(135deg,var(--primary),#8b5cf6);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 4px 20px var(--primary-glow)}
+.header h1{font-size:26px;font-weight:900}
+.header p{color:var(--text2);font-size:13px}
+.header-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:11px 22px;border:none;border-radius:var(--radius-sm);font-weight:700;cursor:pointer;transition:all .3s;font-size:14px;font-family:inherit;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#8b5cf6);color:#fff;box-shadow:0 4px 15px var(--primary-glow)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-secondary{background:var(--surface3);color:var(--text);border:1px solid rgba(255,255,255,.1)}
+.btn-success{background:linear-gradient(135deg,var(--accent2),#059669);color:#fff}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:22px;transition:all .3s}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px}
+.stat-icon.blue{background:rgba(99,102,241,.15)}
+.stat-icon.green{background:rgba(16,185,129,.15)}
+.stat-icon.purple{background:rgba(168,85,247,.15)}
+.stat-icon.orange{background:rgba(251,146,60,.15)}
+.stat-value{font-size:32px;font-weight:900;margin-bottom:4px}
+.stat-label{font-size:13px;color:var(--text2)}
+
+.link-gen{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:24px;margin-bottom:24px}
+.link-gen h3{font-size:18px;font-weight:800;margin-bottom:16px}
+.link-gen .row{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.link-gen input{flex:1;min-width:200px;padding:12px 16px;background:var(--bg);border:1px solid var(--surface3);border-radius:var(--radius-sm);color:var(--text);font-size:15px;font-family:inherit}
+.link-gen input:focus{outline:none;border-color:var(--primary)}
+.generated-link{margin-top:16px;padding:14px;background:var(--bg);border:1px solid var(--accent2);border-radius:var(--radius-sm);color:var(--accent2);font-family:monospace;font-size:13px;word-break:break-all}
+
+.main-content{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:24px}
+.content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--surface3);flex-wrap:wrap;gap:12px}
+.content-title{font-size:20px;font-weight:800}
+
+.session-card{background:var(--bg);border:1px solid var(--surface3);border-radius:var(--radius);padding:22px;margin-bottom:16px;transition:all .3s;cursor:pointer}
+.session-card:hover{border-color:rgba(99,102,241,.4)}
+.session-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.session-info h4{font-size:17px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.session-meta{color:var(--text2);font-size:13px}
+.badge{padding:4px 12px;border-radius:12px;font-size:11px;font-weight:700}
+.badge-phase{background:rgba(99,102,241,.15);color:#a5b4fc}
+.badge-done{background:rgba(16,185,129,.15);color:var(--accent2)}
+
+.phase-bar{display:flex;gap:4px;margin:12px 0}
+.phase-pip{flex:1;height:6px;border-radius:3px;background:var(--surface3)}
+.phase-pip.filled{background:var(--primary)}
+.phase-pip.current{background:var(--accent);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+.detail-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--surface3);display:none}
+.detail-section.visible{display:block;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.values-list{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700}
+.tag.yellow{background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.3)}
+.tag.green{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.tag.blue{background:rgba(96,165,250,.15);color:var(--blue);border:1px solid rgba(96,165,250,.3)}
+.tag.pink{background:rgba(244,114,182,.15);color:var(--pink);border:1px solid rgba(244,114,182,.3)}
+.tag.purple{background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3)}
+.tag.core{background:rgba(16,185,129,.15);color:var(--accent2);border:1px solid rgba(16,185,129,.3)}
+
+.matrix-mini{width:100%;border-collapse:separate;border-spacing:0;margin:12px 0;font-size:13px}
+.matrix-mini th{padding:8px;background:var(--surface2);color:var(--text2);text-align:center;font-weight:700}
+.matrix-mini td{padding:8px;text-align:center;border-bottom:1px solid rgba(51,65,85,.3)}
+.matrix-mini td:first-child{text-align:right;font-weight:700}
+
+.final-value-card{background:var(--surface2);border:1px solid var(--primary);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px}
+.final-value-card .name{font-size:16px;font-weight:800;color:var(--primary)}
+.final-value-card .desc{color:var(--text2);font-size:13px;margin-top:4px}
+.final-value-card .behaviors{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;font-size:12px}
+.final-value-card .behavior{padding:8px;border-radius:6px}
+.final-value-card .behavior.yes{background:rgba(16,185,129,.1);color:var(--accent2)}
+.final-value-card .behavior.no{background:rgba(239,68,68,.1);color:var(--accent3)}
+
+.comment-box{margin-top:12px;display:flex;gap:8px}
+.comment-box textarea{flex:1;padding:10px;background:var(--surface2);border:1px solid var(--surface3);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;resize:none;min-height:40px}
+.comment-box textarea:focus{outline:none;border-color:var(--primary)}
+
+.empty-state{text-align:center;padding:40px;color:var(--text3)}
+.empty-state .icon{font-size:48px;margin-bottom:12px;opacity:.5}
+
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--accent2);color:#fff;padding:12px 24px;border-radius:var(--radius-sm);font-weight:700;z-index:9999;animation:toastIn .3s}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
+
+.hidden{display:none!important}
+@media(max-width:768px){.header{padding:16px}.stats-grid{grid-template-columns:1fr 1fr}.link-gen .row{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div class="header">
+<div class="header-title">
+<div class="header-icon">🔥</div>
+<div><h1>لوحة تحكم الميسّر</h1><p>فانل القيم الجوهرية — مراقبة وإدارة الجلسات</p></div>
+</div>
+<div class="header-actions">
+<button class="btn btn-secondary" onclick="location.reload()">🔄 تحديث</button>
+<button class="btn btn-success" onclick="exportAll()">📥 تصدير الكل</button>
+</div>
+</div>
+
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-icon blue">👥</div><div class="stat-value" id="totalSessions">0</div><div class="stat-label">إجمالي المشاركين</div></div>
+<div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-value" id="completedSessions">0</div><div class="stat-label">مكتمل</div></div>
+<div class="stat-card"><div class="stat-icon purple">⏳</div><div class="stat-value" id="activeSessions">0</div><div class="stat-label">قيد العمل</div></div>
+<div class="stat-card"><div class="stat-icon orange">📊</div><div class="stat-value" id="avgPhase">-</div><div class="stat-label">متوسط المرحلة</div></div>
+</div>
+
+<div class="link-gen">
+<h3>🔗 إنشاء رابط مشارك جديد</h3>
+<div class="row">
+<input type="text" id="linkName" placeholder="اسم المشارك">
+<input type="text" id="linkOrg" placeholder="اسم المؤسسة">
+<input type="text" id="linkWorkshop" placeholder="رقم الورشة (اختياري)">
+<button class="btn btn-primary" onclick="generateLink()">✨ إنشاء</button>
+</div>
+<div id="linkResult" class="hidden">
+<div class="generated-link" id="generatedLink"></div>
+<button class="btn btn-secondary" onclick="copyLink()" style="margin-top:10px;font-size:13px">📋 نسخ الرابط</button>
+</div>
+</div>
+
+<div class="main-content">
+<div class="content-header">
+<h2 class="content-title">جلسات المشاركين</h2>
+<select id="workshopFilter" onchange="filterSessions()" style="padding:10px 18px;background:var(--surface3);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;cursor:pointer">
+<option value="all">جميع الورش</option>
+</select>
+</div>
+<div id="sessionsGrid"></div>
+<div id="emptyState" class="empty-state hidden"><div class="icon">📭</div><p>لا توجد جلسات بعد</p></div>
+</div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,collection,query,orderBy,onSnapshot,doc,updateDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+const firebaseConfig={
+apiKey:"AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+authDomain:"life-makers-diagnostic.firebaseapp.com",
+projectId:"life-makers-diagnostic",
+storageBucket:"life-makers-diagnostic.firebasestorage.app",
+messagingSenderId:"819336926740",
+appId:"1:819336926740:web:d338b3299e6d18e3b67901"
+};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+window._db=db;window._doc=doc;window._updateDoc=updateDoc;window._serverTimestamp=serverTimestamp;
+
+let allSessions=[];
+const q=query(collection(db,'values_sessions'),orderBy('lastUpdated','desc'));
+onSnapshot(q,snap=>{
+allSessions=[];
+snap.forEach(d=>allSessions.push({id:d.id,...d.data()}));
+updateUI();
+});
+
+function updateUI(){
+const total=allSessions.length;
+const completed=allSessions.filter(s=>s.isFinal).length;
+document.getElementById('totalSessions').textContent=total;
+document.getElementById('completedSessions').textContent=completed;
+document.getElementById('activeSessions').textContent=total-completed;
+if(total>0){
+const avgPhase=Math.round(allSessions.reduce((a,s)=>a+(s.currentPhase||1),0)/total*10)/10;
+document.getElementById('avgPhase').textContent=avgPhase.toFixed(1);
+}
+
+// Workshops filter
+const workshops=new Set(allSessions.map(s=>s.workshopId||'standalone'));
+const filter=document.getElementById('workshopFilter');
+const curVal=filter.value;
+filter.innerHTML='<option value="all">جميع الورش</option>';
+workshops.forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=w;filter.appendChild(o)});
+filter.value=curVal;
+
+renderSessions();
+}
+
+window.filterSessions=function(){renderSessions()};
+
+function renderSessions(){
+const grid=document.getElementById('sessionsGrid');
+const empty=document.getElementById('emptyState');
+const filterVal=document.getElementById('workshopFilter').value;
+
+let filtered=allSessions;
+if(filterVal!=='all')filtered=filtered.filter(s=>(s.workshopId||'standalone')===filterVal);
+
+if(filtered.length===0){grid.innerHTML='';empty.classList.remove('hidden');return}
+empty.classList.add('hidden');
+
+grid.innerHTML=filtered.map(s=>{
+const phase=s.currentPhase||1;
+const isDone=s.isFinal;
+const totalTags=s.tags?Object.values(s.tags).reduce((a,arr)=>a+arr.length,0):0;
+const coreGroups=(s.groups||[]).filter(g=>g.classification==='core');
+const finalCount=(s.selectedFinal||[]).length;
+
+return`
+<div class="session-card" onclick="toggleDetail('${s.id}')">
+<div class="session-header">
+<div class="session-info">
+<h4>👤 ${s.participant} <span class="badge ${isDone?'badge-done':'badge-phase'}">${isDone?'✅ مكتمل':`المرحلة ${phase}`}</span></h4>
+<div class="session-meta">🏢 ${s.organization||'-'} ${s.workshopId?`• 📋 ${s.workshopId}`:''}</div>
+</div>
+</div>
+<div class="phase-bar">
+${[1,2,3,4,5].map(p=>`<div class="phase-pip ${p<phase?'filled':''} ${p===phase&&!isDone?'current':''} ${isDone?'filled':''}"></div>`).join('')}
+</div>
+<div style="display:flex;gap:16px;font-size:12px;color:var(--text3);margin-top:8px">
+<span>📝 ${totalTags} قيمة مرشحة</span>
+<span>📁 ${coreGroups.length} مجموعة جوهرية</span>
+<span>🏆 ${finalCount} قيمة نهائية</span>
+</div>
+<div class="detail-section" id="detail-${s.id}">
+${buildDetail(s)}
+</div>
+</div>`;
+}).join('');
+}
+
+function buildDetail(s){
+let html='';
+
+// Phase 1 tags
+if(s.tags){
+const colorMap={p1_traits:'yellow',p2_traits:'yellow',p3_traits:'yellow',hard_principles:'green',regret_principles:'green',peak_values:'blue',violated_values:'blue',portable_values:'pink',retirement_values:'pink'};
+const sourceNames={p1_traits:'الناس ①',p2_traits:'الناس ②',p3_traits:'الناس ③',hard_principles:'قرارات صح',regret_principles:'قرارات ندم',peak_values:'أحسن لحظة',violated_values:'أسوأ لحظة',portable_values:'الهوية',retirement_values:'اختبار التقاعد'};
+html+='<h4 style="margin:12px 0 8px;font-size:15px">🌊 المرحلة 1 — القيم المرشحة:</h4>';
+Object.keys(s.tags).forEach(k=>{
+if(s.tags[k].length>0){
+html+=`<div style="margin-bottom:8px"><span style="font-size:12px;color:var(--text3)">${sourceNames[k]||k}:</span> <div class="values-list">${s.tags[k].map(t=>`<span class="tag ${colorMap[k]}">${t}</span>`).join('')}</div></div>`;
+}
+});
+}
+
+// Phase 2 groups
+if(s.groups&&s.groups.length>0){
+html+='<h4 style="margin:16px 0 8px;font-size:15px">🧹 المرحلة 2 — المجموعات:</h4>';
+s.groups.filter(g=>g.name).forEach(g=>{
+const classLabel={core:'✅ جوهرية',permission:'⚠️ حد أدنى',aspirational:'💫 طموحية',accidental:'🎲 عرضية'}[g.classification]||'—';
+html+=`<div style="padding:10px;background:var(--surface2);border-radius:8px;margin-bottom:8px">
+<strong>${g.name}</strong> <span style="font-size:12px;color:var(--text3)">${classLabel}</span>
+<div class="values-list">${(g.tags||[]).map(t=>`<span class="tag purple" style="font-size:11px">${t}</span>`).join('')}</div>
+</div>`;
+});
+}
+
+// Phase 3 test results
+if(s.testResults&&Object.keys(s.testResults).length>0){
+html+='<h4 style="margin:16px 0 8px;font-size:15px">🔥 المرحلة 3 — نتائج الاختبار:</h4>';
+html+='<table class="matrix-mini"><thead><tr><th>القيمة</th><th>🤝</th><th>⭐</th><th>🚫</th><th>💎</th><th>المجموع</th></tr></thead><tbody>';
+Object.keys(s.testResults).forEach(v=>{
+const r=s.testResults[v];
+const score=[r.partner,r.client,r.repulsion,r.differentiation].filter(x=>x===true).length;
+html+=`<tr><td>${v}</td>
+<td>${r.partner===true?'✅':r.partner===false?'❌':'—'}</td>
+<td>${r.client===true?'✅':r.client===false?'❌':'—'}</td>
+<td>${r.repulsion===true?'✅':r.repulsion===false?'❌':'—'}</td>
+<td>${r.differentiation===true?'✅':r.differentiation===false?'❌':'—'}</td>
+<td style="font-weight:900;color:${score>=4?'var(--accent2)':score>=3?'var(--blue)':'var(--accent3)'}">${score}/4</td></tr>`;
+});
+html+='</tbody></table>';
+}
+
+// Phase 5 final values
+if(s.selectedFinal&&s.selectedFinal.length>0&&s.articulation){
+html+='<h4 style="margin:16px 0 8px;font-size:15px">🏆 القيم الجوهرية النهائية:</h4>';
+s.selectedFinal.forEach(v=>{
+const a=s.articulation[v]||{};
+html+=`<div class="final-value-card">
+<div class="name">${a.displayName||v}</div>
+${a.description?`<div class="desc">${a.description}</div>`:''}
+<div class="behaviors">
+${a.behaviorYes?`<div class="behavior yes">✅ ${a.behaviorYes}</div>`:''}
+${a.behaviorNo?`<div class="behavior no">❌ ${a.behaviorNo}</div>`:''}
+</div>
+</div>`;
+});
+}
+
+// Comment box
+html+=`<div class="comment-box">
+<textarea id="comment-${s.id}" placeholder="اكتب تعليق للمشارك..." rows="2"></textarea>
+<button class="btn btn-primary" style="padding:8px 16px;font-size:13px;align-self:end" onclick="event.stopPropagation();addComment('${s.id}')">💬 إرسال</button>
+</div>`;
+
+return html;
+}
+
+window.toggleDetail=function(id){
+const el=document.getElementById('detail-'+id);
+el.classList.toggle('visible');
+};
+
+window.addComment=async function(id){
+const textarea=document.getElementById('comment-'+id);
+const text=textarea.value.trim();
+if(!text)return;
+try{
+const ref=window._doc(window._db,'values_sessions',id);
+await window._updateDoc(ref,{[`adminComments.${Date.now()}`]:{text,timestamp:new Date().toISOString(),author:'الميسّر'}});
+textarea.value='';
+showToast('✅ تم إرسال التعليق');
+}catch(e){console.error(e);showToast('❌ خطأ في الإرسال')}
+};
+
+window.generateLink=function(){
+const name=document.getElementById('linkName').value.trim();
+const org=document.getElementById('linkOrg').value.trim();
+const workshop=document.getElementById('linkWorkshop').value.trim();
+if(!name||!org){showToast('أدخل الاسم والمؤسسة');return}
+const base=location.origin+location.pathname.replace('values-admin.html','values-participant.html');
+let link=`${base}?name=${encodeURIComponent(name)}&org=${encodeURIComponent(org)}`;
+if(workshop)link+=`&workshop=${encodeURIComponent(workshop)}`;
+document.getElementById('generatedLink').textContent=link;
+document.getElementById('linkResult').classList.remove('hidden');
+};
+
+window.copyLink=function(){
+navigator.clipboard.writeText(document.getElementById('generatedLink').textContent);
+showToast('✅ تم نسخ الرابط');
+};
+
+window.exportAll=function(){
+const data=JSON.stringify(allSessions,null,2);
+const blob=new Blob([data],{type:'application/json'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');a.href=url;a.download=`values-sessions-${Date.now()}.json`;a.click();
+showToast('✅ تم التصدير');
+};
+
+function showToast(msg){
+const t=document.createElement('div');t.className='toast';t.textContent=msg;
+document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+</script>
+</body>
+</html>
