@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فانل القيم الجوهرية</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#0a0e1a;--surface:#111827;--surface2:#1e293b;--surface3:#334155;
+--primary:#6366f1;--primary-glow:rgba(99,102,241,.25);
+--accent:#f59e0b;--accent2:#10b981;--accent3:#ef4444;--accent4:#ec4899;
+--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+--radius:16px;--radius-sm:10px;
+--yellow:#fbbf24;--green:#34d399;--blue:#60a5fa;--pink:#f472b6;
+}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer}
+input,textarea{font-family:inherit}
+
+/* Phase Progress Bar */
+.phase-nav{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--surface3);padding:16px 24px}
+.phase-steps{display:flex;align-items:center;justify-content:center;gap:8px;max-width:800px;margin:0 auto}
+.phase-step{display:flex;align-items:center;gap:8px}
+.phase-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;border:2px solid var(--surface3);color:var(--text3);transition:all .4s}
+.phase-dot.active{border-color:var(--primary);color:#fff;background:var(--primary);box-shadow:0 0 20px var(--primary-glow)}
+.phase-dot.done{border-color:var(--accent2);color:var(--accent2);background:rgba(16,185,129,.15)}
+.phase-line{width:30px;height:2px;background:var(--surface3);transition:background .4s}
+.phase-line.done{background:var(--accent2)}
+.phase-label{display:none}
+@media(min-width:768px){.phase-label{display:block;font-size:11px;color:var(--text3);font-weight:700;margin-top:4px;text-align:center;white-space:nowrap}.phase-step{flex-direction:column}.phase-line{margin-top:-20px}}
+
+/* Main Container */
+.container{max-width:820px;margin:0 auto;padding:24px 16px 100px}
+
+/* Welcome Screen */
+.welcome{text-align:center;padding:60px 20px}
+.welcome-icon{font-size:80px;margin-bottom:24px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.welcome h1{font-size:36px;font-weight:900;margin-bottom:12px;background:linear-gradient(135deg,var(--primary),var(--accent4));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.welcome p{color:var(--text2);font-size:17px;max-width:500px;margin:0 auto 40px;line-height:1.8}
+.form-group{margin-bottom:20px;text-align:right;max-width:400px;margin-left:auto;margin-right:auto}
+.form-group label{display:block;margin-bottom:8px;font-weight:700;color:var(--text2);font-size:14px}
+.form-input{width:100%;padding:14px 18px;background:var(--surface);border:2px solid var(--surface3);border-radius:var(--radius-sm);color:var(--text);font-size:16px;transition:border-color .3s}
+.form-input:focus{outline:none;border-color:var(--primary)}
+
+/* Buttons */
+.btn{padding:14px 32px;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:700;transition:all .3s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#8b5cf6);color:#fff;box-shadow:0 4px 20px var(--primary-glow)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--primary-glow)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--surface3)}
+.btn-secondary:hover{background:var(--surface3)}
+.btn-accent{background:linear-gradient(135deg,var(--accent2),#059669);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+/* Phase Header */
+.phase-header{text-align:center;margin-bottom:40px;padding:30px 20px;background:linear-gradient(135deg,var(--surface),var(--surface2));border-radius:var(--radius);border:1px solid var(--surface3)}
+.phase-header .phase-icon{font-size:48px;margin-bottom:12px}
+.phase-header h2{font-size:28px;font-weight:900;margin-bottom:8px}
+.phase-header .subtitle{color:var(--accent);font-weight:700;font-size:15px;margin-bottom:8px}
+.phase-header p{color:var(--text2);font-size:15px;line-height:1.7}
+
+/* Source Tabs */
+.source-tabs{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px}
+.source-tab{padding:10px 18px;border-radius:var(--radius-sm);font-size:14px;font-weight:700;border:2px solid var(--surface3);background:var(--surface);color:var(--text3);white-space:nowrap;transition:all .3s;flex-shrink:0}
+.source-tab.active{border-color:var(--primary);color:var(--primary);background:rgba(99,102,241,.1)}
+.source-tab.done{border-color:var(--accent2);color:var(--accent2)}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:28px;margin-bottom:20px;transition:all .3s}
+.card:hover{border-color:rgba(99,102,241,.3)}
+.card h3{font-size:18px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.card .theory{color:var(--text3);font-size:13px;margin-bottom:16px;font-style:italic}
+.card .instructions{color:var(--text2);font-size:15px;line-height:1.8;margin-bottom:20px;padding:16px;background:var(--surface2);border-radius:var(--radius-sm);border-right:3px solid var(--primary)}
+
+/* Person/Decision Cards */
+.person-card{background:var(--surface2);border:1px solid var(--surface3);border-radius:var(--radius-sm);padding:20px;margin-bottom:16px}
+.person-card h4{font-size:16px;font-weight:700;margin-bottom:14px;color:var(--accent)}
+.person-card .field{margin-bottom:14px}
+.person-card .field label{display:block;font-size:13px;font-weight:700;color:var(--text2);margin-bottom:6px}
+.person-card textarea{width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--surface3);border-radius:8px;color:var(--text);font-size:14px;resize:vertical;min-height:60px}
+.person-card textarea:focus{outline:none;border-color:var(--primary)}
+.person-card input[type=text]{width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--surface3);border-radius:8px;color:var(--text);font-size:14px}
+.person-card input:focus{outline:none;border-color:var(--primary)}
+
+/* Tags System */
+.tags-input-container{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:var(--surface);border:1px solid var(--surface3);border-radius:8px;min-height:48px;align-items:center;cursor:text}
+.tags-input-container:focus-within{border-color:var(--primary)}
+.tags-input-container input{flex:1;min-width:120px;border:none;background:none;color:var(--text);font-size:14px;padding:4px;font-family:inherit}
+.tags-input-container input:focus{outline:none}
+.tags-input-container input::placeholder{color:var(--text3)}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700;animation:tagIn .3s ease}
+@keyframes tagIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.tag.yellow{background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.3)}
+.tag.green{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.tag.blue{background:rgba(96,165,250,.15);color:var(--blue);border:1px solid rgba(96,165,250,.3)}
+.tag.pink{background:rgba(244,114,182,.15);color:var(--pink);border:1px solid rgba(244,114,182,.3)}
+.tag.purple{background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3)}
+.tag .remove{cursor:pointer;font-size:16px;opacity:.6;transition:opacity .2s}
+.tag .remove:hover{opacity:1}
+
+/* Common Traits Section */
+.common-traits{background:var(--surface2);border:2px solid var(--accent);border-radius:var(--radius);padding:24px;margin-top:24px}
+.common-traits h4{color:var(--accent);font-size:16px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+/* Phase 2 - Clustering */
+.tag-cloud{display:flex;flex-wrap:wrap;gap:10px;padding:20px;background:var(--surface2);border-radius:var(--radius);margin-bottom:24px;min-height:100px}
+.tag-cloud .tag{cursor:pointer;transition:all .2s}
+.tag-cloud .tag:hover{transform:scale(1.1)}
+.tag-cloud .tag.selected{ring:2px solid #fff;box-shadow:0 0 12px rgba(255,255,255,.3)}
+
+.group-container{margin-bottom:20px}
+.group-box{background:var(--surface2);border:2px dashed var(--surface3);border-radius:var(--radius);padding:16px;margin-bottom:12px;transition:border-color .3s}
+.group-box.active{border-color:var(--primary);border-style:solid}
+.group-box .group-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.group-box .group-name-input{flex:1;padding:8px 12px;background:var(--surface);border:1px solid var(--surface3);border-radius:8px;color:var(--text);font-size:15px;font-weight:700}
+.group-box .group-name-input:focus{outline:none;border-color:var(--primary)}
+.group-box .group-tags{display:flex;flex-wrap:wrap;gap:6px;min-height:36px}
+.group-box .source-count{font-size:12px;color:var(--text3);margin-top:8px}
+
+/* Lencioni Classification */
+.classify-btn{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;border:2px solid;cursor:pointer;transition:all .2s;background:transparent}
+.classify-btn:hover{transform:scale(1.05)}
+.classify-btn.core{border-color:var(--accent2);color:var(--accent2)}
+.classify-btn.core.selected{background:var(--accent2);color:#fff}
+.classify-btn.permission{border-color:var(--accent);color:var(--accent)}
+.classify-btn.permission.selected{background:var(--accent);color:#000}
+.classify-btn.aspirational{border-color:var(--blue);color:var(--blue)}
+.classify-btn.aspirational.selected{background:var(--blue);color:#fff}
+.classify-btn.accidental{border-color:var(--accent3);color:var(--accent3)}
+.classify-btn.accidental.selected{background:var(--accent3);color:#fff}
+
+/* Phase 3 - Testing */
+.test-card{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.test-card h4{font-size:17px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.test-card .prompt{color:var(--text2);font-size:15px;line-height:1.7;margin-bottom:16px}
+.value-test-row{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:8px;margin-bottom:8px}
+.value-test-row .value-name{flex:1;font-weight:700;font-size:14px}
+.test-btn{padding:6px 14px;border-radius:6px;font-size:20px;border:1px solid var(--surface3);background:var(--surface);cursor:pointer;transition:all .2s}
+.test-btn:hover{background:var(--surface3)}
+.test-btn.pass{background:rgba(16,185,129,.2);border-color:var(--accent2);color:var(--accent2)}
+.test-btn.fail{background:rgba(239,68,68,.2);border-color:var(--accent3);color:var(--accent3)}
+
+/* Phase 4 - Matrix */
+.matrix-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--surface);border-radius:var(--radius);overflow:hidden;border:1px solid var(--surface3)}
+.matrix-table th{padding:14px 12px;background:var(--surface2);font-size:13px;font-weight:700;color:var(--text2);text-align:center;border-bottom:1px solid var(--surface3)}
+.matrix-table td{padding:12px;text-align:center;border-bottom:1px solid rgba(51,65,85,.5);font-size:14px}
+.matrix-table td:first-child{text-align:right;font-weight:700}
+.matrix-table .score{font-size:18px;font-weight:900}
+.score-4{color:var(--accent2)}
+.score-3{color:var(--blue)}
+.score-2,.score-1,.score-0{color:var(--accent3)}
+.matrix-select{padding:8px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid var(--surface3);background:var(--surface);color:var(--text)}
+
+/* Phase 5 - Value Cards */
+.value-card-final{background:linear-gradient(135deg,var(--surface),var(--surface2));border:2px solid var(--primary);border-radius:var(--radius);padding:28px;margin-bottom:20px;position:relative;overflow:hidden}
+.value-card-final::before{content:'';position:absolute;top:0;right:0;width:100px;height:100px;background:var(--primary-glow);border-radius:50%;filter:blur(40px)}
+.value-card-final h4{font-size:20px;font-weight:900;color:var(--primary);margin-bottom:16px}
+.value-card-final .field{margin-bottom:14px}
+.value-card-final .field label{display:block;font-size:13px;font-weight:700;color:var(--text2);margin-bottom:6px}
+
+/* Navigation Footer */
+.nav-footer{position:fixed;bottom:0;left:0;right:0;background:rgba(10,14,26,.95);backdrop-filter:blur(20px);border-top:1px solid var(--surface3);padding:12px 24px;display:flex;justify-content:space-between;align-items:center;z-index:100}
+.nav-footer .progress-info{font-size:13px;color:var(--text3);font-weight:600}
+
+/* Completion */
+.completion{text-align:center;padding:60px 20px}
+.completion-icon{font-size:80px;animation:float 3s ease-in-out infinite}
+.completion h2{font-size:32px;font-weight:900;margin:20px 0 12px}
+.completion p{color:var(--text2);font-size:16px;line-height:1.8;max-width:500px;margin:0 auto}
+.final-values-display{display:grid;gap:16px;margin-top:30px}
+.final-value-badge{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--primary);border-radius:var(--radius);padding:20px;text-align:right}
+.final-value-badge .name{font-size:20px;font-weight:900;color:var(--primary);margin-bottom:4px}
+.final-value-badge .desc{color:var(--text2);font-size:14px}
+
+/* Utility */
+.hidden{display:none!important}
+.mt-2{margin-top:16px}
+.mt-3{margin-top:24px}
+.text-center{text-align:center}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--accent2);color:#fff;padding:12px 24px;border-radius:var(--radius-sm);font-weight:700;z-index:9999;animation:toastIn .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
+</style>
+</head>
+<body>
+
+<!-- Phase Navigation -->
+<div class="phase-nav hidden" id="phaseNav">
+<div class="phase-steps">
+<div class="phase-step"><div class="phase-dot" data-phase="1">1</div><div class="phase-label">التوليد</div></div>
+<div class="phase-line" data-line="1"></div>
+<div class="phase-step"><div class="phase-dot" data-phase="2">2</div><div class="phase-label">التجميع</div></div>
+<div class="phase-line" data-line="2"></div>
+<div class="phase-step"><div class="phase-dot" data-phase="3">3</div><div class="phase-label">الاختبار</div></div>
+<div class="phase-line" data-line="3"></div>
+<div class="phase-step"><div class="phase-dot" data-phase="4">4</div><div class="phase-label">التصفية</div></div>
+<div class="phase-line" data-line="4"></div>
+<div class="phase-step"><div class="phase-dot" data-phase="5">5</div><div class="phase-label">الصياغة</div></div>
+</div>
+</div>
+
+<div class="container">
+<!-- Welcome Screen -->
+<div id="welcomeScreen" class="welcome">
+<div class="welcome-icon">🔥</div>
+<h1>فانل القيم الجوهرية</h1>
+<p>منهجية عملية مبتكرة لاكتشاف القيم الجوهرية الحقيقية<br>مستوحاة من أعمال Collins • Lencioni • EOS</p>
+<div class="form-group">
+<label>اسم المشارك</label>
+<input type="text" class="form-input" id="nameInput" placeholder="اكتب اسمك هنا">
+</div>
+<div class="form-group">
+<label>اسم الشركة / المؤسسة</label>
+<input type="text" class="form-input" id="orgInput" placeholder="اكتب اسم مؤسستك">
+</div>
+<button class="btn btn-primary" onclick="startFunnel()" style="margin-top:16px">ابدأ الرحلة 🚀</button>
+</div>
+
+<!-- Phase 1: Generation -->
+<div id="phase1" class="hidden">
+<div class="phase-header">
+<div class="phase-icon">🌊</div>
+<h2>المرحلة الأولى: التوليد</h2>
+<div class="subtitle">افتح الباب واسع</div>
+<p>هنجمع أكبر عدد من القيم المرشحة من 4 مصادر مختلفة. مش بنصفّي هنا — بنجمّع.</p>
+</div>
+
+<div class="source-tabs" id="sourceTabs">
+<button class="source-tab active" onclick="showSource(0)">👥 عدسة الناس</button>
+<button class="source-tab" onclick="showSource(1)">⚖️ عدسة القرارات</button>
+<button class="source-tab" onclick="showSource(2)">💫 عدسة التجارب</button>
+<button class="source-tab" onclick="showSource(3)">🧬 عدسة الهوية</button>
+</div>
+
+<!-- Source 1: People -->
+<div class="source-content" id="source0">
+<div class="card">
+<h3>👥 عدسة الناس</h3>
+<div class="theory">مستوحاة من Jim Collins و EOS</div>
+<div class="instructions">فكر في أحسن 3 أشخاص اشتغلوا معاك أو لسه بيشتغلوا — اللي لو تقدر تستنسخهم كنت عملت. مش بالضرورة أكفأهم تقنياً. اكتب الصفات السلوكية والإنسانية لكل واحد.</div>
+
+<div class="person-card" id="person1">
+<h4>الشخص الأول</h4>
+<div class="field"><label>الاسم أو اللقب</label><input type="text" data-field="p1_name" placeholder="اختياري"></div>
+<div class="field"><label>الصفات السلوكية والإنسانية</label>
+<div class="tags-input-container" data-tags="p1_traits" data-color="yellow"><input type="text" placeholder="اكتب صفة واضغط Enter"></div>
+</div>
+</div>
+<div class="person-card" id="person2">
+<h4>الشخص الثاني</h4>
+<div class="field"><label>الاسم أو اللقب</label><input type="text" data-field="p2_name" placeholder="اختياري"></div>
+<div class="field"><label>الصفات السلوكية والإنسانية</label>
+<div class="tags-input-container" data-tags="p2_traits" data-color="yellow"><input type="text" placeholder="اكتب صفة واضغط Enter"></div>
+</div>
+</div>
+<div class="person-card" id="person3">
+<h4>الشخص الثالث</h4>
+<div class="field"><label>الاسم أو اللقب</label><input type="text" data-field="p3_name" placeholder="اختياري"></div>
+<div class="field"><label>الصفات السلوكية والإنسانية</label>
+<div class="tags-input-container" data-tags="p3_traits" data-color="yellow"><input type="text" placeholder="اكتب صفة واضغط Enter"></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Source 2: Decisions -->
+<div class="source-content hidden" id="source1">
+<div class="card">
+<h3>⚖️ عدسة القرارات الصعبة</h3>
+<div class="theory">مستوحاة من Patrick Lencioni</div>
+<div class="instructions">القيم اللي بتطلع من الألم أعمق بكتير من اللي بتطلع من التأمل.</div>
+
+<div class="person-card">
+<h4>🟢 قرارات صعبة لكنها كانت صح</h4>
+<div class="field"><label>وصف القرارات والمبادئ اللي دفعتك</label><textarea data-field="hard_decisions" rows="4" placeholder="اكتب أصعب قرار أخذته وكان صح — وإيه المبدأ اللي خلاك تاخده"></textarea></div>
+<div class="field"><label>المبادئ المستخلصة</label>
+<div class="tags-input-container" data-tags="hard_principles" data-color="green"><input type="text" placeholder="اكتب المبدأ واضغط Enter"></div>
+</div>
+</div>
+<div class="person-card">
+<h4>🔴 قرارات ندمت عليها</h4>
+<div class="field"><label>وصف القرارات والمبادئ اللي اتنازلت عنها</label><textarea data-field="regret_decisions" rows="4" placeholder="اكتب قرار ندمت عليه — وإيه المبدأ اللي كنت خايف عليه بس اتنازلت عنه"></textarea></div>
+<div class="field"><label>المبادئ اللي اتنازلت عنها</label>
+<div class="tags-input-container" data-tags="regret_principles" data-color="green"><input type="text" placeholder="اكتب المبدأ واضغط Enter"></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Source 3: Experiences -->
+<div class="source-content hidden" id="source2">
+<div class="card">
+<h3>💫 عدسة التجارب الحية</h3>
+<div class="theory">الإضافة المبتكرة في الفانل</div>
+
+<div class="person-card">
+<h4>✨ أحسن لحظة في تاريخ شغلك</h4>
+<div class="instructions" style="border-right-color:var(--accent2)">لحظة حسيت فيها: "ده هو الشغل اللي أنا عايز أعمله طول عمري"</div>
+<div class="field"><label>إيه اللي كان بيحصل؟</label><textarea data-field="peak_what" rows="3" placeholder="وصف اللحظة..."></textarea></div>
+<div class="field"><label>القيم اللي كانت حاضرة</label>
+<div class="tags-input-container" data-tags="peak_values" data-color="blue"><input type="text" placeholder="اكتب القيمة واضغط Enter"></div>
+</div>
+</div>
+<div class="person-card">
+<h4>💔 أسوأ لحظة — لحظة انتهاك المبادئ</h4>
+<div class="instructions" style="border-right-color:var(--accent3)">لحظة حسيت فيها بخيانة أو غضب عميق — المبادئ اتكسرت</div>
+<div class="field"><label>إيه اللي كان بيحصل؟</label><textarea data-field="worst_what" rows="3" placeholder="وصف اللحظة..."></textarea></div>
+<div class="field"><label>القيمة اللي اتنتهكت</label>
+<div class="tags-input-container" data-tags="violated_values" data-color="blue"><input type="text" placeholder="اكتب القيمة واضغط Enter"></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Source 4: Identity -->
+<div class="source-content hidden" id="source3">
+<div class="card">
+<h3>🧬 عدسة الهوية المهنية</h3>
+<div class="theory">سؤال Jim Collins الكلاسيكي</div>
+<div class="instructions">لو بكره سبت الشغل ده وبدأت شغل في مجال مختلف تماماً — مطعم، مدرسة، شركة تكنولوجيا — إيه القيم اللي هتبنيها في الشغل الجديد بغض النظر عن المجال؟</div>
+
+<div class="person-card">
+<h4>القيم اللي هتاخدها معاك لأي مكان</h4>
+<div class="field">
+<div class="tags-input-container" data-tags="portable_values" data-color="pink"><input type="text" placeholder="اكتب القيمة واضغط Enter"></div>
+</div>
+</div>
+<div class="person-card" style="border:2px solid var(--accent);background:rgba(245,158,11,.05)">
+<h4 style="color:var(--accent)">🧪 اختبار التأكيد</h4>
+<p style="color:var(--text2);margin-bottom:12px;font-size:14px">لو صحيت بكره ومعاك فلوس كفاية تتقاعد — هل هتفضل ملتزم بالقيم دي؟ اللي الإجابة "لأ" — اشطبها من فوق واكتب هنا اللي فعلاً هيفضلوا:</p>
+<div class="field"><label>القيم اللي هتفضل حتى لو اتقاعدت</label>
+<div class="tags-input-container" data-tags="retirement_values" data-color="pink"><input type="text" placeholder="اكتب القيمة واضغط Enter"></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="text-center mt-3">
+<button class="btn btn-primary" onclick="goToPhase(2)">انتقل للمرحلة الثانية: التجميع ➡️</button>
+</div>
+</div>
+
+<!-- Phase 2: Clustering -->
+<div id="phase2" class="hidden">
+<div class="phase-header">
+<div class="phase-icon">🧹</div>
+<h2>المرحلة الثانية: التجميع والتنظيف</h2>
+<div class="subtitle">نظّم ونضّف</div>
+<p>كل الصفات والقيم اللي طلعت من المرحلة الأولى. جمّع المتشابه مع بعضه وصنّف كل مجموعة.</p>
+</div>
+
+<h3 style="margin-bottom:16px;font-size:18px">كل القيم المرشحة من المصادر الأربعة:</h3>
+<div class="tag-cloud" id="allTagsCloud"></div>
+
+<h3 style="margin:24px 0 12px;font-size:18px">المجموعات:</h3>
+<p style="color:var(--text2);font-size:14px;margin-bottom:16px">اضغط على القيم من فوق ثم اضغط "أضف للمجموعة" لتجميع المتشابه. لاحظ الألوان — كل لون = مصدر مختلف.</p>
+<div id="groupsContainer"></div>
+<button class="btn btn-secondary" onclick="addGroup()" style="margin-bottom:24px">+ مجموعة جديدة</button>
+
+<h3 style="margin:24px 0 12px;font-size:18px">تصنيف Lencioni:</h3>
+<p style="color:var(--text2);font-size:14px;margin-bottom:16px">لكل مجموعة، حدد تصنيفها. فقط "الجوهرية" هتعدّي للمرحلة الجاية.</p>
+<div id="lencioniClassify"></div>
+
+<div class="text-center mt-3">
+<button class="btn btn-primary" onclick="goToPhase(3)">انتقل للمرحلة الثالثة: الاختبار 🔥</button>
+</div>
+</div>
+
+<!-- Phase 3: Reality Testing -->
+<div id="phase3" class="hidden">
+<div class="phase-header">
+<div class="phase-icon">🔥</div>
+<h2>المرحلة الثالثة: الاختبار بالواقع</h2>
+<div class="subtitle">قلب الفانل</div>
+<p>كل قيمة جوهرية مرشحة هتتعرض على 4 اختبارات واقعية. القيمة اللي تعدّي الأربعة = Core مؤكدة.</p>
+</div>
+<div id="realityTests"></div>
+<div class="text-center mt-3">
+<button class="btn btn-primary" onclick="goToPhase(4)">انتقل للمرحلة الرابعة: التصفية 🏆</button>
+</div>
+</div>
+
+<!-- Phase 4: Final Selection -->
+<div id="phase4" class="hidden">
+<div class="phase-header">
+<div class="phase-icon">🏆</div>
+<h2>المرحلة الرابعة: التصفية النهائية</h2>
+<div class="subtitle">اختار الأقوى</div>
+<p>المصفوفة النهائية — كل قيمة × كل اختبار. اختار 3 إلى 5 قيم.</p>
+</div>
+<div style="overflow-x:auto" id="matrixContainer"></div>
+<h3 style="margin:24px 0 12px">القيم المختارة للصياغة النهائية:</h3>
+<div id="selectedValuesP4"></div>
+<div class="text-center mt-3">
+<button class="btn btn-primary" onclick="goToPhase(5)">انتقل للمرحلة الأخيرة: الصياغة ✍️</button>
+</div>
+</div>
+
+<!-- Phase 5: Articulation -->
+<div id="phase5" class="hidden">
+<div class="phase-header">
+<div class="phase-icon">✍️</div>
+<h2>المرحلة الخامسة: الصياغة والتفعيل</h2>
+<div class="subtitle">خلّيها تعيش</div>
+<p>لكل قيمة مختارة — صياغة مميزة + سلوكيات + خطة تفعيل.</p>
+</div>
+<div id="articulationCards"></div>
+
+<div class="card mt-3">
+<h3>📅 خطة الـ 90 يوم</h3>
+<div class="person-card"><h4>الأسبوع الأول</h4><div class="field"><label>كيف ستشارك القيم مع فريقك وجهاً لوجه؟</label><textarea data-field="plan_week1" rows="2" placeholder="خطتك..."></textarea></div></div>
+<div class="person-card"><h4>الشهر الأول</h4><div class="field"><label>أول قرار أو عملية توظيف ستستخدم القيم فيها</label><textarea data-field="plan_month1" rows="2" placeholder="خطتك..."></textarea></div></div>
+<div class="person-card"><h4>الشهر الثالث</h4><div class="field"><label>مراجعة شاملة — هل استخدمت كل القيم؟ هل فيه قيمة ناقصة؟</label><textarea data-field="plan_month3" rows="2" placeholder="خطتك..."></textarea></div></div>
+</div>
+
+<div class="text-center mt-3">
+<button class="btn btn-accent" onclick="finishFunnel()" style="font-size:18px;padding:16px 40px">إنهاء وحفظ القيم الجوهرية 🎉</button>
+</div>
+</div>
+
+<!-- Completion -->
+<div id="completionScreen" class="hidden">
+<div class="completion">
+<div class="completion-icon">🎉</div>
+<h2>تم اكتشاف قيمك الجوهرية!</h2>
+<p>القيم دي مش كلام على الحيطة. دي البوصلة اللي هتحكم كل قرار — من التوظيف للفصل، من قبول العميل لرفضه.</p>
+<div class="final-values-display" id="finalDisplay"></div>
+</div>
+</div>
+</div>
+
+<!-- Nav Footer -->
+<div class="nav-footer hidden" id="navFooter">
+<button class="btn btn-secondary" id="prevPhaseBtn" onclick="prevPhase()">⬅️ السابق</button>
+<div class="progress-info" id="progressInfo"></div>
+<button class="btn btn-primary" id="saveBtn" onclick="saveProgress()">💾 حفظ</button>
+</div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import{getFirestore,doc,setDoc,getDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+const firebaseConfig={
+apiKey:"AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+authDomain:"life-makers-diagnostic.firebaseapp.com",
+projectId:"life-makers-diagnostic",
+storageBucket:"life-makers-diagnostic.firebasestorage.app",
+messagingSenderId:"819336926740",
+appId:"1:819336926740:web:d338b3299e6d18e3b67901"
+};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+window._db=db;window._doc=doc;window._setDoc=setDoc;window._getDoc=getDoc;window._serverTimestamp=serverTimestamp;
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+const STATE={
+participant:'',org:'',currentPhase:0,
+tags:{p1_traits:[],p2_traits:[],p3_traits:[],hard_principles:[],regret_principles:[],peak_values:[],violated_values:[],portable_values:[],retirement_values:[]},
+fields:{},
+groups:[],
+classifications:{},
+testResults:{},
+selectedFinal:[],
+articulation:{},
+plan:{}
+};
+
+let selectedCloudTags=new Set();
+
+// ═══════════════════════════════════════════════════
+// TAGS SYSTEM
+// ═══════════════════════════════════════════════════
+document.querySelectorAll('.tags-input-container').forEach(container=>{
+const input=container.querySelector('input');
+const key=container.dataset.tags;
+const color=container.dataset.color;
+container.addEventListener('click',()=>input.focus());
+input.addEventListener('keydown',e=>{
+if(e.key==='Enter'&&input.value.trim()){
+e.preventDefault();
+addTag(key,input.value.trim(),color,container);
+input.value='';
+}
+});
+});
+
+function addTag(key,text,color,container){
+if(STATE.tags[key].includes(text))return;
+STATE.tags[key].push(text);
+renderTags(key,color,container);
+}
+
+function removeTag(key,text,color,container){
+STATE.tags[key]=STATE.tags[key].filter(t=>t!==text);
+renderTags(key,color,container);
+}
+
+function renderTags(key,color,container){
+container.querySelectorAll('.tag').forEach(t=>t.remove());
+const input=container.querySelector('input');
+STATE.tags[key].forEach(t=>{
+const tag=document.createElement('span');
+tag.className=`tag ${color}`;
+tag.innerHTML=`${t}<span class="remove" onclick="event.stopPropagation()">×</span>`;
+tag.querySelector('.remove').addEventListener('click',()=>removeTag(key,t,color,container));
+container.insertBefore(tag,input);
+});
+}
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+window.startFunnel=function(){
+const name=document.getElementById('nameInput').value.trim();
+const org=document.getElementById('orgInput').value.trim();
+if(!name||!org){showToast('من فضلك اكتب اسمك واسم المؤسسة');return}
+STATE.participant=name;STATE.org=org;
+// Check URL for workshop param
+const params=new URLSearchParams(location.search);
+if(params.get('workshop'))STATE.workshopId=params.get('workshop');
+document.getElementById('welcomeScreen').classList.add('hidden');
+document.getElementById('phaseNav').classList.remove('hidden');
+document.getElementById('navFooter').classList.remove('hidden');
+goToPhase(1);
+loadFromFirebase();
+};
+
+window.goToPhase=function(n){
+// Validate before advancing
+if(n>STATE.currentPhase+1&&STATE.currentPhase>0){
+showToast('أكمل المرحلة الحالية الأول');return;
+}
+STATE.currentPhase=n;
+for(let i=1;i<=5;i++)document.getElementById('phase'+i).classList.add('hidden');
+document.getElementById('phase'+n).classList.remove('hidden');
+// Update nav dots
+document.querySelectorAll('.phase-dot').forEach(d=>{
+const p=+d.dataset.phase;
+d.classList.remove('active','done');
+if(p===n)d.classList.add('active');
+else if(p<n)d.classList.add('done');
+});
+document.querySelectorAll('.phase-line').forEach(l=>{
+const p=+l.dataset.line;
+l.classList.toggle('done',p<n);
+});
+document.getElementById('progressInfo').textContent=`المرحلة ${n} من 5`;
+document.getElementById('prevPhaseBtn').disabled=n<=1;
+
+if(n===2)buildPhase2();
+if(n===3)buildPhase3();
+if(n===4)buildPhase4();
+if(n===5)buildPhase5();
+window.scrollTo({top:0,behavior:'smooth'});
+};
+
+window.prevPhase=function(){
+if(STATE.currentPhase>1)goToPhase(STATE.currentPhase-1);
+};
+
+window.showSource=function(idx){
+document.querySelectorAll('.source-content').forEach((s,i)=>{
+s.classList.toggle('hidden',i!==idx);
+});
+document.querySelectorAll('.source-tab').forEach((t,i)=>{
+t.classList.toggle('active',i===idx);
+});
+};
+
+// ═══════════════════════════════════════════════════
+// PHASE 2: CLUSTERING
+// ═══════════════════════════════════════════════════
+function getAllCandidateTags(){
+const all=[];
+const colorMap={p1_traits:'yellow',p2_traits:'yellow',p3_traits:'yellow',hard_principles:'green',regret_principles:'green',peak_values:'blue',violated_values:'blue',portable_values:'pink',retirement_values:'pink'};
+const sourceMap={p1_traits:'الناس',p2_traits:'الناس',p3_traits:'الناس',hard_principles:'القرارات',regret_principles:'القرارات',peak_values:'التجارب',violated_values:'التجارب',portable_values:'الهوية',retirement_values:'الهوية'};
+Object.keys(STATE.tags).forEach(key=>{
+STATE.tags[key].forEach(text=>{
+if(!all.find(a=>a.text===text)){
+all.push({text,color:colorMap[key],source:sourceMap[key]});
+}else{
+const existing=all.find(a=>a.text===text);
+if(!existing.sources)existing.sources=[existing.source];
+if(!existing.sources.includes(sourceMap[key]))existing.sources.push(sourceMap[key]);
+}
+});
+});
+return all;
+}
+
+function buildPhase2(){
+const cloud=document.getElementById('allTagsCloud');
+const allTags=getAllCandidateTags();
+cloud.innerHTML='';
+if(allTags.length===0){
+cloud.innerHTML='<p style="color:var(--text3);text-align:center;width:100%">لا توجد قيم مرشحة بعد. ارجع للمرحلة الأولى واكتب صفات وقيم.</p>';
+return;
+}
+allTags.forEach(t=>{
+const el=document.createElement('span');
+el.className=`tag ${t.color}`;
+el.textContent=t.text;
+el.dataset.text=t.text;
+el.addEventListener('click',()=>{
+if(selectedCloudTags.has(t.text)){selectedCloudTags.delete(t.text);el.style.outline='none';el.style.boxShadow='none';}
+else{selectedCloudTags.add(t.text);el.style.outline='2px solid #fff';el.style.boxShadow='0 0 12px rgba(255,255,255,.3)';}
+});
+cloud.appendChild(el);
+});
+// Init groups if empty
+if(STATE.groups.length===0){addGroup();addGroup();addGroup();}
+else renderGroups();
+}
+
+window.addGroup=function(){
+STATE.groups.push({name:'',tags:[],classification:''});
+renderGroups();
+};
+
+function renderGroups(){
+const container=document.getElementById('groupsContainer');
+container.innerHTML='';
+STATE.groups.forEach((g,i)=>{
+const div=document.createElement('div');
+div.className='group-box';
+div.innerHTML=`
+<div class="group-header">
+<span style="font-size:20px">📁</span>
+<input class="group-name-input" placeholder="اسم المجموعة ${i+1}" value="${g.name}" onchange="STATE.groups[${i}].name=this.value">
+<button class="btn btn-secondary" style="padding:6px 12px;font-size:13px" onclick="addSelectedToGroup(${i})">+ أضف المحدد</button>
+<button style="background:none;border:none;color:var(--accent3);font-size:18px;cursor:pointer" onclick="removeGroup(${i})">🗑️</button>
+</div>
+<div class="group-tags" id="groupTags${i}">${g.tags.map(t=>`<span class="tag purple">${t} <span class="remove" onclick="removeFromGroup(${i},'${t}')">×</span></span>`).join('')}</div>
+<div class="source-count">${getSourceCount(g.tags)} مصدر/مصادر</div>
+`;
+container.appendChild(div);
+});
+renderLencioniClassify();
+}
+
+window.addSelectedToGroup=function(groupIdx){
+if(selectedCloudTags.size===0){showToast('اختار قيم من السحابة أولاً');return}
+selectedCloudTags.forEach(t=>{
+if(!STATE.groups[groupIdx].tags.includes(t))STATE.groups[groupIdx].tags.push(t);
+// Remove from other groups
+STATE.groups.forEach((g,i)=>{if(i!==groupIdx)g.tags=g.tags.filter(x=>x!==t)});
+});
+selectedCloudTags.clear();
+document.querySelectorAll('.tag-cloud .tag').forEach(el=>{el.style.outline='none';el.style.boxShadow='none'});
+renderGroups();
+};
+
+window.removeFromGroup=function(gi,text){
+STATE.groups[gi].tags=STATE.groups[gi].tags.filter(t=>t!==text);
+renderGroups();
+};
+
+window.removeGroup=function(i){
+STATE.groups.splice(i,1);
+renderGroups();
+};
+
+function getSourceCount(tags){
+const allTags=getAllCandidateTags();
+const sources=new Set();
+tags.forEach(t=>{
+const found=allTags.find(a=>a.text===t);
+if(found){sources.add(found.source);if(found.sources)found.sources.forEach(s=>sources.add(s));}
+});
+return sources.size;
+}
+
+function renderLencioniClassify(){
+const container=document.getElementById('lencioniClassify');
+container.innerHTML='';
+const namedGroups=STATE.groups.filter(g=>g.name&&g.tags.length>0);
+if(namedGroups.length===0){container.innerHTML='<p style="color:var(--text3)">أضف مجموعات وسمّيها أولاً</p>';return}
+namedGroups.forEach((g,i)=>{
+const realIdx=STATE.groups.indexOf(g);
+const div=document.createElement('div');
+div.className='card';
+div.innerHTML=`
+<h3>${g.name} <span style="font-size:13px;color:var(--text3)">(${g.tags.length} قيمة، ${getSourceCount(g.tags)} مصدر)</span></h3>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">${g.tags.map(t=>`<span class="tag purple" style="font-size:12px">${t}</span>`).join('')}</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+<button class="classify-btn core ${g.classification==='core'?'selected':''}" onclick="classify(${realIdx},'core')">✅ جوهرية</button>
+<button class="classify-btn permission ${g.classification==='permission'?'selected':''}" onclick="classify(${realIdx},'permission')">⚠️ حد أدنى</button>
+<button class="classify-btn aspirational ${g.classification==='aspirational'?'selected':''}" onclick="classify(${realIdx},'aspirational')">💫 طموحية</button>
+<button class="classify-btn accidental ${g.classification==='accidental'?'selected':''}" onclick="classify(${realIdx},'accidental')">🎲 عرضية</button>
+</div>
+`;
+container.appendChild(div);
+});
+}
+
+window.classify=function(groupIdx,type){
+STATE.groups[groupIdx].classification=type;
+renderLencioniClassify();
+};
+
+// ═══════════════════════════════════════════════════
+// PHASE 3: REALITY TESTING
+// ═══════════════════════════════════════════════════
+function getCoreValues(){
+return STATE.groups.filter(g=>g.classification==='core'&&g.name).map(g=>g.name);
+}
+
+function buildPhase3(){
+const coreValues=getCoreValues();
+const container=document.getElementById('realityTests');
+if(coreValues.length===0){
+container.innerHTML='<div class="card"><p style="color:var(--accent3)">لا توجد قيم مصنفة "جوهرية" بعد. ارجع للمرحلة الثانية وصنّف على الأقل قيمة واحدة كجوهرية.</p></div>';
+return;
+}
+// Init test results
+coreValues.forEach(v=>{if(!STATE.testResults[v])STATE.testResults[v]={partner:null,client:null,repulsion:null,differentiation:null}});
+
+const tests=[
+{id:'partner',icon:'🤝',name:'اختبار الشريك المثالي',prompt:'تخيل أحسن 3 أشخاص تتمنى يشتغلوا معاك. هل القيمة دي ظاهرة في وصف الشريك المثالي؟'},
+{id:'client',icon:'⭐',name:'اختبار العميل المثالي',prompt:'فكر في أحسن 3 عملاء عندك. هل القيمة دي بتجذب النوع ده من العملاء؟'},
+{id:'repulsion',icon:'🚫',name:'اختبار الطرد (الأقوى)',prompt:'لو قدامك مرشح ممتاز في كل حاجة بس بيخالف القيمة دي — هتقبله؟\n"لأ مستحيل" = ✅ | "ممكن أتجاوز" = ❌'},
+{id:'differentiation',icon:'💎',name:'اختبار التمايز',prompt:'هل فيه ناس في السوق هتختلف مع القيمة دي؟ هل بتفرقك فعلاً عن المنافسين؟'}
+];
+
+container.innerHTML=tests.map(test=>`
+<div class="test-card">
+<h4>${test.icon} ${test.name}</h4>
+<div class="prompt">${test.prompt.replace(/\n/g,'<br>')}</div>
+${coreValues.map(v=>`
+<div class="value-test-row">
+<div class="value-name">${v}</div>
+<button class="test-btn ${STATE.testResults[v][test.id]===true?'pass':''}" onclick="setTestResult('${v}','${test.id}',true,this)">✅</button>
+<button class="test-btn ${STATE.testResults[v][test.id]===false?'fail':''}" onclick="setTestResult('${v}','${test.id}',false,this)">❌</button>
+</div>
+`).join('')}
+</div>
+`).join('');
+}
+
+window.setTestResult=function(value,test,result,btn){
+STATE.testResults[value][test]=result;
+// Update UI
+const row=btn.parentElement;
+row.querySelectorAll('.test-btn').forEach(b=>{b.classList.remove('pass','fail')});
+btn.classList.add(result?'pass':'fail');
+};
+
+// ═══════════════════════════════════════════════════
+// PHASE 4: FINAL SELECTION
+// ═══════════════════════════════════════════════════
+function buildPhase4(){
+const coreValues=getCoreValues();
+const container=document.getElementById('matrixContainer');
+const selContainer=document.getElementById('selectedValuesP4');
+
+if(coreValues.length===0){
+container.innerHTML='<p style="color:var(--accent3)">لا توجد قيم للتصفية</p>';return;
+}
+
+let html=`<table class="matrix-table"><thead><tr>
+<th>القيمة المرشحة</th><th>🤝 الشريك</th><th>⭐ العميل</th><th>🚫 الطرد</th><th>💎 التمايز</th><th>المجموع</th><th>اختيار</th>
+</tr></thead><tbody>`;
+
+coreValues.forEach(v=>{
+const r=STATE.testResults[v]||{};
+const score=[r.partner,r.client,r.repulsion,r.differentiation].filter(x=>x===true).length;
+const scoreClass=score>=4?'score-4':score>=3?'score-3':'score-2';
+const isSelected=STATE.selectedFinal.includes(v);
+html+=`<tr>
+<td>${v}</td>
+<td>${r.partner===true?'✅':r.partner===false?'❌':'—'}</td>
+<td>${r.client===true?'✅':r.client===false?'❌':'—'}</td>
+<td>${r.repulsion===true?'✅':r.repulsion===false?'❌':'—'}</td>
+<td>${r.differentiation===true?'✅':r.differentiation===false?'❌':'—'}</td>
+<td class="score ${scoreClass}">${score}/4</td>
+<td><input type="checkbox" ${isSelected?'checked':''} onchange="toggleFinalValue('${v}',this.checked)" style="width:20px;height:20px;cursor:pointer"></td>
+</tr>`;
+});
+html+='</tbody></table>';
+container.innerHTML=html;
+
+selContainer.innerHTML=STATE.selectedFinal.length>0?
+STATE.selectedFinal.map(v=>`<span class="tag purple" style="font-size:15px;padding:8px 16px;margin:4px">${v}</span>`).join(''):
+'<p style="color:var(--text3)">اختار 3-5 قيم من الجدول أعلاه</p>';
+}
+
+window.toggleFinalValue=function(v,checked){
+if(checked){
+if(STATE.selectedFinal.length>=7){showToast('الحد الأقصى 7 قيم');return}
+if(!STATE.selectedFinal.includes(v))STATE.selectedFinal.push(v);
+}else{
+STATE.selectedFinal=STATE.selectedFinal.filter(x=>x!==v);
+}
+buildPhase4();
+};
+
+// ═══════════════════════════════════════════════════
+// PHASE 5: ARTICULATION
+// ═══════════════════════════════════════════════════
+function buildPhase5(){
+const container=document.getElementById('articulationCards');
+if(STATE.selectedFinal.length===0){
+container.innerHTML='<div class="card"><p style="color:var(--accent3)">لا توجد قيم مختارة. ارجع للمرحلة الرابعة واختار على الأقل 3 قيم.</p></div>';return;
+}
+container.innerHTML=STATE.selectedFinal.map((v,i)=>{
+const a=STATE.articulation[v]||{};
+return`
+<div class="value-card-final">
+<h4>القيمة ${i+1}: ${v}</h4>
+<div class="field"><label>اسم مميز (مش كلمة عامة — مثال: "اكنس الأرض" أحسن من "التواضع")</label>
+<input type="text" class="form-input" value="${a.displayName||''}" onchange="setArticulation('${v}','displayName',this.value)" placeholder="اكتب اسم مميز..."></div>
+<div class="field"><label>وصف من سطر واحد</label>
+<input type="text" class="form-input" value="${a.description||''}" onchange="setArticulation('${v}','description',this.value)" placeholder="ماذا تعني هذه القيمة بالتحديد عندنا؟"></div>
+<div class="field"><label>سلوك يبيّنها (شخص يعيش القيمة دي بيعمل إيه؟)</label>
+<textarea class="form-input" style="min-height:60px" onchange="setArticulation('${v}','behaviorYes',this.value)" placeholder="مثال: لما حد يغلط يعترف من غير ما حد يقوله">${a.behaviorYes||''}</textarea></div>
+<div class="field"><label>سلوك يناقضها (شخص يخالف القيمة دي بيعمل إيه؟)</label>
+<textarea class="form-input" style="min-height:60px" onchange="setArticulation('${v}','behaviorNo',this.value)" placeholder="مثال: لما حد يلبس قناع ويمثل إن كله تمام">${a.behaviorNo||''}</textarea></div>
+<div class="field"><label>🧪 اختبار الـ 100 سنة: هل القيمة دي هتفضل صالحة بعد 100 سنة؟</label>
+<select class="matrix-select" onchange="setArticulation('${v}','test100',this.value)">
+<option value="">اختار...</option>
+<option value="yes" ${a.test100==='yes'?'selected':''}>أيوه — دي أبدية</option>
+<option value="maybe" ${a.test100==='maybe'?'selected':''}>مش متأكد</option>
+<option value="no" ${a.test100==='no'?'selected':''}>لأ — مرتبطة بالوقت الحالي</option>
+</select></div>
+</div>`;
+}).join('');
+}
+
+window.setArticulation=function(v,field,value){
+if(!STATE.articulation[v])STATE.articulation[v]={};
+STATE.articulation[v][field]=value;
+};
+
+// ═══════════════════════════════════════════════════
+// COMPLETION
+// ═══════════════════════════════════════════════════
+window.finishFunnel=async function(){
+await saveToFirebase(true);
+document.getElementById('phase5').classList.add('hidden');
+document.getElementById('navFooter').classList.add('hidden');
+document.getElementById('completionScreen').classList.remove('hidden');
+const display=document.getElementById('finalDisplay');
+display.innerHTML=STATE.selectedFinal.map(v=>{
+const a=STATE.articulation[v]||{};
+return`<div class="final-value-badge">
+<div class="name">${a.displayName||v}</div>
+<div class="desc">${a.description||''}</div>
+</div>`;
+}).join('');
+};
+
+// ═══════════════════════════════════════════════════
+// FIREBASE
+// ═══════════════════════════════════════════════════
+window.saveProgress=async function(){
+await saveToFirebase(false);
+showToast('✅ تم الحفظ');
+};
+
+async function saveToFirebase(isFinal){
+try{
+const docId=`VF_${STATE.org.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g,'_')}_${STATE.participant.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g,'_')}`;
+const data={
+participant:STATE.participant,
+organization:STATE.org,
+workshopId:STATE.workshopId||'standalone',
+currentPhase:STATE.currentPhase,
+tags:STATE.tags,
+fields:collectFields(),
+groups:STATE.groups.map(g=>({name:g.name,tags:g.tags,classification:g.classification})),
+testResults:STATE.testResults,
+selectedFinal:STATE.selectedFinal,
+articulation:STATE.articulation,
+plan:collectPlanFields(),
+isFinal,
+lastUpdated:window._serverTimestamp()
+};
+await window._setDoc(window._doc(window._db,'values_sessions',docId),data,{merge:true});
+}catch(e){console.error('Save error:',e)}
+}
+
+async function loadFromFirebase(){
+try{
+const docId=`VF_${STATE.org.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g,'_')}_${STATE.participant.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g,'_')}`;
+const snap=await window._getDoc(window._doc(window._db,'values_sessions',docId));
+if(snap.exists()){
+const d=snap.data();
+if(d.tags)Object.assign(STATE.tags,d.tags);
+if(d.groups)STATE.groups=d.groups;
+if(d.testResults)STATE.testResults=d.testResults;
+if(d.selectedFinal)STATE.selectedFinal=d.selectedFinal;
+if(d.articulation)STATE.articulation=d.articulation;
+// Re-render tags
+document.querySelectorAll('.tags-input-container').forEach(c=>{
+const key=c.dataset.tags;const color=c.dataset.color;
+if(STATE.tags[key])renderTags(key,color,c);
+});
+// Restore text fields
+if(d.fields){
+Object.keys(d.fields).forEach(k=>{
+const el=document.querySelector(`[data-field="${k}"]`);
+if(el)el.value=d.fields[k];
+});
+}
+showToast('✅ تم استعادة بياناتك السابقة');
+}
+}catch(e){console.error('Load error:',e)}
+}
+
+function collectFields(){
+const fields={};
+document.querySelectorAll('[data-field]').forEach(el=>{
+if(el.value&&el.value.trim())fields[el.dataset.field]=el.value.trim();
+});
+return fields;
+}
+
+function collectPlanFields(){
+const plan={};
+['plan_week1','plan_month1','plan_month3'].forEach(k=>{
+const el=document.querySelector(`[data-field="${k}"]`);
+if(el&&el.value.trim())plan[k]=el.value.trim();
+});
+return plan;
+}
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function showToast(msg){
+const existing=document.querySelector('.toast');
+if(existing)existing.remove();
+const t=document.createElement('div');
+t.className='toast';t.textContent=msg;
+document.body.appendChild(t);
+setTimeout(()=>t.remove(),3000);
+}
+
+// Auto-save every 60 seconds
+setInterval(()=>{if(STATE.currentPhase>0)saveToFirebase(false)},60000);
+
+// URL params
+const urlParams=new URLSearchParams(location.search);
+if(urlParams.get('org')){
+document.getElementById('orgInput').value=decodeURIComponent(urlParams.get('org'));
+}
+if(urlParams.get('name')){
+document.getElementById('nameInput').value=decodeURIComponent(urlParams.get('name'));
+}
+if(urlParams.get('org')&&urlParams.get('name')){
+// Auto-start if both params present
+setTimeout(()=>startFunnel(),500);
+}
+</script>
+</body>
+</html>
